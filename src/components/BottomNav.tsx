@@ -48,9 +48,10 @@ function LocationIcon({ active }: { active: boolean }) {
 function SproutIcon({ active }: { active: boolean }) {
   return (
     <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.2 : 1.8} strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 22V12" />
-      <path d="M5.5 8c0 0 2-4 6.5-4s6.5 4 6.5 4" />
-      <path d="M8 14c0 0 1.5-3 4-3s4 3 4 3" />
+      <path d="M17 8c-4 0-7 3-7 7" />
+      <path d="M17 8c0-4-2.5-6-6-6C8 2 6 4.5 6 8c0 0 3.5-1 5.5 1s1 5.5 1 5.5" />
+      <path d="M10 16c4 0 7-3 7-7" />
+      <path d="M10 16c0 4 2.5 6 6 6 3 0 5-2.5 5-6 0 0-3.5 1-5.5-1s-1-5.5-1-5.5" />
     </svg>
   );
 }
