@@ -65,50 +65,57 @@ const MarketPricePage = () => {
       <AppHeader title="실시간 시세" showRefresh />
 
       <main className="px-4 pt-5 safe-bottom space-y-4">
-        {/* 필터 바 */}
+        {/* 필터 칩 */}
         <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
-          {["고추 ▾", "건고추 ▾", "전국 도매 ▾", "20kg ▾", "1주 ▾"].map((label) => (
-            <button key={label} className="filter-chip flex-shrink-0">
-              {label}
+          {[
+            { label: "배추", emoji: "🥬" },
+            { label: "전체 품종", emoji: null },
+            { label: "전국 도매시장", emoji: null },
+            { label: "10kg", emoji: null },
+          ].map((chip) => (
+            <button key={chip.label} className="filter-chip flex-shrink-0">
+              {chip.emoji && <span className="text-sm">{chip.emoji}</span>}
+              {chip.label}
+              <ChevronDown className="w-3 h-3 ml-0.5 text-muted-foreground" />
             </button>
           ))}
-          <button className="filter-chip flex-shrink-0 filter-chip-active">
-            <SlidersHorizontal className="w-3 h-3" />
-            필터
-          </button>
         </div>
 
-        {/* KPI 요약 */}
-        <div className="grid grid-cols-3 gap-2">
-          <div className="kpi-card">
-            <p className="text-[10px] text-muted-foreground">현재가</p>
-            <p className="text-lg font-bold text-foreground mt-0.5">52,400</p>
-            <p className="text-[10px] text-muted-foreground">원/20kg</p>
+        {/* 통합 시세 요약 */}
+        <div className="bg-card rounded-xl border border-border overflow-hidden">
+          <div className="px-4 pt-4 pb-3">
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-3xl font-extrabold text-foreground tracking-tight">52,400<span className="text-base font-semibold text-muted-foreground ml-1">원</span></p>
+                <p className="text-xs text-muted-foreground mt-1">배추 · 10kg · 전국 평균</p>
+              </div>
+              <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+                <Clock className="w-3 h-3" />
+                <span>2026.04.14 14:00</span>
+              </div>
+            </div>
           </div>
-          <div className="kpi-card">
-            <p className="text-[10px] text-muted-foreground">전일 대비</p>
-            <p className="text-lg font-bold price-up mt-0.5">+2.3%</p>
-            <p className="text-[10px] text-muted-foreground">+1,180원</p>
+          <div className="border-t border-border px-4 py-3 grid grid-cols-4 gap-0">
+            <div className="text-center">
+              <p className="text-[10px] text-muted-foreground mb-1">전일 대비</p>
+              <p className="text-sm font-bold price-up">+2.3%</p>
+            </div>
+            <div className="text-center border-l border-border">
+              <p className="text-[10px] text-muted-foreground mb-1">전주 대비</p>
+              <p className="text-sm font-bold price-up">+6.8%</p>
+            </div>
+            <div className="text-center border-l border-border">
+              <p className="text-[10px] text-muted-foreground mb-1">전년 동기</p>
+              <p className="text-sm font-bold price-up">+14.2%</p>
+            </div>
+            <div className="text-center border-l border-border">
+              <p className="text-[10px] text-muted-foreground mb-1">거래량</p>
+              <p className="text-sm font-bold text-foreground">1,280t</p>
+            </div>
           </div>
-          <div className="kpi-card">
-            <p className="text-[10px] text-muted-foreground">거래량</p>
-            <p className="text-lg font-bold text-foreground mt-0.5">1,280</p>
-            <p className="text-[10px] text-muted-foreground">톤</p>
-          </div>
-        </div>
-        <div className="grid grid-cols-3 gap-2">
-          <div className="kpi-card">
-            <p className="text-[10px] text-muted-foreground">전주 대비</p>
-            <p className="text-sm font-bold price-up mt-0.5">+6.8%</p>
-          </div>
-          <div className="kpi-card">
-            <p className="text-[10px] text-muted-foreground">전년 동기</p>
-            <p className="text-sm font-bold price-up mt-0.5">+14.2%</p>
-          </div>
-          <div className="kpi-card">
-            <p className="text-[10px] text-muted-foreground">반입량</p>
-            <p className="text-sm font-bold text-foreground mt-0.5">53,400</p>
-            <p className="text-[10px] text-muted-foreground">상자</p>
+          <div className="border-t border-border px-4 py-2 flex items-center justify-between text-[10px] text-muted-foreground">
+            <span>반입량 53,400상자</span>
+            <span>전일 대비 +1,180원</span>
           </div>
         </div>
 
