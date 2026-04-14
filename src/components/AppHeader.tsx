@@ -1,4 +1,5 @@
 import { Menu, Bell, RefreshCw } from "lucide-react";
+import MobileStatusBar from "./MobileStatusBar";
 
 interface AppHeaderProps {
   title: string;
@@ -11,6 +12,7 @@ interface AppHeaderProps {
 const AppHeader = ({ title, showRefresh, subtitle, onRefresh }: AppHeaderProps) => {
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-sm border-b border-border">
+      <MobileStatusBar />
       <div className="flex items-center justify-between h-14 px-5">
         <button className="text-muted-foreground">
           <Menu className="w-5 h-5" />
