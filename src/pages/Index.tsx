@@ -45,21 +45,31 @@ const HomePage = () => {
 
         {/* 작물 선택 */}
         <section>
-          <h2 className="text-sm font-semibold text-foreground mb-2.5">관심 작물</h2>
-          <div className="flex gap-2 overflow-x-auto scrollbar-hide">
-            {crops.map((crop) => (
-              <button
-                key={crop.name}
-                className={`flex-shrink-0 flex items-center gap-1.5 pl-2 pr-4 py-2 rounded-full text-sm font-medium transition-colors border ${
-                  crop.active
-                    ? "bg-foreground text-background border-foreground"
-                    : "bg-card text-foreground border-border"
-                }`}
-              >
-                <span className="text-lg">{crop.emoji}</span>
-                {crop.name}
-              </button>
-            ))}
+          <div className="flex items-center justify-between mb-2.5">
+            <h2 className="text-sm font-semibold text-foreground">관심 작물</h2>
+            <button className="w-7 h-7 rounded-full border-2 border-primary flex items-center justify-center">
+              <Plus className="w-4 h-4 text-primary" />
+            </button>
+          </div>
+          <div className="flex gap-3 overflow-x-auto scrollbar-hide items-center">
+            {crops.map((crop) =>
+              crop.active ? (
+                <button
+                  key={crop.name}
+                  className="flex-shrink-0 flex items-center gap-2 pl-2.5 pr-5 py-2.5 rounded-full bg-[#2d5a3d] text-white text-sm font-semibold"
+                >
+                  <span className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center text-lg">{crop.emoji}</span>
+                  {crop.name}
+                </button>
+              ) : (
+                <button
+                  key={crop.name}
+                  className="flex-shrink-0 flex flex-col items-center gap-1"
+                >
+                  <span className="w-12 h-12 bg-secondary rounded-full flex items-center justify-center text-2xl">{crop.emoji}</span>
+                </button>
+              )
+            )}
           </div>
         </section>
 
