@@ -4,11 +4,12 @@ import AppHeader from "@/components/AppHeader";
 import BottomNav from "@/components/BottomNav";
 
 const crops = [
-  { name: "고추", active: true },
-  { name: "배추", active: false },
-  { name: "양파", active: false },
-  { name: "마늘", active: false },
-  { name: "상추", active: false },
+  { name: "고추", emoji: "🌶️", active: true },
+  { name: "배추", emoji: "🥬", active: false },
+  { name: "양파", emoji: "🧅", active: false },
+  { name: "마늘", emoji: "🧄", active: false },
+  { name: "상추", emoji: "🥗", active: false },
+  { name: "당근", emoji: "🥕", active: false },
 ];
 
 const HomePage = () => {
