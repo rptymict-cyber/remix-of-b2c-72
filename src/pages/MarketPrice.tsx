@@ -66,7 +66,7 @@ const MarketPricePage = () => {
 
       <main className="px-4 pt-5 safe-bottom space-y-4">
         {/* 필터 칩 */}
-        <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
+        <div className="flex flex-wrap gap-2 pb-1">
           {[
             { label: "배추", emoji: "🥬" },
             { label: "전체 품종", emoji: null },
