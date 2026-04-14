@@ -136,13 +136,13 @@ const HomePage = () => {
             {[
               { icon: BarChart3, title: "시세 조회", desc: "현재 시장 시세 확인", color: "bg-primary/10", iconColor: "text-primary", route: "/market" },
               { icon: BrainCircuit, title: "가격 예측", desc: "AI 기반\n판매 시점 분석", color: "bg-accent/10", iconColor: "text-accent", route: "/prediction" },
-              { icon: Store, title: "판매 시장 추천", desc: "최적 판매처 및\n시장 비교", color: "bg-warning/10", iconColor: "text-warning", route: undefined },
-              { icon: Sprout, title: "다음 작물 추천", desc: "수익성 기반\n다음 재배 작물 추천", color: "bg-success/10", iconColor: "text-success", route: undefined },
+              { icon: Store, title: "판매 시장 추천", desc: "최적 판매처 및\n시장 비교", color: "bg-warning/10", iconColor: "text-warning", route: "/sales" },
+              { icon: Sprout, title: "다음 작물 추천", desc: "수익성 기반\n다음 재배 작물 추천", color: "bg-success/10", iconColor: "text-success", route: "/crop" },
             ].map((item) => (
               <button
                 key={item.title}
                 onClick={() => item.route && navigate(item.route)}
-                className={`bg-card rounded-lg border border-border p-4 text-left shadow-[var(--shadow-sm)] active:scale-[0.98] transition-transform relative ${!item.route ? "opacity-60" : ""}`}
+                className="bg-card rounded-lg border border-border p-4 text-left shadow-[var(--shadow-sm)] active:scale-[0.98] transition-transform relative"
               >
                 <div className="flex items-center justify-between mb-3">
                   <div className={`w-9 h-9 rounded-full ${item.color} flex items-center justify-center`}>
