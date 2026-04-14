@@ -1,4 +1,4 @@
-import { ChevronRight, MapPin, CloudSun, TrendingUp, BrainCircuit, ArrowUpRight, BarChart3, Store, Sprout, Plus } from "lucide-react";
+import { ChevronRight, MapPin, CloudSun, TrendingUp, BrainCircuit, ArrowUpRight, BarChart3, Store, Sprout, Plus, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import AppHeader from "@/components/AppHeader";
 import BottomNav from "@/components/BottomNav";
@@ -20,26 +20,22 @@ const HomePage = () => {
       <AppHeader title="농산물 시세" />
 
       <main className="px-4 pt-4 pb-4 safe-bottom space-y-4">
-        {/* 사용자/지역 카드 */}
-        <section className="bg-card rounded-lg p-4 shadow-[var(--shadow-sm)] border border-border">
+        {/* 사용자 인사 카드 */}
+        <section className="bg-gradient-to-br from-[#e8f0f8] to-[#dce8f4] rounded-2xl p-5">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-xs text-muted-foreground">재배 기준 지역</p>
-              <p className="text-lg font-bold text-foreground mt-0.5">충남 공주시</p>
+              <p className="text-sm text-[#6b8db5]">안녕하세요,</p>
+              <p className="text-xl font-bold text-foreground mt-0.5">홍길동님</p>
             </div>
-            <div className="flex items-center gap-1 bg-secondary rounded-md px-2.5 py-1.5">
-              <CloudSun className="w-4 h-4 text-warning" />
-              <span className="text-xs font-medium text-secondary-foreground">맑음 22°</span>
+            <div className="w-12 h-12 rounded-full bg-[#c8d8e8] flex items-center justify-center">
+              <User className="w-6 h-6 text-[#8ba4be]" />
             </div>
           </div>
-          <div className="flex items-center gap-4 mt-3 pt-3 border-t border-border">
-            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <MapPin className="w-3.5 h-3.5" />
-              <span>기상 예보 10일 반영 중</span>
-            </div>
-            <div className="text-[10px] text-muted-foreground/70">
-              2026.04.14 기준
-            </div>
+          <div className="flex items-center gap-1.5 mt-3 text-sm text-[#6b8db5]">
+            <CloudSun className="w-4 h-4" />
+            <span>충남 공주시</span>
+            <span className="text-[#c0d0e0] mx-1">|</span>
+            <span>대체로 맑음 22°</span>
           </div>
         </section>
 
