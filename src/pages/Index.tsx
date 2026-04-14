@@ -73,41 +73,57 @@ const HomePage = () => {
         {/* 대표 시세 요약 */}
         <section
           onClick={() => navigate("/market")}
-          className="bg-card rounded-xl border border-border shadow-[var(--shadow-sm)] overflow-hidden cursor-pointer active:scale-[0.99] transition-transform"
+          className="bg-card rounded-2xl border border-border shadow-[var(--shadow-md)] overflow-hidden cursor-pointer active:scale-[0.99] transition-transform"
         >
-          <div className="px-4 pt-3 pb-2.5">
+          {/* 메인 시세 영역 */}
+          <div className="px-5 pt-5 pb-4">
             <div className="flex items-start justify-between">
-              <div>
-                <p className="text-[11px] font-medium text-muted-foreground">고추 · 건고추 · 서울 가락시장</p>
-                <div className="flex items-baseline gap-2 mt-1.5">
-                  <span className="text-3xl font-extrabold text-foreground tracking-tight">52,400</span>
-                  <span className="text-sm text-muted-foreground">원/20kg</span>
+              <div className="flex-1 min-w-0">
+                <p className="text-[11px] font-medium text-muted-foreground tracking-wide">
+                  고추 · 서울 가락시장 · 건고추
+                </p>
+                <div className="flex items-baseline gap-1.5 mt-2.5">
+                  <span className="text-[34px] font-extrabold text-foreground leading-none tracking-tight">52,400</span>
+                  <span className="text-[13px] font-medium text-muted-foreground">원/20kg</span>
                 </div>
               </div>
-              <ChevronRight className="w-4 h-4 text-muted-foreground/50 mt-0.5" />
+              {/* 우측: 전일 대비 + 네비 */}
+              <div className="flex flex-col items-end gap-1 pt-0.5 flex-shrink-0">
+                <ChevronRight className="w-4 h-4 text-muted-foreground/40" />
+                <div className="flex items-center gap-1 mt-1 px-2.5 py-1 rounded-lg bg-[hsl(0_72%_50%/0.07)]">
+                  <ArrowUpRight className="w-3.5 h-3.5 price-up" />
+                  <span className="text-[13px] font-bold price-up">+2.3%</span>
+                </div>
+                <span className="text-[10px] text-muted-foreground">전일 대비</span>
+              </div>
             </div>
-            <div className="flex items-center gap-2 mt-1.5">
-              <span className="price-up text-sm font-semibold flex items-center gap-0.5">
-                <ArrowUpRight className="w-3.5 h-3.5" />
-                +2.3%
-              </span>
-              <span className="text-[10px] text-muted-foreground">전일 대비 · +1,180원</span>
-            </div>
-            <p className="text-[10px] text-muted-foreground/60 mt-2">2026.04.14 14:00 업데이트</p>
           </div>
-          <div className="border-t border-border grid grid-cols-3 divide-x divide-border">
-            <div className="py-2.5 text-center">
-              <p className="text-[10px] text-muted-foreground">거래량</p>
-              <p className="text-sm font-bold text-foreground mt-0.5">1,280t</p>
+
+          {/* 보조 지표 */}
+          <div className="px-5 pb-4">
+            <div className="grid grid-cols-3 gap-2">
+              <div className="bg-background rounded-xl px-3 py-2.5">
+                <p className="text-[10px] text-muted-foreground leading-tight">전주</p>
+                <p className="text-[15px] font-bold price-up mt-1 leading-tight">+6.8%</p>
+              </div>
+              <div className="bg-background rounded-xl px-3 py-2.5">
+                <p className="text-[10px] text-muted-foreground leading-tight">전년</p>
+                <p className="text-[15px] font-bold price-up mt-1 leading-tight">+14.2%</p>
+              </div>
+              <div className="bg-background rounded-xl px-3 py-2.5">
+                <p className="text-[10px] text-muted-foreground leading-tight">거래량</p>
+                <p className="text-[15px] font-bold text-foreground mt-1 leading-tight">1,280t</p>
+              </div>
             </div>
-            <div className="py-2.5 text-center">
-              <p className="text-[10px] text-muted-foreground">전년 동기 대비</p>
-              <p className="text-sm font-bold price-up mt-0.5">+14.2%</p>
+          </div>
+
+          {/* 푸터 */}
+          <div className="border-t border-border/60 px-5 py-2.5 flex items-center justify-between">
+            <div className="flex items-center gap-1 text-[10px] text-muted-foreground/70">
+              <Clock className="w-3 h-3" />
+              <span>2026.04.14 14:00 업데이트</span>
             </div>
-            <div className="py-2.5 text-center">
-              <p className="text-[10px] text-muted-foreground">반입량</p>
-              <p className="text-sm font-bold text-foreground mt-0.5">53,400상자</p>
-            </div>
+            <span className="text-[10px] text-muted-foreground/70">반입량 53,400상자</span>
           </div>
         </section>
 
