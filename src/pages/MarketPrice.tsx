@@ -62,7 +62,7 @@ const MarketPricePage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <AppHeader title="실시간 시세" showRefresh subtitle="2026.04.14 14:00 기준" />
+      <AppHeader title="실시간 시세" showRefresh />
 
       <main className="px-4 pt-3 pb-4 safe-bottom space-y-3">
         {/* 필터 바 */}
