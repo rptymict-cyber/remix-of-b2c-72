@@ -1,4 +1,4 @@
-import { ChevronRight, MapPin, CloudSun, TrendingUp, BrainCircuit, ArrowUpRight, BarChart3 } from "lucide-react";
+import { ChevronRight, MapPin, CloudSun, TrendingUp, BrainCircuit, ArrowUpRight, BarChart3, Store, Sprout } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import AppHeader from "@/components/AppHeader";
 import BottomNav from "@/components/BottomNav";
@@ -129,28 +129,29 @@ const HomePage = () => {
 
         {/* 핵심 기능 진입 */}
         <section>
-          <h2 className="text-sm font-semibold text-foreground mb-2.5">핵심 기능</h2>
+          <h2 className="text-sm font-semibold text-foreground mb-2.5">무엇을 알고 싶으세요?</h2>
           <div className="grid grid-cols-2 gap-3">
-            <button
-              onClick={() => navigate("/market")}
-              className="bg-card rounded-lg border border-border p-4 text-left shadow-[var(--shadow-sm)] active:scale-[0.98] transition-transform"
-            >
-              <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center mb-3">
-                <BarChart3 className="w-5 h-5 text-primary" />
-              </div>
-              <p className="text-sm font-semibold text-foreground">실시간 시세 분석</p>
-              <p className="text-[11px] text-muted-foreground mt-0.5">시장별 가격·거래량 비교</p>
-            </button>
-            <button
-              onClick={() => navigate("/prediction")}
-              className="bg-card rounded-lg border border-border p-4 text-left shadow-[var(--shadow-sm)] active:scale-[0.98] transition-transform"
-            >
-              <div className="w-9 h-9 rounded-lg bg-accent/10 flex items-center justify-center mb-3">
-                <BrainCircuit className="w-5 h-5 text-accent" />
-              </div>
-              <p className="text-sm font-semibold text-foreground">AI 가격 예측</p>
-              <p className="text-[11px] text-muted-foreground mt-0.5">최적 출하 시점 판단</p>
-            </button>
+            {[
+              { icon: BarChart3, title: "시세 조회", desc: "현재 시장 시세 확인", color: "bg-primary/10", iconColor: "text-primary", route: "/market" },
+              { icon: BrainCircuit, title: "가격 예측", desc: "AI 기반\n판매 시점 분석", color: "bg-accent/10", iconColor: "text-accent", route: "/prediction" },
+              { icon: Store, title: "판매 시장 추천", desc: "최적 판매처 및\n시장 비교", color: "bg-warning/10", iconColor: "text-warning", route: undefined },
+              { icon: Sprout, title: "다음 작물 추천", desc: "수익성 기반\n다음 재배 작물 추천", color: "bg-success/10", iconColor: "text-success", route: undefined },
+            ].map((item) => (
+              <button
+                key={item.title}
+                onClick={() => item.route && navigate(item.route)}
+                className={`bg-card rounded-lg border border-border p-4 text-left shadow-[var(--shadow-sm)] active:scale-[0.98] transition-transform relative ${!item.route ? "opacity-60" : ""}`}
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <div className={`w-9 h-9 rounded-full ${item.color} flex items-center justify-center`}>
+                    <item.icon className={`w-5 h-5 ${item.iconColor}`} />
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-muted-foreground/50" />
+                </div>
+                <p className="text-sm font-semibold text-foreground">{item.title}</p>
+                <p className="text-[11px] text-muted-foreground mt-0.5 whitespace-pre-line leading-relaxed">{item.desc}</p>
+              </button>
+            ))}
           </div>
         </section>
       </main>
