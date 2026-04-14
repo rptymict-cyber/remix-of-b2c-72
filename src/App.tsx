@@ -6,6 +6,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Index from "./pages/Index.tsx";
 import MarketPrice from "./pages/MarketPrice.tsx";
 import AIPrediction from "./pages/AIPrediction.tsx";
+import SalesChannel from "./pages/SalesChannel.tsx";
+import CropRecommend from "./pages/CropRecommend.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -21,6 +23,8 @@ const App = () => (
           <Route path="/market" element={<MarketPrice />} />
           <Route path="/prediction" element={<AIPrediction />} />
           <Route path="/prediction/expanded" element={<AIPrediction defaultExpanded />} />
+          <Route path="/sales" element={<SalesChannel />} />
+          <Route path="/crop" element={<CropRecommend />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
