@@ -66,25 +66,100 @@ const SalesChannelPage = () => {
           </div>
         </div>
 
-        {/* 위치 요약 */}
-        <div className="bg-card rounded-xl border border-border p-3">
-          <div className="flex items-center gap-1.5 mb-2">
+        {/* 위치 요약 - 지도 스타일 */}
+        <div className="bg-card rounded-xl border border-border overflow-hidden">
+          <div className="flex items-center gap-1.5 px-3 py-2.5 border-b border-border">
             <MapPin className="w-4 h-4 text-muted-foreground" />
             <span className="text-xs font-semibold text-foreground">출하 위치 비교</span>
           </div>
-          <div className="bg-secondary/50 rounded-lg p-4 flex items-center justify-center">
-            <div className="text-center">
-              <div className="w-3 h-3 bg-primary rounded-full mx-auto mb-1" />
-              <p className="text-[10px] font-medium text-foreground">내 농장</p>
-              <p className="text-[10px] text-muted-foreground">충북 충주시</p>
-              <div className="flex gap-3 mt-3 justify-center">
-                {sorted.slice(0, 3).map((s, i) => (
-                  <div key={s.name} className="text-center">
-                    <div className={`w-2.5 h-2.5 rounded-full mx-auto mb-0.5 ${s.recommended ? "bg-primary" : "bg-muted-foreground/40"}`} />
-                    <p className="text-[9px] font-medium">{s.name}</p>
-                    <p className="text-[9px] text-muted-foreground">{s.distance}</p>
-                  </div>
-                ))}
+          <div className="relative bg-[#e8f4e8] h-52 overflow-hidden">
+            {/* 지도 배경 패턴 */}
+            <svg className="absolute inset-0 w-full h-full opacity-30" xmlns="http://www.w3.org/2000/svg">
+              {/* 도로 그리드 */}
+              <line x1="0" y1="60" x2="400" y2="60" stroke="hsl(var(--muted-foreground))" strokeWidth="0.5" strokeDasharray="4 4" opacity="0.3" />
+              <line x1="0" y1="120" x2="400" y2="120" stroke="hsl(var(--muted-foreground))" strokeWidth="0.5" strokeDasharray="4 4" opacity="0.3" />
+              <line x1="0" y1="180" x2="400" y2="180" stroke="hsl(var(--muted-foreground))" strokeWidth="0.5" strokeDasharray="4 4" opacity="0.3" />
+              <line x1="80" y1="0" x2="80" y2="220" stroke="hsl(var(--muted-foreground))" strokeWidth="0.5" strokeDasharray="4 4" opacity="0.3" />
+              <line x1="195" y1="0" x2="195" y2="220" stroke="hsl(var(--muted-foreground))" strokeWidth="0.5" strokeDasharray="4 4" opacity="0.3" />
+              <line x1="310" y1="0" x2="310" y2="220" stroke="hsl(var(--muted-foreground))" strokeWidth="0.5" strokeDasharray="4 4" opacity="0.3" />
+              {/* 주요 도로 */}
+              <path d="M50 200 Q120 140 195 110 Q270 80 350 30" stroke="hsl(var(--muted-foreground))" strokeWidth="1.5" fill="none" opacity="0.2" />
+              <path d="M30 80 Q100 100 195 110 Q290 120 380 160" stroke="hsl(var(--muted-foreground))" strokeWidth="1.5" fill="none" opacity="0.2" />
+              {/* 지형 영역 */}
+              <circle cx="60" cy="40" r="25" fill="hsl(142 40% 60%)" opacity="0.15" />
+              <circle cx="320" cy="180" r="30" fill="hsl(142 40% 60%)" opacity="0.12" />
+              <circle cx="140" cy="170" r="20" fill="hsl(200 50% 60%)" opacity="0.1" />
+            </svg>
+
+            {/* 연결선 - 내 농장에서 각 시장으로 */}
+            <svg className="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
+              {/* 내 농장 → 대구북부 */}
+              <line x1="195" y1="105" x2="300" y2="160" stroke="hsl(var(--primary))" strokeWidth="1.5" strokeDasharray="4 3" opacity="0.5" />
+              {/* 내 농장 → 대전 오정 */}
+              <line x1="195" y1="105" x2="130" y2="160" stroke="hsl(var(--muted-foreground))" strokeWidth="1" strokeDasharray="4 3" opacity="0.35" />
+              {/* 내 농장 → 안양 */}
+              <line x1="195" y1="105" x2="230" y2="40" stroke="hsl(var(--muted-foreground))" strokeWidth="1" strokeDasharray="4 3" opacity="0.35" />
+              {/* 내 농장 → 서울 가락 */}
+              <line x1="195" y1="105" x2="195" y2="30" stroke="hsl(var(--muted-foreground))" strokeWidth="1" strokeDasharray="4 3" opacity="0.35" />
+            </svg>
+
+            {/* 내 농장 마커 (중앙) */}
+            <div className="absolute left-1/2 top-[105px] -translate-x-1/2 -translate-y-1/2 z-10 flex flex-col items-center">
+              <div className="relative">
+                <div className="w-9 h-9 bg-primary rounded-full flex items-center justify-center shadow-lg shadow-primary/30 ring-[3px] ring-white">
+                  <MapPin className="w-4.5 h-4.5 text-white" />
+                </div>
+                <div className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[5px] border-r-[5px] border-t-[6px] border-l-transparent border-r-transparent border-t-primary" />
+              </div>
+              <div className="mt-2 bg-white/95 backdrop-blur-sm rounded-lg px-2.5 py-1 shadow-sm border border-border/50">
+                <p className="text-[10px] font-bold text-foreground leading-tight">내 농장</p>
+                <p className="text-[9px] text-muted-foreground leading-tight">충북 충주시</p>
+              </div>
+            </div>
+
+            {/* 대구북부 마커 (추천) */}
+            <div className="absolute left-[75%] top-[160px] -translate-x-1/2 -translate-y-1/2 z-10 flex flex-col items-center">
+              <div className="relative">
+                <div className="w-7 h-7 bg-primary rounded-full flex items-center justify-center shadow-md ring-2 ring-white">
+                  <Star className="w-3.5 h-3.5 text-white" />
+                </div>
+              </div>
+              <div className="mt-1.5 bg-white/95 backdrop-blur-sm rounded-md px-2 py-0.5 shadow-sm border border-primary/20">
+                <p className="text-[9px] font-bold text-primary leading-tight">대구북부</p>
+                <p className="text-[8px] text-muted-foreground leading-tight">82km</p>
+              </div>
+            </div>
+
+            {/* 대전 오정 마커 */}
+            <div className="absolute left-[33%] top-[160px] -translate-x-1/2 -translate-y-1/2 z-10 flex flex-col items-center">
+              <div className="w-6 h-6 bg-muted-foreground/60 rounded-full flex items-center justify-center shadow-sm ring-2 ring-white">
+                <MapPin className="w-3 h-3 text-white" />
+              </div>
+              <div className="mt-1 bg-white/90 backdrop-blur-sm rounded-md px-1.5 py-0.5 shadow-sm">
+                <p className="text-[9px] font-medium text-foreground leading-tight">대전 오정</p>
+                <p className="text-[8px] text-muted-foreground leading-tight">48km</p>
+              </div>
+            </div>
+
+            {/* 안양 마커 */}
+            <div className="absolute left-[60%] top-[40px] -translate-x-1/2 -translate-y-1/2 z-10 flex flex-col items-center">
+              <div className="w-6 h-6 bg-muted-foreground/60 rounded-full flex items-center justify-center shadow-sm ring-2 ring-white">
+                <MapPin className="w-3 h-3 text-white" />
+              </div>
+              <div className="mt-1 bg-white/90 backdrop-blur-sm rounded-md px-1.5 py-0.5 shadow-sm">
+                <p className="text-[9px] font-medium text-foreground leading-tight">안양</p>
+                <p className="text-[8px] text-muted-foreground leading-tight">185km</p>
+              </div>
+            </div>
+
+            {/* 서울 가락 마커 */}
+            <div className="absolute left-[50%] top-[28px] -translate-x-1/2 -translate-y-1/2 z-10 flex flex-col items-center">
+              <div className="w-6 h-6 bg-muted-foreground/60 rounded-full flex items-center justify-center shadow-sm ring-2 ring-white">
+                <MapPin className="w-3 h-3 text-white" />
+              </div>
+              <div className="mt-1 bg-white/90 backdrop-blur-sm rounded-md px-1.5 py-0.5 shadow-sm">
+                <p className="text-[9px] font-medium text-foreground leading-tight">서울 가락</p>
+                <p className="text-[8px] text-muted-foreground leading-tight">210km</p>
               </div>
             </div>
           </div>
