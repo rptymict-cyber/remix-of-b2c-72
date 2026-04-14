@@ -30,7 +30,7 @@ const SalesChannelPage = () => {
     <div className="min-h-screen bg-background">
       <AppHeader title="판매처 추천" subtitle="최적 출하처 비교" />
 
-      <main className="px-4 pt-3 pb-4 safe-bottom space-y-3">
+      <main className="px-4 pt-5 pb-4 safe-bottom space-y-4">
         {/* 조건 */}
         <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
           {["상추 · 청상추 ▾", "충북 충주 ▾", "38상자 ▾", "2kg 상자 ▾"].map((l) => (

@@ -77,7 +77,7 @@ const CropRecommendPage = () => {
     <div className="min-h-screen bg-background">
       <AppHeader title="작물 추천" subtitle="다음 시즌 재배 계획" />
 
-      <main className="px-4 pt-3 pb-4 safe-bottom space-y-3">
+      <main className="px-4 pt-5 pb-4 safe-bottom space-y-4">
         {/* 조건 */}
         <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
           {["충남 공주 ▾", "노지 기준 ▾", "다음 시즌 ▾", "1,200평 ▾"].map((l) => (
