@@ -1,4 +1,4 @@
-import { ChevronRight, MapPin, CloudSun, TrendingUp, BrainCircuit, ArrowUpRight, BarChart3, Store, Sprout, Plus, User } from "lucide-react";
+import { ChevronRight, MapPin, CloudSun, TrendingUp, BrainCircuit, ArrowUpRight, BarChart3, Store, Sprout, Plus, User, Clock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import AppHeader from "@/components/AppHeader";
 import BottomNav from "@/components/BottomNav";
