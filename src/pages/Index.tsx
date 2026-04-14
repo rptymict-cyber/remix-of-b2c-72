@@ -19,7 +19,7 @@ const HomePage = () => {
     <div className="min-h-screen bg-background">
       <AppHeader title="농산물 시세" />
 
-      <main className="px-4 pt-4 pb-4 safe-bottom space-y-4">
+      <main className="px-4 pt-6 pb-4 safe-bottom space-y-6">
         {/* 사용자 인사 카드 */}
         <section className="bg-gradient-to-br from-[#e6f4ea] to-[#d4edda] rounded-2xl p-5">
           <div className="flex items-start justify-between">
