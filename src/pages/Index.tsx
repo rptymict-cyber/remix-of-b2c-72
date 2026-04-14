@@ -143,7 +143,7 @@ const HomePage = () => {
 
         {/* 핵심 기능 진입 */}
         <section>
-          <h2 className="text-sm font-semibold text-foreground mb-2.5">무엇을 알고 싶으세요?</h2>
+          <h2 className="text-sm font-semibold text-foreground mb-2.5">핵심 기능 바로가기</h2>
           <div className="grid grid-cols-2 gap-3">
             {[
               { icon: BarChart3, title: "시세 조회", desc: "현재 시장 시세 확인", color: "bg-primary/10", iconColor: "text-primary", route: "/market" },
