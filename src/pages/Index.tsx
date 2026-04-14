@@ -43,8 +43,9 @@ const HomePage = () => {
         <section>
           <div className="flex items-center justify-between mb-2.5">
             <h2 className="text-sm font-semibold text-foreground">관심 작물</h2>
-            <button className="w-7 h-7 rounded-full border-2 border-primary flex items-center justify-center">
-              <Plus className="w-4 h-4 text-primary" />
+            <button className="flex items-center gap-1 px-3 py-1.5 rounded-full border border-primary text-primary text-xs font-medium">
+              <Plus className="w-3.5 h-3.5" />
+              작물 추가
             </button>
           </div>
           <div className="flex gap-3 overflow-x-auto scrollbar-hide items-center">
