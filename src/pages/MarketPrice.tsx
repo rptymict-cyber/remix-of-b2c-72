@@ -86,7 +86,7 @@ const MarketPricePage = () => {
           {/* 상단 메인 영역 */}
           <div className="px-5 pt-5 pb-4">
             <p className="text-[11px] font-medium text-muted-foreground tracking-wide">
-              고추 · 서울 가락시장 · 건고추
+              고추 · 건고추 · 서울 가락시장
             </p>
             <div className="flex items-baseline gap-1.5 mt-2">
               <span className="text-[32px] font-extrabold text-foreground leading-none tracking-tight">52,400</span>
