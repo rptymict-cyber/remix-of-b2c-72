@@ -64,7 +64,7 @@ const MarketPricePage = () => {
     <div className="min-h-screen bg-background">
       <AppHeader title="실시간 시세" showRefresh />
 
-      <main className="px-4 pt-3 pb-4 safe-bottom space-y-3">
+      <main className="px-4 pt-5 pb-4 safe-bottom space-y-4">
         {/* 필터 바 */}
         <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
           {["고추 ▾", "건고추 ▾", "전국 도매 ▾", "20kg ▾", "1주 ▾"].map((label) => (
