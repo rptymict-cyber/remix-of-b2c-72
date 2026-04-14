@@ -72,7 +72,7 @@ const BottomNav = () => {
         boxShadow: "0 -1px 0 hsl(220 13% 91%)",
       }}
     >
-      <div className="flex items-center justify-around h-[60px] max-w-lg mx-auto">
+      <div className="flex items-center justify-around h-[64px] max-w-lg mx-auto px-2">
         {tabs.map((tab) => {
           const active = isActive(tab.id);
           const Icon = tab.icon;
