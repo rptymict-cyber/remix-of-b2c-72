@@ -73,38 +73,41 @@ const HomePage = () => {
         {/* 대표 시세 요약 */}
         <section
           onClick={() => navigate("/market")}
-          className="bg-card rounded-lg border border-border shadow-[var(--shadow-sm)] overflow-hidden cursor-pointer active:scale-[0.99] transition-transform"
+          className="bg-card rounded-xl border border-border shadow-[var(--shadow-sm)] overflow-hidden cursor-pointer active:scale-[0.99] transition-transform"
         >
-          <div className="bg-primary/5 px-4 py-3">
-            <div className="flex items-center justify-between">
+          <div className="px-4 pt-3 pb-2.5">
+            <div className="flex items-start justify-between">
               <div>
-                <p className="text-[11px] font-medium text-muted-foreground">고추 · 서울 가락시장 · 건고추</p>
-                <div className="flex items-baseline gap-2 mt-1">
-                  <span className="text-2xl font-bold text-foreground">52,400</span>
+                <p className="text-[11px] font-medium text-muted-foreground">고추 · 건고추 · 서울 가락시장</p>
+                <div className="flex items-baseline gap-2 mt-1.5">
+                  <span className="text-3xl font-extrabold text-foreground tracking-tight">52,400</span>
                   <span className="text-sm text-muted-foreground">원/20kg</span>
                 </div>
               </div>
-              <div className="flex flex-col items-end gap-1">
-                <span className="price-up text-sm font-semibold flex items-center gap-0.5">
-                  <ArrowUpRight className="w-3.5 h-3.5" />
-                  +2.3%
-                </span>
-                <span className="text-[10px] text-muted-foreground">전일 대비</span>
-              </div>
+              <ChevronRight className="w-4 h-4 text-muted-foreground/50 mt-0.5" />
             </div>
-          </div>
-          <div className="px-4 py-2.5 flex items-center justify-between">
-            <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
-              <span>전주 <span className="price-up font-medium">+6.8%</span></span>
-              <span className="text-border">|</span>
-              <span>전년 <span className="price-up font-medium">+14.2%</span></span>
-              <span className="text-border">|</span>
-              <span>거래량 1,280t</span>
+            <div className="flex items-center gap-2 mt-1.5">
+              <span className="price-up text-sm font-semibold flex items-center gap-0.5">
+                <ArrowUpRight className="w-3.5 h-3.5" />
+                +2.3%
+              </span>
+              <span className="text-[10px] text-muted-foreground">전일 대비 · +1,180원</span>
             </div>
-            <ChevronRight className="w-4 h-4 text-muted-foreground/50" />
+            <p className="text-[10px] text-muted-foreground/60 mt-2">2026.04.14 14:00 업데이트</p>
           </div>
-          <div className="px-4 pb-2 text-[10px] text-muted-foreground/60">
-            2026.04.14 14:00 업데이트
+          <div className="border-t border-border grid grid-cols-3 divide-x divide-border">
+            <div className="py-2.5 text-center">
+              <p className="text-[10px] text-muted-foreground">거래량</p>
+              <p className="text-sm font-bold text-foreground mt-0.5">1,280t</p>
+            </div>
+            <div className="py-2.5 text-center">
+              <p className="text-[10px] text-muted-foreground">전년 동기 대비</p>
+              <p className="text-sm font-bold price-up mt-0.5">+14.2%</p>
+            </div>
+            <div className="py-2.5 text-center">
+              <p className="text-[10px] text-muted-foreground">반입량</p>
+              <p className="text-sm font-bold text-foreground mt-0.5">53,400상자</p>
+            </div>
           </div>
         </section>
 
@@ -114,9 +117,12 @@ const HomePage = () => {
           className="prediction-hero cursor-pointer active:scale-[0.99] transition-transform"
         >
           <div className="relative z-10">
-            <div className="flex items-center gap-1.5 mb-2">
-              <BrainCircuit className="w-4 h-4 text-white/80" />
-              <span className="text-xs font-medium text-white/80">AI 출하 시점 예측</span>
+            <div className="flex items-start justify-between mb-2">
+              <div className="flex items-center gap-1.5">
+                <BrainCircuit className="w-4 h-4 text-white/80" />
+                <span className="text-xs font-medium text-white/80">AI 출하 시점 예측</span>
+              </div>
+              <ChevronRight className="w-4 h-4 text-white/50" />
             </div>
             <p className="text-xl font-bold">
               4월 24일 출하 시 유리
@@ -131,7 +137,6 @@ const HomePage = () => {
             </div>
             <div className="flex items-center justify-between mt-3">
               <span className="text-[10px] text-white/50">기상 + 시세 패턴 분석 기반</span>
-              <ChevronRight className="w-4 h-4 text-white/50" />
             </div>
           </div>
         </section>
@@ -151,7 +156,7 @@ const HomePage = () => {
                 onClick={() => item.route && navigate(item.route)}
                 className="bg-card rounded-lg border border-border p-4 text-left shadow-[var(--shadow-sm)] active:scale-[0.98] transition-transform relative"
               >
-                <div className="flex items-center justify-between mb-3">
+                <div className="flex items-start justify-between mb-3">
                   <div className={`w-9 h-9 rounded-full ${item.color} flex items-center justify-center`}>
                     <item.icon className={`w-5 h-5 ${item.iconColor}`} />
                   </div>
