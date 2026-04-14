@@ -50,12 +50,13 @@ const HomePage = () => {
             {crops.map((crop) => (
               <button
                 key={crop.name}
-                className={`flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`flex-shrink-0 flex items-center gap-1.5 pl-2 pr-4 py-2 rounded-full text-sm font-medium transition-colors border ${
                   crop.active
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-secondary text-secondary-foreground"
+                    ? "bg-foreground text-background border-foreground"
+                    : "bg-card text-foreground border-border"
                 }`}
               >
+                <span className="text-lg">{crop.emoji}</span>
                 {crop.name}
               </button>
             ))}
