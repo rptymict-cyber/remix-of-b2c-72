@@ -11,11 +11,11 @@ const MobileStatusBar = () => {
           <rect x="12" y="0" width="3" height="12" rx="0.5" fill="currentColor" />
         </svg>
         {/* WiFi */}
-        <svg width="15" height="12" viewBox="0 0 15 12" fill="none" className="text-foreground">
-          <path d="M7.5 10.5a1.25 1.25 0 110 2.5 1.25 1.25 0 010-2.5z" fill="currentColor" transform="translate(0,-1.5)" />
-          <path d="M4.5 9c.8-.9 1.8-1.4 3-1.4s2.2.5 3 1.4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" fill="none" />
-          <path d="M2 6.2c1.5-1.6 3.3-2.5 5.5-2.5S12.5 4.6 14 6.2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" fill="none" />
-          <path d="M0 3.2C2 1.2 4.5 0 7.5 0S13 1.2 15 3.2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" fill="none" />
+        <svg width="15" height="11" viewBox="0 0 15 11" fill="none" className="text-foreground">
+          <path d="M0.68 3.02C2.46 1.14 4.84 0 7.5 0c2.66 0 5.04 1.14 6.82 3.02" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" fill="none" />
+          <path d="M2.84 5.34C4.04 4.06 5.68 3.3 7.5 3.3c1.82 0 3.46.76 4.66 2.04" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" fill="none" />
+          <path d="M5.0 7.66c.66-.72 1.5-1.16 2.5-1.16s1.84.44 2.5 1.16" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" fill="none" />
+          <circle cx="7.5" cy="9.75" r="1.25" fill="currentColor" />
         </svg>
         {/* Battery */}
         <svg width="25" height="12" viewBox="0 0 25 12" fill="none" className="text-foreground">
