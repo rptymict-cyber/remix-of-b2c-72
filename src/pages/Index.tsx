@@ -80,7 +80,7 @@ const HomePage = () => {
             <div className="flex items-start justify-between">
               <div className="flex-1 min-w-0">
                 <p className="text-[11px] font-medium text-muted-foreground tracking-wide">
-                  고추 · 서울 가락시장 · 건고추
+                  고추 · 건고추 · 서울 가락시장
                 </p>
                 <div className="flex items-baseline gap-1.5 mt-2.5">
                   <span className="text-[34px] font-extrabold text-foreground leading-none tracking-tight">52,400</span>
