@@ -21,20 +21,20 @@ const HomePage = () => {
 
       <main className="px-4 pt-4 pb-4 safe-bottom space-y-4">
         {/* 사용자 인사 카드 */}
-        <section className="bg-gradient-to-br from-[#e8f0f8] to-[#dce8f4] rounded-2xl p-5">
+        <section className="bg-gradient-to-br from-[#e6f4ea] to-[#d4edda] rounded-2xl p-5">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-sm text-[#6b8db5]">안녕하세요,</p>
-              <p className="text-xl font-bold text-foreground mt-0.5">홍길동님</p>
+              <p className="text-sm text-[#5a8a6a]">안녕하세요,</p>
+              <p className="text-xl font-bold text-[#1a3c2a] mt-0.5">홍길동님</p>
             </div>
-            <div className="w-12 h-12 rounded-full bg-[#c8d8e8] flex items-center justify-center">
-              <User className="w-6 h-6 text-[#8ba4be]" />
+            <div className="w-12 h-12 rounded-full bg-[#b8d8c4] flex items-center justify-center">
+              <User className="w-6 h-6 text-[#5a8a6a]" />
             </div>
           </div>
-          <div className="flex items-center gap-1.5 mt-3 text-sm text-[#6b8db5]">
+          <div className="flex items-center gap-1.5 mt-3 text-sm text-[#5a8a6a]">
             <CloudSun className="w-4 h-4" />
             <span>충남 공주시</span>
-            <span className="text-[#c0d0e0] mx-1">|</span>
+            <span className="text-[#a0c8b0] mx-1">|</span>
             <span>대체로 맑음 22°</span>
           </div>
         </section>
