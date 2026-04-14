@@ -13,8 +13,8 @@ const AppHeader = ({ title, showRefresh, subtitle, onRefresh }: AppHeaderProps) 
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-sm border-b border-border">
       <MobileStatusBar />
-      <div className="flex items-center justify-between h-14 px-5">
-        <button className="text-muted-foreground">
+      <div className="relative flex items-center justify-center h-14 px-5">
+        <button className="absolute left-5 text-muted-foreground">
           <Menu className="w-5 h-5" />
         </button>
         <div className="flex flex-col items-center">
@@ -27,7 +27,7 @@ const AppHeader = ({ title, showRefresh, subtitle, onRefresh }: AppHeaderProps) 
             </span>
           )}
         </div>
-        <div className="flex items-center gap-3">
+        <div className="absolute right-5 flex items-center gap-3">
           {showRefresh && (
             <button onClick={onRefresh} className="text-muted-foreground">
               <RefreshCw className="w-4.5 h-4.5" />
