@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronDown, ArrowUpRight, ArrowDownRight, Minus, SlidersHorizontal } from "lucide-react";
+import { ChevronDown, ArrowUpRight, ArrowDownRight, Minus, Clock } from "lucide-react";
 import {
   ComposedChart, Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
