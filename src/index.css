@@ -6,8 +6,7 @@
 
 @layer base {
   :root {
-    /* Light theme - Home & Prediction */
-    --background: 210 20% 98%;
+    --background: 0 0% 97%;
     --foreground: 220 20% 10%;
 
     --card: 0 0% 100%;
@@ -16,57 +15,43 @@
     --popover: 0 0% 100%;
     --popover-foreground: 220 20% 10%;
 
-    --primary: 220 80% 50%;
+    --primary: 142 52% 38%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 20% 95%;
+    --secondary: 140 20% 95%;
     --secondary-foreground: 220 20% 20%;
 
-    --muted: 210 15% 93%;
-    --muted-foreground: 215 12% 50%;
+    --muted: 140 10% 93%;
+    --muted-foreground: 215 10% 50%;
 
-    --accent: 168 70% 42%;
+    --accent: 142 52% 38%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 72% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --success: 152 60% 42%;
+    --success: 142 60% 40%;
     --success-foreground: 0 0% 100%;
 
     --warning: 38 92% 55%;
     --warning-foreground: 0 0% 10%;
 
-    --border: 214 20% 90%;
-    --input: 214 20% 90%;
-    --ring: 220 80% 50%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 142 52% 38%;
 
-    --radius: 0.75rem;
-
-    /* Dark expert theme tokens */
-    --expert-bg: 220 30% 8%;
-    --expert-surface: 220 25% 12%;
-    --expert-surface-hover: 220 22% 16%;
-    --expert-border: 220 20% 18%;
-    --expert-text: 210 20% 92%;
-    --expert-text-secondary: 215 15% 58%;
-    --expert-accent: 210 85% 55%;
-    --expert-accent-glow: 210 90% 65%;
-    --expert-success: 152 65% 50%;
-    --expert-danger: 0 72% 58%;
-    --expert-warning: 38 92% 60%;
+    --radius: 0.875rem;
 
     /* Chart colors */
-    --chart-price: 210 85% 55%;
-    --chart-volume: 168 60% 45%;
-    --chart-prediction: 152 65% 50%;
-    --chart-grid: 220 15% 20%;
+    --chart-price: 142 52% 38%;
+    --chart-volume: 200 60% 50%;
+    --chart-prediction: 142 60% 45%;
+    --chart-grid: 220 10% 90%;
 
     /* Shadows */
     --shadow-sm: 0 1px 3px 0 hsl(220 20% 10% / 0.04);
     --shadow-md: 0 4px 12px -2px hsl(220 20% 10% / 0.06);
     --shadow-lg: 0 8px 24px -4px hsl(220 20% 10% / 0.08);
-    --shadow-expert: 0 4px 20px -4px hsl(220 30% 5% / 0.4);
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -93,60 +78,33 @@
 }
 
 @layer components {
-  /* Expert page dark background */
-  .expert-bg {
-    background-color: hsl(var(--expert-bg));
-    color: hsl(var(--expert-text));
-  }
-
-  .expert-surface {
-    background-color: hsl(var(--expert-surface));
-    border-color: hsl(var(--expert-border));
-  }
-
-  .expert-surface-hover:hover {
-    background-color: hsl(var(--expert-surface-hover));
-  }
-
-  .expert-text-secondary {
-    color: hsl(var(--expert-text-secondary));
-  }
-
-  .expert-accent {
-    color: hsl(var(--expert-accent));
-  }
-
-  .expert-border {
-    border-color: hsl(var(--expert-border));
-  }
-
   /* Price change indicators */
   .price-up {
-    color: hsl(var(--expert-success));
+    color: hsl(0 72% 50%);
   }
 
   .price-down {
-    color: hsl(var(--expert-danger));
+    color: hsl(220 80% 50%);
   }
 
   .price-neutral {
-    color: hsl(var(--expert-text-secondary));
+    color: hsl(215 10% 50%);
   }
 
-  /* KPI card in expert mode */
+  /* KPI card */
   .kpi-card {
-    background-color: hsl(var(--expert-surface));
-    border: 1px solid hsl(var(--expert-border));
+    background-color: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
     border-radius: var(--radius);
     padding: 0.75rem;
   }
 
   /* Filter chip */
   .filter-chip {
-    background-color: hsl(var(--expert-surface));
-    border: 1px solid hsl(var(--expert-border));
-    color: hsl(var(--expert-text));
-    border-radius: 0.5rem;
+    background-color: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    color: hsl(var(--foreground));
+    border-radius: 2rem;
     padding: 0.375rem 0.75rem;
     font-size: 0.8125rem;
     font-weight: 500;
@@ -157,9 +115,9 @@
   }
 
   .filter-chip-active {
-    background-color: hsl(var(--expert-accent) / 0.15);
-    border-color: hsl(var(--expert-accent));
-    color: hsl(var(--expert-accent));
+    background-color: hsl(var(--primary) / 0.1);
+    border-color: hsl(var(--primary));
+    color: hsl(var(--primary));
   }
 
   /* Analysis tab */
@@ -167,14 +125,14 @@
     font-size: 0.8125rem;
     font-weight: 500;
     padding: 0.5rem 0;
-    color: hsl(var(--expert-text-secondary));
+    color: hsl(var(--muted-foreground));
     border-bottom: 2px solid transparent;
     transition: all 0.15s;
   }
 
   .analysis-tab-active {
-    color: hsl(var(--expert-accent));
-    border-bottom-color: hsl(var(--expert-accent));
+    color: hsl(var(--primary));
+    border-bottom-color: hsl(var(--primary));
   }
 
   /* Prediction condition chip */
@@ -192,7 +150,7 @@
 
   /* Prediction hero card */
   .prediction-hero {
-    background: linear-gradient(135deg, hsl(210 85% 50%), hsl(200 80% 45%));
+    background: linear-gradient(135deg, hsl(142 52% 38%), hsl(160 50% 40%));
     border-radius: var(--radius);
     color: white;
     padding: 1.25rem;
@@ -222,13 +180,13 @@
   }
 
   .reason-badge-up {
-    background-color: hsl(152 60% 42% / 0.1);
-    color: hsl(152 60% 42%);
+    background-color: hsl(0 72% 50% / 0.08);
+    color: hsl(0 72% 50%);
   }
 
   .reason-badge-caution {
     background-color: hsl(38 92% 55% / 0.1);
-    color: hsl(38 92% 55%);
+    color: hsl(38 75% 40%);
   }
 
   /* Scrollbar hide */

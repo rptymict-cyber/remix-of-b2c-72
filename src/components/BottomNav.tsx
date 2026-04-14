@@ -1,18 +1,15 @@
-import { Home, TrendingUp, BrainCircuit, MoreHorizontal } from "lucide-react";
+import { Home, BarChart3, BrainCircuit, Store, Sprout } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const tabs = [
   { id: "/", label: "홈", icon: Home },
-  { id: "/market", label: "시세", icon: TrendingUp },
+  { id: "/market", label: "시세", icon: BarChart3 },
   { id: "/prediction", label: "예측", icon: BrainCircuit },
-  { id: "/more", label: "더보기", icon: MoreHorizontal, muted: true },
+  { id: "/sales", label: "판매처", icon: Store },
+  { id: "/crop", label: "작물", icon: Sprout },
 ];
 
-interface BottomNavProps {
-  variant?: "light" | "dark";
-}
-
-const BottomNav = ({ variant = "light" }: BottomNavProps) => {
+const BottomNav = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -21,41 +18,27 @@ const BottomNav = ({ variant = "light" }: BottomNavProps) => {
     return location.pathname === path;
   };
 
-  const isDark = variant === "dark";
-
   return (
     <nav
-      className={`fixed bottom-0 left-0 right-0 z-50 ${
-        isDark
-          ? "bg-expert-bg border-t border-expert-border"
-          : "bg-card border-t border-border"
-      }`}
+      className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-border"
       style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
     >
-      <div className="flex items-center justify-around h-14 max-w-lg mx-auto">
+      <div className="flex items-center justify-around h-[56px] max-w-lg mx-auto">
         {tabs.map((tab) => {
           const active = isActive(tab.id);
           const Icon = tab.icon;
           return (
             <button
               key={tab.id}
-              onClick={() => !tab.muted && navigate(tab.id)}
-              className={`flex flex-col items-center justify-center gap-0.5 flex-1 h-full transition-colors ${
-                tab.muted
-                  ? isDark
-                    ? "text-expert-text-secondary/40 cursor-default"
-                    : "text-muted-foreground/40 cursor-default"
-                  : active
-                  ? isDark
-                    ? "text-expert-accent"
-                    : "text-primary"
-                  : isDark
-                  ? "text-expert-text-secondary"
-                  : "text-muted-foreground"
+              onClick={() => navigate(tab.id)}
+              className={`flex flex-col items-center justify-center gap-[3px] flex-1 h-full transition-colors ${
+                active
+                  ? "text-green-600"
+                  : "text-gray-400"
               }`}
             >
-              <Icon className="w-5 h-5" strokeWidth={active ? 2.2 : 1.8} />
-              <span className={`text-[10px] ${active ? "font-semibold" : "font-medium"}`}>
+              <Icon className="w-[22px] h-[22px]" strokeWidth={active ? 2.2 : 1.6} />
+              <span className={`text-[10px] leading-none ${active ? "font-bold" : "font-medium"}`}>
                 {tab.label}
               </span>
             </button>
