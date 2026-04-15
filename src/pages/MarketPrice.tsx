@@ -208,7 +208,7 @@ const MarketPricePage = () => {
                   <span className="col-span-2 text-right">전일</span>
                   <span className="col-span-2 text-right">전주</span>
                   <span className="col-span-1 text-right">거래</span>
-                  <span className="col-span-2 text-right">점유</span>
+                  <span className="col-span-2 text-right">점유율</span>
                 </div>
                 {marketData.map((m) => (
                   <div key={m.name} className="grid grid-cols-12 gap-1 px-3 py-2.5 text-xs active:bg-secondary/50 cursor-pointer">
@@ -246,7 +246,7 @@ const MarketPricePage = () => {
                   <span className="col-span-2 text-right">전일</span>
                   <span className="col-span-2 text-right">전주</span>
                   <span className="col-span-1 text-right">거래</span>
-                  <span className="col-span-2 text-right">점유</span>
+                  <span className="col-span-2 text-right">점유율</span>
                 </div>
                 {marketData.map((m) => (
                   <div key={m.name} className="grid grid-cols-12 gap-1 px-3 py-2.5 text-xs active:bg-secondary/50 cursor-pointer">
