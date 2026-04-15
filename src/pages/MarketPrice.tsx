@@ -194,13 +194,13 @@ const MarketPricePage = () => {
             </div>
 
             {/* 시장별 시세 테이블 */}
+            <div className="flex items-center justify-between mt-1">
+              <span className="text-sm font-semibold text-foreground">시장별 시세</span>
+              <button className="text-[11px] text-primary flex items-center gap-0.5 font-medium">
+                높은가격순 <ChevronDown className="w-3 h-3" />
+              </button>
+            </div>
             <div className="bg-card rounded-xl border border-border overflow-hidden">
-              <div className="flex items-center justify-between px-3 py-2.5 border-b border-border">
-                <span className="text-xs font-semibold text-foreground">시장별 시세</span>
-                <button className="text-[10px] text-primary flex items-center gap-0.5">
-                  높은가격순 <ChevronDown className="w-3 h-3" />
-                </button>
-              </div>
               <div className="divide-y divide-border">
                 <div className="grid grid-cols-12 gap-1 px-3 py-2 text-[10px] text-muted-foreground">
                   <span className="col-span-3">시장</span>
