@@ -34,7 +34,7 @@ const SalesChannelPage = () => {
         {/* 조건 */}
         <div className="flex flex-wrap gap-2.5">
           {[
-            { label: "상추 · 청상추", icon: true },
+            { label: "고추·건고추", icon: true },
             { label: "충북 충주", icon: true },
             { label: "38상자", icon: true },
             { label: "2kg 상자", icon: true },

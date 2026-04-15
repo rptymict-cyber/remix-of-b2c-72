@@ -59,7 +59,7 @@ const PredictionPage = ({ defaultExpanded = false }: PredictionPageProps) => {
           <div className="flex flex-wrap gap-2">
             <button className="condition-chip">
               <Layers className="w-3.5 h-3.5 text-muted-foreground" />
-              상추 · 청상추 <ChevronDown className="w-3 h-3 text-muted-foreground" />
+              고추·건고추 <ChevronDown className="w-3 h-3 text-muted-foreground" />
             </button>
             <button className="condition-chip">
               <Building2 className="w-3.5 h-3.5 text-muted-foreground" />
@@ -99,7 +99,7 @@ const PredictionPage = ({ defaultExpanded = false }: PredictionPageProps) => {
             </div>
             <p className="text-2xl font-bold">11월 12일 <span className="text-base font-medium text-white/70">오전 경매</span></p>
             <p className="text-xs text-white/70 mt-1">
-              상추(청상추) · 대구북부 · 2kg 상자 기준
+              고추(건고추) · 대구북부 · 20kg 기준
             </p>
             <div className="grid grid-cols-2 gap-2 mt-3">
               <div className="bg-white/15 rounded-md px-3 py-2">
@@ -127,7 +127,7 @@ const PredictionPage = ({ defaultExpanded = false }: PredictionPageProps) => {
           <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs">
             <div className="flex justify-between">
               <span className="text-muted-foreground">품목</span>
-              <span className="font-medium text-foreground">상추(청상추)</span>
+              <span className="font-medium text-foreground">고추(건고추)</span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">시장</span>
