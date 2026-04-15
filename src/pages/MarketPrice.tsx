@@ -68,10 +68,10 @@ const MarketPricePage = () => {
         {/* 필터 칩 */}
         <div className="flex gap-2">
           {[
-            { label: "배추", emoji: "🥬" },
+            { label: "고추·건고추", emoji: "🌶️" },
             { label: "전체 품종", emoji: null },
             { label: "전국 도매시장", emoji: null },
-            { label: "10kg", emoji: null },
+            { label: "20kg", emoji: null },
           ].map((chip) => (
             <button key={chip.label} className="filter-chip flex-1 justify-center text-xs px-2 py-1.5">
               {chip.emoji && <span className="text-sm">{chip.emoji}</span>}

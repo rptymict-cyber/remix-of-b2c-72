@@ -8,8 +8,8 @@ const crops = [
   { name: "배추", emoji: "🥬", active: false },
   { name: "양파", emoji: "🧅", active: false },
   { name: "마늘", emoji: "🧄", active: false },
-  { name: "상추", emoji: "🥗", active: false },
-  { name: "당근", emoji: "🥕", active: false },
+  { name: "감자", emoji: "🥔", active: false },
+  { name: "무", emoji: "🥕", active: false },
 ];
 
 const HomePage = () => {
