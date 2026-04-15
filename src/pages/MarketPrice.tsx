@@ -107,18 +107,22 @@ const MarketPricePage = () => {
           </div>
 
           {/* 하단 보조 정보 */}
-          <div className="mx-5 mb-4 grid grid-cols-3 gap-2.5">
-            <div className="bg-background rounded-xl px-3 py-2.5">
-              <p className="text-[10px] text-muted-foreground mb-1">전주</p>
-              <p className="text-[15px] font-bold price-up leading-tight">+6.8%</p>
+          <div className="mx-5 mb-4 grid grid-cols-4 gap-2">
+            <div className="bg-background rounded-xl px-2.5 py-2.5">
+              <p className="text-[10px] text-muted-foreground mb-1">전일 대비</p>
+              <p className="text-[14px] font-bold price-up leading-tight">+2.3%</p>
             </div>
-            <div className="bg-background rounded-xl px-3 py-2.5">
-              <p className="text-[10px] text-muted-foreground mb-1">전년</p>
-              <p className="text-[15px] font-bold price-up leading-tight">+14.2%</p>
+            <div className="bg-background rounded-xl px-2.5 py-2.5">
+              <p className="text-[10px] text-muted-foreground mb-1">전주 대비</p>
+              <p className="text-[14px] font-bold price-up leading-tight">+6.8%</p>
             </div>
-            <div className="bg-background rounded-xl px-3 py-2.5">
+            <div className="bg-background rounded-xl px-2.5 py-2.5">
+              <p className="text-[10px] text-muted-foreground mb-1">전년 동기</p>
+              <p className="text-[14px] font-bold price-up leading-tight">+14.2%</p>
+            </div>
+            <div className="bg-background rounded-xl px-2.5 py-2.5">
               <p className="text-[10px] text-muted-foreground mb-1">거래량</p>
-              <p className="text-[15px] font-bold text-foreground leading-tight">1,280t</p>
+              <p className="text-[14px] font-bold text-foreground leading-tight">1,280t</p>
             </div>
           </div>
 
