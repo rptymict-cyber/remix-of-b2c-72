@@ -31,7 +31,7 @@ const HomePage = () => {
             <div className="flex flex-col items-end flex-shrink-0 ml-4">
               <CloudSun className="w-8 h-8 text-white/80 mb-1" />
               <p className="text-[28px] font-bold leading-none">14°C</p>
-              <p className="text-[11px] text-white/60 mt-1">맑음 · 남서풍</p>
+              <p className="text-[11px] text-white/60 mt-1">맑음</p>
             </div>
           </div>
           <div className="flex flex-wrap gap-2 mt-4">
