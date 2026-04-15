@@ -287,16 +287,15 @@ const MarketPricePage = () => {
               <span className="text-sm font-semibold text-foreground">주요 출하 산지</span>
               <p className="text-[10px] text-muted-foreground mt-0.5">고추(건고추) 기준 전국 도매시장</p>
             </div>
-            <div className="bg-card rounded-xl border border-border overflow-hidden">
-              {originData.map((o) => (
-                <div key={o.region} className="px-3 py-3 border-b border-border last:border-b-0">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium text-foreground">{o.region}</span>
-                    <span className="text-sm font-semibold text-primary">{o.share}%</span>
+            <div className="space-y-2">
+              {originData.map((o, i) => (
+                <div key={o.region} className="flex items-center gap-3 bg-card rounded-xl border border-border px-4 py-3.5 shadow-sm">
+                  <span className="text-lg font-bold text-primary w-6 text-center shrink-0">{i + 1}</span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-foreground">{o.region}</p>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">주요 출하처: {o.markets}</p>
                   </div>
-                  <p className="text-[10px] text-muted-foreground mt-1">
-                    주요 출하처: {o.markets}
-                  </p>
+                  <span className="text-lg font-bold text-foreground tabular-nums shrink-0">{o.share}%</span>
                 </div>
               ))}
             </div>
