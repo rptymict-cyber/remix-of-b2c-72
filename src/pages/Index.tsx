@@ -21,21 +21,32 @@ const HomePage = () => {
 
       <main className="px-4 pt-6 safe-bottom space-y-6">
         {/* 사용자 인사 카드 */}
-        <section className="bg-gradient-to-br from-[#e6f4ea] to-[#d4edda] rounded-2xl p-5">
+        <section className="bg-[#2d5a3d] rounded-2xl p-5 text-white">
           <div className="flex items-start justify-between">
-            <div>
-              <p className="text-sm text-[#5a8a6a]">안녕하세요,</p>
-              <p className="text-xl font-bold text-[#1a3c2a] mt-0.5">홍길동님</p>
+            <div className="flex-1 min-w-0">
+              <p className="text-[11px] font-medium text-white/60 tracking-wide">내 재배 기준 지역</p>
+              <p className="text-[22px] font-bold mt-1 leading-tight">충남 공주시</p>
+              <p className="text-[11px] text-white/50 mt-1.5">오늘 기준 시세 · 향후 10일 기상 반영 중</p>
             </div>
-            <div className="w-12 h-12 rounded-full bg-[#b8d8c4] flex items-center justify-center">
-              <User className="w-6 h-6 text-[#5a8a6a]" />
+            <div className="flex flex-col items-end flex-shrink-0 ml-4">
+              <CloudSun className="w-8 h-8 text-white/80 mb-1" />
+              <p className="text-[28px] font-bold leading-none">14°C</p>
+              <p className="text-[11px] text-white/60 mt-1">맑음 · 남서풍</p>
             </div>
           </div>
-          <div className="flex items-center gap-1.5 mt-3 text-sm text-[#5a8a6a]">
-            <CloudSun className="w-4 h-4" />
-            <span>충남 공주시</span>
-            <span className="text-[#a0c8b0] mx-1">|</span>
-            <span>대체로 맑음 22°</span>
+          <div className="flex flex-wrap gap-2 mt-4">
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/15 text-[10px] font-medium text-white/90">
+              <Thermometer className="w-3 h-3" />
+              주간 최저 2°C 예상
+            </span>
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/15 text-[10px] font-medium text-white/90">
+              <Droplets className="w-3 h-3" />
+              3일 후 강수
+            </span>
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#f59e0b]/20 text-[10px] font-medium text-[#fbbf24]">
+              <Wind className="w-3 h-3" />
+              출하 영향 주의
+            </span>
           </div>
         </section>
 
