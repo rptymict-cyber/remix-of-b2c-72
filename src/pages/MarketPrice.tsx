@@ -251,7 +251,7 @@ const MarketPricePage = () => {
                 {marketData.map((m) => (
                   <div key={m.name} className="grid grid-cols-12 gap-1 px-3 py-2.5 text-xs active:bg-secondary/50 cursor-pointer">
                     <span className="col-span-3 font-medium text-foreground truncate">{m.name}</span>
-                    <span className="col-span-2 text-right font-semibold text-foreground">{(m.price/10000).toFixed(1)}만</span>
+                    <span className="col-span-2 text-right font-semibold text-foreground">{m.price.toLocaleString()}</span>
                     <span className={`col-span-2 text-right font-medium ${m.dayChange > 0 ? "price-up" : m.dayChange < 0 ? "price-down" : "price-neutral"}`}>
                       {m.dayChange > 0 ? "+" : ""}{m.dayChange}%
                     </span>
