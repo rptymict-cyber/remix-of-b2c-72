@@ -83,7 +83,7 @@ const CropRecommendPage = () => {
           {[
             { label: "충남 공주", icon: true },
             { label: "노지", icon: true },
-            { label: "다음 시즌", icon: true },
+            { label: "시즌", icon: true },
             { label: "1,200평", icon: true },
           ].map((chip) => (
             <button key={chip.label} className="filter-chip">
