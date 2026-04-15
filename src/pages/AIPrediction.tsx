@@ -35,7 +35,7 @@ const PredictionPage = ({ defaultExpanded = false }: PredictionPageProps) => {
   const currentPrice = 8500;
   const predictedPrice = 9100;
   const quantity = 38;
-  const unitWeight = 2;
+  const unitWeight = 20;
   const totalKg = quantity * unitWeight;
   const currentTotal = currentPrice * quantity;
   const predictedTotal = predictedPrice * quantity;
