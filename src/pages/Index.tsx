@@ -35,7 +35,7 @@ const HomePage = () => {
             </div>
           </div>
           <div className="flex gap-2 mt-4 overflow-x-auto scrollbar-hide">
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/15 text-[10px] font-medium text-white/90">
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/15 text-[10px] font-medium text-white/90 whitespace-nowrap flex-shrink-0">
               <Thermometer className="w-3 h-3" />
               주간 최저 2°C 예상
             </span>
