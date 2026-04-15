@@ -80,7 +80,7 @@ const CropRecommendPage = () => {
       <main className="px-4 pt-5 safe-bottom space-y-4">
         {/* 조건 */}
         <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
-          {["충남 공주 ▾", "노지 기준 ▾", "다음 시즌 ▾", "1,200평 ▾"].map((l) => (
+          {["충남 공주 ▾", "노지 ▾", "다음 시즌 ▾", "1,200평 ▾"].map((l) => (
             <button key={l} className="filter-chip flex-shrink-0">{l}</button>
           ))}
         </div>
