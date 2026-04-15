@@ -32,17 +32,17 @@ const SalesChannelPage = () => {
 
       <main className="px-4 pt-5 safe-bottom space-y-4">
         {/* 조건 */}
-        <div className="flex flex-wrap gap-2.5">
+        <div className="grid grid-cols-2 gap-2">
           {[
-            { label: "고추·건고추", icon: true },
-            { label: "충북 충주", icon: true },
-            { label: "38상자", icon: true },
-            { label: "2kg 상자", icon: true },
+            { label: "고추·건고추", emoji: "🌶️" },
+            { label: "충북 충주 · 38상자", emoji: null },
+            { label: "20kg", emoji: null },
+            { label: "전국 도매시장", emoji: null },
           ].map((chip) => (
-            <button key={chip.label} className="filter-chip">
-              {chip.label === "고추·건고추" && <span className="text-sm">🌶️</span>}
+            <button key={chip.label} className="filter-chip justify-center text-xs px-2 py-1.5">
+              {chip.emoji && <span className="text-sm">{chip.emoji}</span>}
               {chip.label}
-              <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
+              <ChevronDown className="w-3 h-3 text-muted-foreground" />
             </button>
           ))}
         </div>
