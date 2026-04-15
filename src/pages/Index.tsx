@@ -34,7 +34,7 @@ const HomePage = () => {
               <p className="text-[11px] text-white/60 mt-1">맑음</p>
             </div>
           </div>
-          <div className="flex flex-wrap gap-2 mt-4">
+          <div className="flex gap-2 mt-4 overflow-x-auto scrollbar-hide">
             <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/15 text-[10px] font-medium text-white/90">
               <Thermometer className="w-3 h-3" />
               주간 최저 2°C 예상
