@@ -39,7 +39,7 @@ const HomePage = () => {
               <Thermometer className="w-3 h-3" />
               주간 최저 2°C 예상
             </span>
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/15 text-[10px] font-medium text-white/90">
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/15 text-[10px] font-medium text-white/90 whitespace-nowrap flex-shrink-0">
               <Droplets className="w-3 h-3" />
               3일 후 강수
             </span>
