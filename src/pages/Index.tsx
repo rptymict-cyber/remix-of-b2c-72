@@ -34,16 +34,16 @@ const HomePage = () => {
               <p className="text-[11px] text-white/60 mt-1">맑음</p>
             </div>
           </div>
-          <div className="flex flex-wrap gap-2 mt-4">
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/15 text-[10px] font-medium text-white/90">
+          <div className="flex gap-2 mt-4 overflow-x-auto scrollbar-hide">
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/15 text-[10px] font-medium text-white/90 whitespace-nowrap flex-shrink-0">
               <Thermometer className="w-3 h-3" />
               주간 최저 2°C 예상
             </span>
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/15 text-[10px] font-medium text-white/90">
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/15 text-[10px] font-medium text-white/90 whitespace-nowrap flex-shrink-0">
               <Droplets className="w-3 h-3" />
               3일 후 강수
             </span>
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#f59e0b]/20 text-[10px] font-medium text-[#fbbf24]">
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#f59e0b]/20 text-[10px] font-medium text-[#fbbf24] whitespace-nowrap flex-shrink-0">
               <Wind className="w-3 h-3" />
               출하 영향 주의
             </span>
