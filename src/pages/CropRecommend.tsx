@@ -79,9 +79,17 @@ const CropRecommendPage = () => {
 
       <main className="px-4 pt-5 safe-bottom space-y-4">
         {/* 조건 */}
-        <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
-          {["충남 공주 ▾", "노지 ▾", "다음 시즌 ▾", "1,200평 ▾"].map((l) => (
-            <button key={l} className="filter-chip flex-shrink-0">{l}</button>
+        <div className="flex flex-wrap gap-2.5">
+          {[
+            { label: "충남 공주", icon: true },
+            { label: "노지", icon: true },
+            { label: "다음 시즌", icon: true },
+            { label: "1,200평", icon: true },
+          ].map((chip) => (
+            <button key={chip.label} className="filter-chip">
+              {chip.label}
+              <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
+            </button>
           ))}
         </div>
 

@@ -66,17 +66,17 @@ const MarketPricePage = () => {
 
       <main className="px-4 pt-5 safe-bottom space-y-4">
         {/* 필터 칩 */}
-        <div className="flex flex-wrap gap-2 pb-1">
+        <div className="flex flex-wrap gap-2.5">
           {[
             { label: "배추", emoji: "🥬" },
             { label: "전체 품종", emoji: null },
             { label: "전국 도매시장", emoji: null },
             { label: "10kg", emoji: null },
           ].map((chip) => (
-            <button key={chip.label} className="filter-chip flex-shrink-0">
+            <button key={chip.label} className="filter-chip">
               {chip.emoji && <span className="text-sm">{chip.emoji}</span>}
               {chip.label}
-              <ChevronDown className="w-3 h-3 ml-0.5 text-muted-foreground" />
+              <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
             </button>
           ))}
         </div>
