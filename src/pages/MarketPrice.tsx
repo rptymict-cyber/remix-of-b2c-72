@@ -302,7 +302,7 @@ const MarketPricePage = () => {
             </div>
             <div className="bg-primary/5 rounded-xl border border-primary/20 p-3">
               <p className="text-[11px] text-foreground">
-                <span className="text-primary font-semibold">내 지역 인사이트</span>
+                <span className="text-primary font-semibold">내 지역 출하 흐름</span>
               </p>
               <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
                 충남 공주산 고추는 주로 서울 가락시장(42%), 안양시장(31%), 대전 오정(12%)으로 출하됩니다.
