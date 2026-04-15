@@ -32,9 +32,17 @@ const SalesChannelPage = () => {
 
       <main className="px-4 pt-5 safe-bottom space-y-4">
         {/* 조건 */}
-        <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
-          {["상추 · 청상추 ▾", "충북 충주 ▾", "38상자 ▾", "2kg 상자 ▾"].map((l) => (
-            <button key={l} className="filter-chip flex-shrink-0">{l}</button>
+        <div className="flex flex-wrap gap-2.5">
+          {[
+            { label: "상추 · 청상추", icon: true },
+            { label: "충북 충주", icon: true },
+            { label: "38상자", icon: true },
+            { label: "2kg 상자", icon: true },
+          ].map((chip) => (
+            <button key={chip.label} className="filter-chip">
+              {chip.label}
+              <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
+            </button>
           ))}
         </div>
 
