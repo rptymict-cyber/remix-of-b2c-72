@@ -232,10 +232,8 @@ const MarketPricePage = () => {
         {/* 시장비교 탭 */}
         {activeTab === "시장비교" && (
           <div className="space-y-3 animate-fade-in">
+            <span className="text-sm font-semibold text-foreground">시장별 가격 비교</span>
             <div className="bg-card rounded-xl border border-border overflow-hidden">
-              <div className="px-3 py-2.5 border-b border-border">
-                <span className="text-xs font-semibold text-foreground">시장별 가격 비교</span>
-              </div>
               {marketData.map((m) => (
                 <div key={m.name} className="px-3 py-3 border-b border-border last:border-b-0">
                   <div className="flex justify-between items-center mb-1.5">
@@ -258,11 +256,11 @@ const MarketPricePage = () => {
         {/* 법인 탭 */}
         {activeTab === "법인" && (
           <div className="space-y-3 animate-fade-in">
+            <div>
+              <span className="text-sm font-semibold text-foreground">법인청과별 거래 현황</span>
+              <p className="text-[10px] text-muted-foreground mt-0.5">서울 가락시장 기준</p>
+            </div>
             <div className="bg-card rounded-xl border border-border overflow-hidden">
-              <div className="px-3 py-2.5 border-b border-border">
-                <span className="text-xs font-semibold text-foreground">법인청과별 거래 현황</span>
-                <p className="text-[10px] text-muted-foreground mt-0.5">서울 가락시장 기준</p>
-              </div>
               {corporationData.map((c) => (
                 <div key={c.name} className="px-3 py-3 border-b border-border last:border-b-0">
                   <div className="flex justify-between items-center">
@@ -285,11 +283,11 @@ const MarketPricePage = () => {
         {/* 산지 탭 */}
         {activeTab === "산지" && (
           <div className="space-y-3 animate-fade-in">
+            <div>
+              <span className="text-sm font-semibold text-foreground">주요 출하 산지</span>
+              <p className="text-[10px] text-muted-foreground mt-0.5">고추(건고추) 기준 전국 도매시장</p>
+            </div>
             <div className="bg-card rounded-xl border border-border overflow-hidden">
-              <div className="px-3 py-2.5 border-b border-border">
-                <span className="text-xs font-semibold text-foreground">주요 출하 산지</span>
-                <p className="text-[10px] text-muted-foreground mt-0.5">고추(건고추) 기준 전국 도매시장</p>
-              </div>
               {originData.map((o) => (
                 <div key={o.region} className="px-3 py-3 border-b border-border last:border-b-0">
                   <div className="flex justify-between items-center">
@@ -316,10 +314,8 @@ const MarketPricePage = () => {
         {/* 품종 탭 */}
         {activeTab === "품종" && (
           <div className="space-y-3 animate-fade-in">
+            <span className="text-sm font-semibold text-foreground">품종 · 단량별 가격</span>
             <div className="bg-card rounded-xl border border-border overflow-hidden">
-              <div className="px-3 py-2.5 border-b border-border">
-                <span className="text-xs font-semibold text-foreground">품종 · 단량별 가격</span>
-              </div>
               <div className="grid grid-cols-12 gap-1 px-3 py-2 text-[10px] text-muted-foreground border-b border-border">
                 <span className="col-span-4">품종</span>
                 <span className="col-span-2 text-right">단량</span>
