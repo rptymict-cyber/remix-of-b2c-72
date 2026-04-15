@@ -40,6 +40,7 @@ const SalesChannelPage = () => {
             { label: "2kg 상자", icon: true },
           ].map((chip) => (
             <button key={chip.label} className="filter-chip">
+              {chip.label === "고추·건고추" && <span className="text-sm">🌶️</span>}
               {chip.label}
               <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
             </button>
