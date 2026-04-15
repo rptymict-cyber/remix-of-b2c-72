@@ -270,26 +270,29 @@ const MarketPricePage = () => {
         {/* 법인 탭 */}
         {activeTab === "법인" && (
           <div className="space-y-3 animate-fade-in">
-            <div>
-              <span className="text-sm font-semibold text-foreground">법인청과별 거래 현황</span>
-              <p className="text-[10px] text-muted-foreground mt-0.5">서울 가락시장 기준</p>
+            <div className="flex items-center justify-between mt-1">
+              <div>
+                <span className="text-sm font-semibold text-foreground">법인청과별 거래 현황</span>
+                <p className="text-[10px] text-muted-foreground mt-0.5">서울 가락시장 기준</p>
+              </div>
             </div>
             <div className="bg-card rounded-xl border border-border overflow-hidden">
-              {corporationData.map((c) => (
-                <div key={c.name} className="px-3 py-3 border-b border-border last:border-b-0">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium text-foreground">{c.name}</span>
-                    <span className="text-sm font-bold text-foreground">{c.avgPrice.toLocaleString()}원</span>
-                  </div>
-                  <div className="flex justify-between mt-1 text-[10px] text-muted-foreground">
-                    <span>거래량 {c.volume}t</span>
-                    <span>점유율 {c.share}%</span>
-                  </div>
-                  <div className="w-full bg-secondary rounded-full h-1 mt-1.5">
-                    <div className="bg-primary rounded-full h-1" style={{ width: `${c.share}%` }} />
-                  </div>
+              <div className="divide-y divide-border">
+                <div className="grid grid-cols-[2fr_2.2fr_1.8fr_1.6fr] px-2.5 py-2 text-[10px] text-muted-foreground">
+                  <span>시장명</span>
+                  <span className="text-right">현재가</span>
+                  <span className="text-right">거래량</span>
+                  <span className="text-right">점유율</span>
                 </div>
-              ))}
+                {corporationData.map((c) => (
+                  <div key={c.name} className="grid grid-cols-[2fr_2.2fr_1.8fr_1.6fr] px-2.5 py-2 text-[11px] active:bg-secondary/50 cursor-pointer">
+                    <span className="font-medium text-foreground truncate">{c.name}</span>
+                    <span className="text-right font-semibold text-foreground whitespace-nowrap">{c.avgPrice.toLocaleString()}</span>
+                    <span className="text-right text-muted-foreground whitespace-nowrap">{c.volume}t</span>
+                    <span className="text-right text-muted-foreground whitespace-nowrap">{c.share}%</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         )}
