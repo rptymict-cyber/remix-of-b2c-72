@@ -232,23 +232,37 @@ const MarketPricePage = () => {
         {/* 시장비교 탭 */}
         {activeTab === "시장비교" && (
           <div className="space-y-3 animate-fade-in">
-            <span className="text-sm font-semibold text-foreground">시장별 가격 비교</span>
+            <div className="flex items-center justify-between mt-1">
+              <span className="text-sm font-semibold text-foreground">시장별 시세 비교</span>
+              <button className="text-[11px] text-primary flex items-center gap-0.5 font-medium">
+                높은가격순 <ChevronDown className="w-3 h-3" />
+              </button>
+            </div>
             <div className="bg-card rounded-xl border border-border overflow-hidden">
-              {marketData.map((m) => (
-                <div key={m.name} className="px-3 py-3 border-b border-border last:border-b-0">
-                  <div className="flex justify-between items-center mb-1.5">
-                    <span className="text-sm font-medium text-foreground">{m.name}</span>
-                    <span className="text-sm font-bold text-foreground">{m.price.toLocaleString()}원</span>
-                  </div>
-                  <div className="w-full bg-secondary rounded-full h-1.5">
-                    <div className="bg-primary rounded-full h-1.5" style={{ width: `${m.share * 2.5}%` }} />
-                  </div>
-                  <div className="flex justify-between mt-1.5 text-[10px] text-muted-foreground">
-                    <span>거래량 {m.volume}t · 점유율 {m.share}%</span>
-                    <ChangeIndicator value={m.dayChange} />
-                  </div>
+              <div className="divide-y divide-border">
+                <div className="grid grid-cols-12 gap-1 px-3 py-2 text-[10px] text-muted-foreground">
+                  <span className="col-span-3">시장명</span>
+                  <span className="col-span-2 text-right">현재가</span>
+                  <span className="col-span-2 text-right">전일</span>
+                  <span className="col-span-2 text-right">전주</span>
+                  <span className="col-span-1 text-right">거래</span>
+                  <span className="col-span-2 text-right">점유</span>
                 </div>
-              ))}
+                {marketData.map((m) => (
+                  <div key={m.name} className="grid grid-cols-12 gap-1 px-3 py-2.5 text-xs active:bg-secondary/50 cursor-pointer">
+                    <span className="col-span-3 font-medium text-foreground truncate">{m.name}</span>
+                    <span className="col-span-2 text-right font-semibold text-foreground">{(m.price/10000).toFixed(1)}만</span>
+                    <span className={`col-span-2 text-right font-medium ${m.dayChange > 0 ? "price-up" : m.dayChange < 0 ? "price-down" : "price-neutral"}`}>
+                      {m.dayChange > 0 ? "+" : ""}{m.dayChange}%
+                    </span>
+                    <span className={`col-span-2 text-right font-medium ${m.weekChange > 0 ? "price-up" : "price-neutral"}`}>
+                      +{m.weekChange}%
+                    </span>
+                    <span className="col-span-1 text-right text-muted-foreground">{m.volume >= 1000 ? `${(m.volume/1000).toFixed(1)}k` : m.volume}</span>
+                    <span className="col-span-2 text-right text-muted-foreground">{m.share}%</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         )}
