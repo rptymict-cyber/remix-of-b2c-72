@@ -207,7 +207,7 @@ const MarketPricePage = () => {
                   <span className="col-span-2 text-right">현재가</span>
                   <span className="col-span-2 text-right">전일</span>
                   <span className="col-span-2 text-right">전주</span>
-                  <span className="col-span-1 text-right">거래</span>
+                  <span className="col-span-1 text-right">거래량</span>
                   <span className="col-span-2 text-right">점유율</span>
                 </div>
                 {marketData.map((m) => (
@@ -220,7 +220,7 @@ const MarketPricePage = () => {
                     <span className={`col-span-2 text-right font-medium ${m.weekChange > 0 ? "price-up" : "price-neutral"}`}>
                       +{m.weekChange}%
                     </span>
-                    <span className="col-span-1 text-right text-muted-foreground">{m.volume >= 1000 ? `${(m.volume/1000).toFixed(1)}k` : m.volume}</span>
+                    <span className="col-span-1 text-right text-muted-foreground">{m.volume}t</span>
                     <span className="col-span-2 text-right text-muted-foreground">{m.share}%</span>
                   </div>
                 ))}
@@ -245,7 +245,7 @@ const MarketPricePage = () => {
                   <span className="col-span-2 text-right">현재가</span>
                   <span className="col-span-2 text-right">전일</span>
                   <span className="col-span-2 text-right">전주</span>
-                  <span className="col-span-1 text-right">거래</span>
+                  <span className="col-span-1 text-right">거래량</span>
                   <span className="col-span-2 text-right">점유율</span>
                 </div>
                 {marketData.map((m) => (
@@ -258,7 +258,7 @@ const MarketPricePage = () => {
                     <span className={`col-span-2 text-right font-medium ${m.weekChange > 0 ? "price-up" : "price-neutral"}`}>
                       +{m.weekChange}%
                     </span>
-                    <span className="col-span-1 text-right text-muted-foreground">{m.volume >= 1000 ? `${(m.volume/1000).toFixed(1)}k` : m.volume}</span>
+                    <span className="col-span-1 text-right text-muted-foreground">{m.volume}t</span>
                     <span className="col-span-2 text-right text-muted-foreground">{m.share}%</span>
                   </div>
                 ))}
