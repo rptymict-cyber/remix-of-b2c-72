@@ -202,26 +202,26 @@ const MarketPricePage = () => {
             </div>
             <div className="bg-card rounded-xl border border-border overflow-hidden">
               <div className="divide-y divide-border">
-                <div className="grid grid-cols-12 gap-1 px-3 py-2 text-[10px] text-muted-foreground">
-                  <span className="col-span-3">시장</span>
-                  <span className="col-span-2 text-right">현재가</span>
-                  <span className="col-span-2 text-right">전일</span>
-                  <span className="col-span-2 text-right">전주</span>
-                  <span className="col-span-1 text-right">거래량</span>
-                  <span className="col-span-2 text-right">점유율</span>
+                <div className="grid grid-cols-[2.8fr_2.2fr_1.6fr_1.6fr_1.8fr_1.6fr] px-2.5 py-2 text-[10px] text-muted-foreground">
+                  <span >시장</span>
+                  <span className="text-right">현재가</span>
+                  <span className="text-right">전일</span>
+                  <span className="text-right">전주</span>
+                  <span className="text-right">거래량</span>
+                  <span className="text-right">점유율</span>
                 </div>
                 {marketData.map((m) => (
-                  <div key={m.name} className="grid grid-cols-12 gap-1 px-3 py-2.5 text-xs active:bg-secondary/50 cursor-pointer">
-                    <span className="col-span-3 font-medium text-foreground truncate">{m.name}</span>
-                    <span className="col-span-2 text-right font-semibold text-foreground">{m.price.toLocaleString()}</span>
-                    <span className={`col-span-2 text-right font-medium ${m.dayChange > 0 ? "price-up" : m.dayChange < 0 ? "price-down" : "price-neutral"}`}>
+                  <div key={m.name} className="grid grid-cols-[2.8fr_2.2fr_1.6fr_1.6fr_1.8fr_1.6fr] px-2.5 py-2 text-[11px] active:bg-secondary/50 cursor-pointer">
+                    <span className="font-medium text-foreground truncate">{m.name}</span>
+                    <span className="text-right font-semibold text-foreground whitespace-nowrap">{m.price.toLocaleString()}</span>
+                    <span className={`text-right font-medium whitespace-nowrap ${m.dayChange > 0 ? "price-up" : m.dayChange < 0 ? "price-down" : "price-neutral"}`}>
                       {m.dayChange > 0 ? "+" : ""}{m.dayChange}%
                     </span>
-                    <span className={`col-span-2 text-right font-medium ${m.weekChange > 0 ? "price-up" : "price-neutral"}`}>
+                    <span className={`text-right font-medium whitespace-nowrap ${m.weekChange > 0 ? "price-up" : "price-neutral"}`}>
                       +{m.weekChange}%
                     </span>
-                    <span className="col-span-1 text-right text-muted-foreground">{m.volume}t</span>
-                    <span className="col-span-2 text-right text-muted-foreground">{m.share}%</span>
+                    <span className="text-right text-muted-foreground whitespace-nowrap">{m.volume}t</span>
+                    <span className="text-right text-muted-foreground whitespace-nowrap">{m.share}%</span>
                   </div>
                 ))}
               </div>
@@ -240,26 +240,26 @@ const MarketPricePage = () => {
             </div>
             <div className="bg-card rounded-xl border border-border overflow-hidden">
               <div className="divide-y divide-border">
-                <div className="grid grid-cols-12 gap-1 px-3 py-2 text-[10px] text-muted-foreground">
-                  <span className="col-span-3">시장명</span>
-                  <span className="col-span-2 text-right">현재가</span>
-                  <span className="col-span-2 text-right">전일</span>
-                  <span className="col-span-2 text-right">전주</span>
-                  <span className="col-span-1 text-right">거래량</span>
-                  <span className="col-span-2 text-right">점유율</span>
+                <div className="grid grid-cols-[2.8fr_2.2fr_1.6fr_1.6fr_1.8fr_1.6fr] px-2.5 py-2 text-[10px] text-muted-foreground">
+                  <span >시장명</span>
+                  <span className="text-right">현재가</span>
+                  <span className="text-right">전일</span>
+                  <span className="text-right">전주</span>
+                  <span className="text-right">거래량</span>
+                  <span className="text-right">점유율</span>
                 </div>
                 {marketData.map((m) => (
-                  <div key={m.name} className="grid grid-cols-12 gap-1 px-3 py-2.5 text-xs active:bg-secondary/50 cursor-pointer">
-                    <span className="col-span-3 font-medium text-foreground truncate">{m.name}</span>
-                    <span className="col-span-2 text-right font-semibold text-foreground">{m.price.toLocaleString()}</span>
-                    <span className={`col-span-2 text-right font-medium ${m.dayChange > 0 ? "price-up" : m.dayChange < 0 ? "price-down" : "price-neutral"}`}>
+                  <div key={m.name} className="grid grid-cols-[2.8fr_2.2fr_1.6fr_1.6fr_1.8fr_1.6fr] px-2.5 py-2 text-[11px] active:bg-secondary/50 cursor-pointer">
+                    <span className="font-medium text-foreground truncate">{m.name}</span>
+                    <span className="text-right font-semibold text-foreground whitespace-nowrap">{m.price.toLocaleString()}</span>
+                    <span className={`text-right font-medium whitespace-nowrap ${m.dayChange > 0 ? "price-up" : m.dayChange < 0 ? "price-down" : "price-neutral"}`}>
                       {m.dayChange > 0 ? "+" : ""}{m.dayChange}%
                     </span>
-                    <span className={`col-span-2 text-right font-medium ${m.weekChange > 0 ? "price-up" : "price-neutral"}`}>
+                    <span className={`text-right font-medium whitespace-nowrap ${m.weekChange > 0 ? "price-up" : "price-neutral"}`}>
                       +{m.weekChange}%
                     </span>
-                    <span className="col-span-1 text-right text-muted-foreground">{m.volume}t</span>
-                    <span className="col-span-2 text-right text-muted-foreground">{m.share}%</span>
+                    <span className="text-right text-muted-foreground whitespace-nowrap">{m.volume}t</span>
+                    <span className="text-right text-muted-foreground whitespace-nowrap">{m.share}%</span>
                   </div>
                 ))}
               </div>
@@ -338,7 +338,7 @@ const MarketPricePage = () => {
               {varietyData.map((v) => (
                 <div key={v.variety} className="grid grid-cols-12 gap-1 px-3 py-2.5 text-xs border-b border-border last:border-b-0">
                   <span className="col-span-4 font-medium text-foreground">{v.variety}</span>
-                  <span className="col-span-2 text-right text-muted-foreground">{v.unit}</span>
+                  <span className="text-right text-muted-foreground whitespace-nowrap">{v.unit}</span>
                   <span className="col-span-3 text-right font-semibold text-foreground">{v.price.toLocaleString()}</span>
                   <span className="col-span-3 text-right text-muted-foreground">{v.volume}</span>
                 </div>
