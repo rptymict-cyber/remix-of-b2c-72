@@ -43,7 +43,7 @@ const HomePage = () => {
               <Droplets className="w-3 h-3" />
               3일 후 강수
             </span>
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#f59e0b]/20 text-[10px] font-medium text-[#fbbf24]">
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#f59e0b]/20 text-[10px] font-medium text-[#fbbf24] whitespace-nowrap flex-shrink-0">
               <Wind className="w-3 h-3" />
               출하 영향 주의
             </span>
