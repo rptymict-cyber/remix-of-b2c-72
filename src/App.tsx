@@ -31,6 +31,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <div className="mx-auto max-w-[430px] min-h-screen bg-background shadow-sm relative">
         <Routes>
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/" element={<Gate><Index /></Gate>} />
@@ -45,6 +46,7 @@ const App = () => (
           <Route path="/mypage" element={<Gate><MyPage /></Gate>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
+        </div>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
