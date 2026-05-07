@@ -1,10 +1,15 @@
 import { useState } from "react";
-import { ChevronDown, ArrowUpRight, ArrowDownRight, Minus, Clock } from "lucide-react";
+import { ChevronDown, ArrowUpRight, ArrowDownRight, Minus, Clock, SlidersHorizontal } from "lucide-react";
 import {
   ComposedChart, Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
 import AppHeader from "@/components/AppHeader";
 import BottomNav from "@/components/BottomNav";
+import { useApp } from "@/store/appStore";
+import { findCrop, findMarket, seedPrice } from "@/data/catalog";
+import CropSheet from "@/components/sheets/CropSheet";
+import MarketSheet from "@/components/sheets/MarketSheet";
+import VarietySheet from "@/components/sheets/VarietySheet";
 
 const chartData = [
   { date: "4/8", price: 48200, volume: 1120 },
@@ -59,6 +64,13 @@ const ChangeIndicator = ({ value }: { value: number }) => {
 const MarketPricePage = () => {
   const [activeTab, setActiveTab] = useState("종합");
   const [activePeriod, setActivePeriod] = useState("1주");
+  const { cropId, variety, marketId } = useApp();
+  const [cropOpen, setCropOpen] = useState(false);
+  const [marketOpen, setMarketOpen] = useState(false);
+  const [varietyOpen, setVarietyOpen] = useState(false);
+  const crop = findCrop(cropId);
+  const market = findMarket(marketId);
+  const price = seedPrice(cropId, marketId, variety);
 
   return (
     <div className="min-h-screen bg-background">
@@ -67,18 +79,18 @@ const MarketPricePage = () => {
       <main className="px-4 pt-5 safe-bottom space-y-4">
         {/* 필터 칩 */}
         <div className="grid grid-cols-2 gap-2">
-          {[
-            { label: "고추·건고추", emoji: "🌶️" },
-            { label: "20kg", emoji: null },
-            { label: "전체 품종", emoji: null },
-            { label: "전국 도매시장", emoji: null },
-          ].map((chip) => (
-            <button key={chip.label} className="filter-chip justify-center text-xs px-2 py-1.5">
-              {chip.emoji && <span className="text-sm">{chip.emoji}</span>}
-              {chip.label}
-              <ChevronDown className="w-3 h-3 text-muted-foreground" />
-            </button>
-          ))}
+          <button onClick={() => setCropOpen(true)} className="filter-chip justify-center text-xs px-2 py-1.5">
+            <span className="text-sm">{crop.emoji}</span>{crop.name}<ChevronDown className="w-3 h-3 text-muted-foreground" />
+          </button>
+          <button onClick={() => setVarietyOpen(true)} className="filter-chip justify-center text-xs px-2 py-1.5">
+            {variety}<ChevronDown className="w-3 h-3 text-muted-foreground" />
+          </button>
+          <button onClick={() => setMarketOpen(true)} className="filter-chip justify-center text-xs px-2 py-1.5">
+            {market.name}<ChevronDown className="w-3 h-3 text-muted-foreground" />
+          </button>
+          <button className="filter-chip justify-center text-xs px-2 py-1.5">
+            {crop.defaultUnitKg}kg 기준<ChevronDown className="w-3 h-3 text-muted-foreground" />
+          </button>
         </div>
 
         {/* 통합 시세 요약 */}
@@ -87,14 +99,14 @@ const MarketPricePage = () => {
           <div className="px-5 pt-5 pb-4">
             <div className="flex items-center justify-between">
               <p className="text-[11px] font-medium text-muted-foreground tracking-wide">
-                고추 · 건고추 · 서울 가락시장
+                {crop.emoji} {crop.name} · {variety} · {market.name}
               </p>
               <ChevronDown className="w-4 h-4 -rotate-90 text-muted-foreground" />
             </div>
             <div className="flex items-end justify-between mt-3">
               <div className="flex items-baseline gap-1.5">
-                <span className="text-[32px] font-extrabold text-foreground leading-none tracking-tight">52,400</span>
-                <span className="text-sm font-medium text-muted-foreground">원/20kg</span>
+                <span className="text-[32px] font-extrabold text-foreground leading-none tracking-tight">{price.toLocaleString()}</span>
+                <span className="text-sm font-medium text-muted-foreground">원/{crop.defaultUnitKg}kg</span>
               </div>
               <div className="flex flex-col items-end">
                 <div className="flex items-center gap-0.5">
@@ -352,6 +364,9 @@ const MarketPricePage = () => {
       </main>
 
       <BottomNav />
+      <CropSheet open={cropOpen} onOpenChange={setCropOpen} />
+      <MarketSheet open={marketOpen} onOpenChange={setMarketOpen} />
+      <VarietySheet open={varietyOpen} onOpenChange={setVarietyOpen} />
     </div>
   );
 };

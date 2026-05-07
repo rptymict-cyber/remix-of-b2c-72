@@ -1,7 +1,10 @@
 import { useState } from "react";
-import { ChevronDown, ChevronUp, Sprout, TrendingUp, Shield, AlertTriangle, BarChart2, ThermometerSun, FileText } from "lucide-react";
+import { ChevronDown, ChevronUp, Sprout, TrendingUp, AlertTriangle, BarChart2, ThermometerSun, FileText } from "lucide-react";
 import AppHeader from "@/components/AppHeader";
 import BottomNav from "@/components/BottomNav";
+import CropSheet from "@/components/sheets/CropSheet";
+import { useApp } from "@/store/appStore";
+import { findCrop } from "@/data/catalog";
 
 const cropData = [
   {
@@ -60,6 +63,9 @@ const cropData = [
 
 const CropRecommendPage = () => {
   const [expandedCrop, setExpandedCrop] = useState<string | null>(null);
+  const [cropOpen, setCropOpen] = useState(false);
+  const { cropId, profile } = useApp();
+  const crop = findCrop(cropId);
 
   const levelColor = (level: string) => {
     if (level === "높음" || level === "큼") return "text-red-500";
@@ -75,22 +81,27 @@ const CropRecommendPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <AppHeader title="작물 추천" subtitle="다음 시즌 재배 계획" />
+      <AppHeader title="내 작물" subtitle="다음 시즌 재배 계획" />
 
       <main className="px-4 pt-5 safe-bottom space-y-4">
         {/* 조건 */}
         <div className="grid grid-cols-2 gap-2">
-          {[
-            { label: "충남 공주", icon: true },
-            { label: "1,200평", icon: true },
-            { label: "노지 · 시즌", icon: true },
-            { label: "전체 품종", icon: true },
-          ].map((chip) => (
-            <button key={chip.label} className="filter-chip justify-center text-xs px-2 py-1.5">
-              {chip.label}
-              <ChevronDown className="w-3 h-3 text-muted-foreground" />
-            </button>
-          ))}
+          <button onClick={() => setCropOpen(true)} className="filter-chip justify-center text-xs px-2 py-1.5">
+            <span className="text-sm">{crop.emoji}</span>{crop.name}
+            <ChevronDown className="w-3 h-3 text-muted-foreground" />
+          </button>
+          <button className="filter-chip justify-center text-xs px-2 py-1.5">
+            {profile.region}
+            <ChevronDown className="w-3 h-3 text-muted-foreground" />
+          </button>
+          <button className="filter-chip justify-center text-xs px-2 py-1.5">
+            {profile.farmAreaM2.toLocaleString()}㎡
+            <ChevronDown className="w-3 h-3 text-muted-foreground" />
+          </button>
+          <button className="filter-chip justify-center text-xs px-2 py-1.5">
+            노지 · 시즌
+            <ChevronDown className="w-3 h-3 text-muted-foreground" />
+          </button>
         </div>
 
         {/* 추천 카드 */}
@@ -235,6 +246,7 @@ const CropRecommendPage = () => {
       </main>
 
       <BottomNav />
+      <CropSheet open={cropOpen} onOpenChange={setCropOpen} />
     </div>
   );
 };
