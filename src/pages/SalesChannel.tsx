@@ -225,7 +225,14 @@ const SalesChannelPage = () => {
         <div className="space-y-2">
           {sorted.map((s, i) => {
             const recommended = i === 0;
-            const medal = ["🥇", "🥈", "🥉"][i] || `${i + 1}위`;
+            const rank = i + 1;
+            const rankBadge = rank === 1
+              ? { emoji: "🥇", label: "1위", bg: "bg-gradient-to-br from-amber-300 to-yellow-500", text: "text-white" }
+              : rank === 2
+              ? { emoji: "🥈", label: "2위", bg: "bg-gradient-to-br from-slate-200 to-slate-400", text: "text-white" }
+              : rank === 3
+              ? { emoji: "🥉", label: "3위", bg: "bg-gradient-to-br from-amber-500 to-orange-700", text: "text-white" }
+              : { emoji: "", label: `${rank}위`, bg: "bg-secondary", text: "text-muted-foreground" };
             const mapActive = selectedMapId === s.m.id;
             return (
               <button
@@ -243,7 +250,10 @@ const SalesChannelPage = () => {
                 )}
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
-                    <span className="text-base">{medal}</span>
+                    <div className={`flex items-center gap-1 ${rankBadge.bg} ${rankBadge.text} pl-1 pr-2 py-0.5 rounded-full shadow-sm`}>
+                      {rankBadge.emoji && <span className="text-base leading-none">{rankBadge.emoji}</span>}
+                      <span className="text-[11px] font-extrabold tracking-tight">{rankBadge.label}</span>
+                    </div>
                     <span className="text-sm font-bold text-foreground">{s.m.name}</span>
                     <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
                       <Truck className="w-3 h-3" />{s.m.distanceKm}km
