@@ -19,16 +19,11 @@ const AppHeader = ({ title, subtitle, showRefresh, onRefresh, showBack, rightAct
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-sm border-b border-border">
       <MobileStatusBar />
       <div className="relative flex items-center justify-center h-14 px-4">
-        <button onClick={() => useBack ? nav(-1) : nav("/")} className="absolute left-4 text-foreground flex items-center gap-1">
-          {useBack ? (
+        {useBack && (
+          <button onClick={() => nav(-1)} className="absolute left-4 text-foreground flex items-center gap-1">
             <ChevronLeft className="w-5 h-5" />
-          ) : (
-            <span className="flex items-center gap-1">
-              <Sprout className="w-4 h-4 text-primary" />
-              <span className="text-[13px] font-bold text-primary">FarmInsight</span>
-            </span>
-          )}
-        </button>
+          </button>
+        )}
         <div className="flex flex-col items-center pointer-events-none">
           <h1 className="text-[15px] font-semibold text-foreground">{title}</h1>
           {subtitle && <span className="text-[10px] text-muted-foreground">{subtitle}</span>}
