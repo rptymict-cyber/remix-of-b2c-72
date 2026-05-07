@@ -81,7 +81,7 @@ const CropRecommendPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <AppHeader title="내 작물" subtitle="다음 시즌 재배 계획" />
+      <AppHeader title="내 작물" />
 
       <main className="px-4 pt-5 safe-bottom space-y-4">
         {/* 조건 */}
