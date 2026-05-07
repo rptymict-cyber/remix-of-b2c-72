@@ -19,9 +19,13 @@ const AppHeader = ({ title, subtitle, showRefresh, onRefresh, showBack, rightAct
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-sm border-b border-border">
       <MobileStatusBar />
       <div className="relative flex items-center justify-center h-14 px-4">
-        {useBack && (
+        {useBack ? (
           <button onClick={() => nav(-1)} className="absolute left-4 text-foreground flex items-center gap-1">
             <ChevronLeft className="w-5 h-5" />
+          </button>
+        ) : (
+          <button onClick={() => nav("/mypage")} className="absolute left-4 text-foreground" aria-label="마이페이지">
+            <User className="w-5 h-5" />
           </button>
         )}
         <div className="flex flex-col items-center pointer-events-none">
@@ -36,15 +40,10 @@ const AppHeader = ({ title, subtitle, showRefresh, onRefresh, showBack, rightAct
           )}
           {rightAction}
           {!useBack && (
-            <>
-              <button onClick={() => nav("/notifications")} className="relative text-foreground" aria-label="알림">
-                <Bell className="w-5 h-5" />
-                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-destructive rounded-full" />
-              </button>
-              <button onClick={() => nav("/mypage")} className="text-foreground" aria-label="마이페이지">
-                <User className="w-5 h-5" />
-              </button>
-            </>
+            <button onClick={() => nav("/notifications")} className="relative text-foreground" aria-label="알림">
+              <Bell className="w-5 h-5" />
+              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-destructive rounded-full" />
+            </button>
           )}
         </div>
       </div>
