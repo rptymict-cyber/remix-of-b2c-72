@@ -54,7 +54,7 @@ const SalesChannelPage = () => {
 
       <main className="px-4 pt-5 safe-bottom space-y-4">
         {/* 조건 */}
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-3 gap-2">
           <button onClick={() => setCropOpen(true)} className="filter-chip justify-center text-xs px-2 py-1.5">
             <span className="text-sm">{crop.emoji}</span>{crop.name}
             <ChevronDown className="w-3 h-3 text-muted-foreground" />
@@ -66,17 +66,19 @@ const SalesChannelPage = () => {
           <button className="filter-chip justify-center text-xs px-2 py-1.5">
             출발 {profile.region}
           </button>
-          <div className="flex bg-secondary rounded-full p-0.5">
-            {(["current", "forecast"] as const).map((b) => (
-              <button
-                key={b}
-                onClick={() => setBasis(b)}
-                className={`flex-1 text-xs py-1.5 rounded-full font-medium ${basis === b ? "bg-white text-foreground shadow-sm" : "text-muted-foreground"}`}
-              >
-                {b === "current" ? "현재가" : "예측가"}
-              </button>
-            ))}
-          </div>
+        </div>
+
+        {/* 시세 기준 전환 */}
+        <div className="flex bg-secondary rounded-full p-1 w-full">
+          {(["current", "forecast"] as const).map((b) => (
+            <button
+              key={b}
+              onClick={() => setBasis(b)}
+              className={`flex-1 text-sm py-2.5 rounded-full font-semibold transition-colors ${basis === b ? "bg-white text-foreground shadow-sm" : "text-muted-foreground"}`}
+            >
+              {b === "current" ? "현재가 기준" : "예측가 기준"}
+            </button>
+          ))}
         </div>
 
         {/* 추천 요약 */}
