@@ -144,9 +144,11 @@ const CropRecommendPage = () => {
 
         <div className="space-y-2">
           {cropData.map((crop, idx) => (
-            <div key={crop.name} className={`bg-card rounded-xl border p-3 ${crop.recommended ? "border-primary/30" : "border-border"} relative`}>
+            <div key={crop.name} className={`bg-card rounded-xl border p-3 ${crop.recommended ? "border-primary/40 pt-4" : "border-border"} relative`}>
               {crop.recommended && (
-                <div className="absolute -top-2 right-3 bg-primary text-white text-[9px] font-bold px-1.5 py-0.5 rounded">추천</div>
+                <div className="absolute -top-2.5 left-3 bg-primary text-white text-[11px] font-extrabold px-2.5 py-1 rounded-full shadow-md flex items-center gap-1">
+                  <span className="text-[10px]">⭐</span> AI 추천
+                </div>
               )}
               <button
                 className="w-full text-left"
