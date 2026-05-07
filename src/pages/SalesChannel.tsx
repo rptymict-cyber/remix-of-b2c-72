@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ChevronDown, MapPin, Truck, Star, CheckCircle2, Info } from "lucide-react";
 import AppHeader from "@/components/AppHeader";
 import BottomNav from "@/components/BottomNav";
@@ -7,6 +7,20 @@ import { CROPS, MARKETS, findCrop, seedPrice, transportCost } from "@/data/catal
 import CropSheet from "@/components/sheets/CropSheet";
 import QtySheet from "@/components/sheets/QtySheet";
 import MarketDetailSheet from "@/components/sheets/MarketDetailSheet";
+import ShipmentMap from "@/components/ShipmentMap";
+
+// 시장별 대략 좌표 (한국 지도상 위치)
+const MARKET_COORDS: Record<string, { lat: number; lng: number }> = {
+  garak: { lat: 37.4925, lng: 127.1186 },
+  gangseo: { lat: 37.5509, lng: 126.8495 },
+  daegu: { lat: 35.9078, lng: 128.6014 },
+  busan: { lat: 35.1539, lng: 128.9707 },
+  anyang: { lat: 37.3943, lng: 126.9568 },
+  gwangju: { lat: 35.1525, lng: 126.8526 },
+  suwon: { lat: 37.2636, lng: 127.0286 },
+  cheongju: { lat: 36.6424, lng: 127.4890 },
+};
+const FARM_COORD = { lat: 36.9910, lng: 127.9259 }; // 충북 충주시
 
 type SortKey = "netRevenue" | "unitPrice" | "logistics" | "distance";
 
@@ -23,6 +37,7 @@ const SalesChannelPage = () => {
   const [cropOpen, setCropOpen] = useState(false);
   const [qtyOpen, setQtyOpen] = useState(false);
   const [detailMarketId, setDetailMarketId] = useState<string | null>(null);
+  const [selectedMapId, setSelectedMapId] = useState<string | null>(null);
 
   const crop = findCrop(cropId);
   const unitWeight = crop.defaultUnitKg;
@@ -47,6 +62,23 @@ const SalesChannelPage = () => {
   const best = sorted[0];
   const detail = detailMarketId ? sorted.find((r) => r.m.id === detailMarketId) : null;
   const detailRank = detail ? sorted.indexOf(detail) + 1 : 0;
+
+  // 추천 시장이 바뀌면 지도 선택 자동 업데이트
+  useEffect(() => {
+    setSelectedMapId(best.m.id);
+  }, [best.m.id]);
+
+  const mapMarkets = sorted.slice(0, 5).map((s) => ({
+    id: s.m.id,
+    name: s.m.name,
+    distanceKm: s.m.distanceKm,
+    lat: MARKET_COORDS[s.m.id]?.lat ?? 37,
+    lng: MARKET_COORDS[s.m.id]?.lng ?? 127.5,
+    netRevenue: s.netRevenue,
+    unitPrice: s.unitPrice,
+    logistics: s.logistics,
+  }));
+  const selectedMap = mapMarkets.find((m) => m.id === selectedMapId) || mapMarkets[0];
 
   return (
     <div className="min-h-screen bg-background">
@@ -119,6 +151,62 @@ const SalesChannelPage = () => {
           </p>
         </div>
 
+        {/* 출하 위치 비교 지도 */}
+        <section className="space-y-2">
+          <div className="flex items-end justify-between">
+            <div>
+              <h3 className="text-sm font-bold text-foreground flex items-center gap-1">
+                <MapPin className="w-4 h-4 text-primary" /> 출하 위치 비교
+              </h3>
+              <p className="text-[11px] text-muted-foreground mt-0.5">
+                내 농장과 주요 도매시장의 위치를 비교해 출하 거리와 추천 판매처를 확인하세요.
+              </p>
+            </div>
+          </div>
+          <ShipmentMap
+            farm={{ name: "내 농장", region: profile.region, lat: FARM_COORD.lat, lng: FARM_COORD.lng }}
+            markets={mapMarkets}
+            recommendedId={best.m.id}
+            selectedId={selectedMapId}
+            onSelect={setSelectedMapId}
+          />
+          {selectedMap && (
+            <div className="bg-card border border-border rounded-2xl p-3 shadow-sm">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-1.5">
+                  {selectedMap.id === best.m.id && (
+                    <span className="text-[10px] font-bold bg-primary text-white px-1.5 py-0.5 rounded">추천</span>
+                  )}
+                  <span className="text-sm font-bold text-foreground">{selectedMap.name}</span>
+                </div>
+                <span className="text-[11px] text-muted-foreground flex items-center gap-0.5">
+                  <Truck className="w-3 h-3" /> {selectedMap.distanceKm}km
+                </span>
+              </div>
+              <div className="grid grid-cols-3 gap-2 text-[11px]">
+                <div className="bg-secondary/50 rounded-lg px-2 py-1.5 text-center">
+                  <p className="text-muted-foreground text-[10px]">예상 단가</p>
+                  <p className="font-bold text-foreground">{selectedMap.unitPrice?.toLocaleString()}원</p>
+                </div>
+                <div className="bg-secondary/50 rounded-lg px-2 py-1.5 text-center">
+                  <p className="text-muted-foreground text-[10px]">물류비</p>
+                  <p className="font-bold text-foreground">{selectedMap.logistics?.toLocaleString()}원</p>
+                </div>
+                <div className="bg-primary/10 rounded-lg px-2 py-1.5 text-center">
+                  <p className="text-muted-foreground text-[10px]">예상 순이익</p>
+                  <p className="font-bold text-primary">{selectedMap.netRevenue?.toLocaleString()}원</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setDetailMarketId(selectedMap.id)}
+                className="mt-3 w-full py-2 rounded-xl bg-primary text-white text-xs font-bold"
+              >
+                이 시장 자세히 보기
+              </button>
+            </div>
+          )}
+        </section>
+
         {/* 정렬 */}
         <div className="flex items-center justify-between">
           <span className="text-sm font-semibold text-foreground">시장 랭킹</span>
@@ -138,11 +226,17 @@ const SalesChannelPage = () => {
           {sorted.map((s, i) => {
             const recommended = i === 0;
             const medal = ["🥇", "🥈", "🥉"][i] || `${i + 1}위`;
+            const mapActive = selectedMapId === s.m.id;
             return (
               <button
                 key={s.m.id}
-                onClick={() => setDetailMarketId(s.m.id)}
-                className={`w-full text-left bg-card rounded-2xl border p-3 ${recommended ? "border-primary/30" : "border-border"} relative active:scale-[0.99] transition-transform`}
+                onClick={() => {
+                  setSelectedMapId(s.m.id);
+                  setDetailMarketId(s.m.id);
+                }}
+                className={`w-full text-left bg-card rounded-2xl border p-3 ${
+                  mapActive ? "border-primary ring-2 ring-primary/20" : recommended ? "border-primary/30" : "border-border"
+                } relative active:scale-[0.99] transition-transform`}
               >
                 {recommended && (
                   <div className="absolute -top-2 right-3 bg-primary text-white text-[9px] font-bold px-1.5 py-0.5 rounded">추천</div>
