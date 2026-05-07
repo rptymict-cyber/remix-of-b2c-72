@@ -50,7 +50,7 @@ const SalesChannelPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <AppHeader title="판매처 추천" subtitle="물류비 포함 순이익 비교" />
+      <AppHeader title="판매처 추천" />
 
       <main className="px-4 pt-5 safe-bottom space-y-4">
         {/* 조건 */}
