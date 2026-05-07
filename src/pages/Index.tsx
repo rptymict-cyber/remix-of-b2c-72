@@ -56,7 +56,7 @@ const HomePage = () => {
         <section>
           <div className="flex items-center justify-between mb-2.5">
             <h2 className="text-sm font-semibold text-foreground">내 작물</h2>
-            <button onClick={() => setCropOpen(true)} className="flex items-center gap-1 px-3 py-1.5 rounded-full border border-primary text-primary text-xs font-medium">
+            <button onClick={() => navigate("/crop/add")} className="flex items-center gap-1 px-3 py-1.5 rounded-full border border-primary text-primary text-xs font-medium">
               <Plus className="w-3.5 h-3.5" />
               작물 추가
             </button>

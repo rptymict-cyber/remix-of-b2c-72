@@ -12,6 +12,7 @@ import Onboarding from "./pages/Onboarding.tsx";
 import Notifications from "./pages/Notifications.tsx";
 import NotificationSettings from "./pages/NotificationSettings.tsx";
 import MyPage from "./pages/MyPage.tsx";
+import AddCrop from "./pages/AddCrop.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import { useApp } from "./store/appStore";
 
@@ -38,6 +39,7 @@ const App = () => (
           <Route path="/prediction/expanded" element={<Gate><AIPrediction defaultExpanded /></Gate>} />
           <Route path="/sales" element={<Gate><SalesChannel /></Gate>} />
           <Route path="/crop" element={<Gate><CropRecommend /></Gate>} />
+          <Route path="/crop/add" element={<Gate><AddCrop /></Gate>} />
           <Route path="/notifications" element={<Gate><Notifications /></Gate>} />
           <Route path="/notification-settings" element={<Gate><NotificationSettings /></Gate>} />
           <Route path="/mypage" element={<Gate><MyPage /></Gate>} />
