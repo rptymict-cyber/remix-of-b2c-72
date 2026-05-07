@@ -179,7 +179,7 @@ const NextBtn = ({ onClick, disabled, label = "다음" }: { onClick: () => void;
     disabled={disabled}
     className="w-full py-3.5 rounded-xl bg-primary text-white text-sm font-bold disabled:opacity-40 mt-auto flex items-center justify-center gap-1"
   >
-    {label} <ChevronRight className="w-4 h-4" />
+    {label}
   </button>
 );
 
