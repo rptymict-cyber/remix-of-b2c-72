@@ -44,31 +44,67 @@ const ShipmentMap = ({ farm, markets, recommendedId, selectedId, onSelect }: Pro
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full block" preserveAspectRatio="xMidYMid slice">
         <defs>
           <linearGradient id="mapBg" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#eef4ee" />
-            <stop offset="100%" stopColor="#e5ecea" />
+            <stop offset="0%" stopColor="#f5f3ee" />
+            <stop offset="100%" stopColor="#ecebe4" />
           </linearGradient>
-          <pattern id="grid" width="22" height="22" patternUnits="userSpaceOnUse">
-            <path d="M22 0 L0 0 0 22" fill="none" stroke="#dbe3df" strokeWidth="0.5" />
-          </pattern>
           <radialGradient id="farmGlow" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.25" />
             <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0" />
           </radialGradient>
         </defs>
 
-        {/* base */}
+        {/* base — Kakao Map 느낌의 베이지 배경 */}
         <rect width={W} height={H} fill="url(#mapBg)" />
-        <rect width={W} height={H} fill="url(#grid)" />
 
-        {/* faux land blobs */}
-        <path d="M 40 60 Q 120 40 200 70 T 320 90 L 320 220 Q 240 240 160 220 T 30 200 Z" fill="#e8efe8" opacity="0.7" />
-        <path d="M 60 130 Q 150 110 230 140 T 320 160" fill="none" stroke="#d4ddd6" strokeWidth="1.2" />
+        {/* 공원/녹지 */}
+        <path d="M 0 0 L 80 0 Q 70 40 100 70 Q 60 90 30 80 Z" fill="#dde8d4" />
+        <path d="M 240 200 Q 280 180 320 200 L 340 230 L 340 280 L 220 280 Q 230 240 240 200 Z" fill="#dde8d4" />
+        <circle cx="200" cy="55" r="22" fill="#dde8d4" />
 
-        {/* faux highways */}
-        <path d="M 80 40 Q 140 120 200 200 T 310 260" fill="none" stroke="#ffffff" strokeWidth="3" opacity="0.9" />
-        <path d="M 80 40 Q 140 120 200 200 T 310 260" fill="none" stroke="#fbbf24" strokeWidth="0.8" opacity="0.7" />
-        <path d="M 20 180 Q 120 160 220 170 T 330 150" fill="none" stroke="#ffffff" strokeWidth="2.5" opacity="0.8" />
-        <path d="M 160 20 Q 170 120 180 220 T 200 280" fill="none" stroke="#ffffff" strokeWidth="2" opacity="0.7" />
+        {/* 강/물 */}
+        <path d="M -10 150 Q 80 130 150 165 Q 220 195 350 175 L 350 195 Q 220 215 150 185 Q 80 150 -10 170 Z" fill="#cfe3ee" />
+
+        {/* 블록(건물 영역) — 옅은 회색 사각형 */}
+        <g fill="#e8e4d8">
+          <rect x="30" y="100" width="40" height="22" rx="2" />
+          <rect x="78" y="100" width="28" height="22" rx="2" />
+          <rect x="30" y="128" width="28" height="18" rx="2" />
+          <rect x="66" y="128" width="40" height="18" rx="2" />
+          <rect x="120" y="80" width="48" height="26" rx="2" />
+          <rect x="120" y="112" width="22" height="34" rx="2" />
+          <rect x="148" y="112" width="20" height="34" rx="2" />
+          <rect x="180" y="90" width="34" height="20" rx="2" />
+          <rect x="180" y="116" width="34" height="28" rx="2" />
+          <rect x="225" y="100" width="40" height="44" rx="2" />
+          <rect x="270" y="100" width="40" height="22" rx="2" />
+          <rect x="270" y="128" width="40" height="16" rx="2" />
+          <rect x="40" y="220" width="50" height="22" rx="2" />
+          <rect x="100" y="220" width="34" height="22" rx="2" />
+          <rect x="142" y="220" width="40" height="30" rx="2" />
+          <rect x="190" y="225" width="28" height="25" rx="2" />
+        </g>
+
+        {/* 도로 — 흰색 메인 + 얇은 보조 */}
+        <g stroke="#ffffff" strokeLinecap="round" fill="none">
+          {/* 주요 도로 (굵은 흰색) */}
+          <path d="M 0 110 L 340 110" strokeWidth="6" />
+          <path d="M 0 218 L 340 218" strokeWidth="5" />
+          <path d="M 110 0 L 110 280" strokeWidth="5" />
+          <path d="M 218 0 L 218 280" strokeWidth="5" />
+          {/* 곡선 도로 */}
+          <path d="M 0 60 Q 120 70 220 50 T 340 70" strokeWidth="3" />
+          <path d="M 0 250 Q 120 240 220 260 T 340 245" strokeWidth="3" />
+          {/* 보조 격자 */}
+          <path d="M 60 0 L 60 280" strokeWidth="1.5" opacity="0.85" />
+          <path d="M 160 0 L 160 280" strokeWidth="1.5" opacity="0.85" />
+          <path d="M 270 0 L 270 280" strokeWidth="1.5" opacity="0.85" />
+          <path d="M 0 150 L 340 150" strokeWidth="1.5" opacity="0.85" />
+          <path d="M 0 185 L 340 185" strokeWidth="1.5" opacity="0.85" />
+        </g>
+
+        {/* 고속도로 노란선 */}
+        <path d="M 0 110 L 340 110" stroke="#f6c66a" strokeWidth="1.2" opacity="0.9" />
+        <path d="M 218 0 L 218 280" stroke="#f6c66a" strokeWidth="1.2" opacity="0.9" />
 
         {/* connection lines from farm */}
         {points.map((p) => {
