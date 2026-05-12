@@ -27,7 +27,7 @@ const AddCrop = () => {
   const [q, setQ] = useState("");
   const [category, setCategory] = useState<CropCategory | "전체">("전체");
   const [selectedCropId, setSelectedCropId] = useState<string>("");
-  const [variety, setVariety] = useState<string>(ALL_LABEL);
+  const [varieties, setVarieties] = useState<string[]>([ALL_LABEL]);
   const [varOpen, setVarOpen] = useState(false);
   const [regType, setRegType] = useState<RegType>("growing");
   const [marketSel, setMarketSel] = useState<string>(marketId || "gwangju");
@@ -45,10 +45,30 @@ const AddCrop = () => {
   const showRepresentative = !q.trim() && category === "전체";
 
   const handlePickCrop = (c: CropItem) => {
+    if (c.id !== selectedCropId) {
+      setVarieties([ALL_LABEL]);
+    }
     setSelectedCropId(c.id);
-    setVariety(ALL_LABEL);
     setVarOpen(true);
   };
+
+  const toggleVariety = (v: string) => {
+    setVarieties((prev) => {
+      if (v === ALL_LABEL) return [ALL_LABEL];
+      const without = prev.filter((x) => x !== ALL_LABEL);
+      const next = without.includes(v)
+        ? without.filter((x) => x !== v)
+        : [...without, v];
+      return next.length === 0 ? [ALL_LABEL] : next;
+    });
+  };
+
+  const varietyLabel = (() => {
+    if (varieties.length === 0 || varieties[0] === ALL_LABEL) return ALL_LABEL;
+    if (varieties.length === 1) return varieties[0];
+    if (varieties.length === 2) return varieties.join(", ");
+    return `${varieties[0]} 외 ${varieties.length - 1}개`;
+  })();
 
   const goNext = () => {
     if (!selectedCropId) return;
