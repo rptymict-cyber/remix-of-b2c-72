@@ -34,13 +34,19 @@ const DragScroller = ({
     const el = ref.current;
     if (!el) return;
     drag.current = { active: true, startX: e.clientX, startLeft: el.scrollLeft, moved: false };
-    el.setPointerCapture(e.pointerId);
   };
   const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     if (!drag.current.active || !ref.current) return;
     const dx = e.clientX - drag.current.startX;
-    if (Math.abs(dx) > 4) drag.current.moved = true;
-    ref.current.scrollLeft = drag.current.startLeft - dx;
+    if (Math.abs(dx) > 5) {
+      if (!drag.current.moved) {
+        drag.current.moved = true;
+        try {
+          ref.current.setPointerCapture(e.pointerId);
+        } catch {}
+      }
+      ref.current.scrollLeft = drag.current.startLeft - dx;
+    }
   };
   const onPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
     drag.current.active = false;
