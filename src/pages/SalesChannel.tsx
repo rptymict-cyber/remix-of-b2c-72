@@ -144,7 +144,7 @@ const SalesChannelPage = () => {
     <div className="h-full bg-background">
       <AppHeader title="판매처 추천" />
 
-      <main className="h-full overflow-y-auto px-4 pt-[calc(var(--app-header-height)+1.25rem)] safe-bottom space-y-4">
+      <main className="relative z-10 h-full overflow-y-auto px-4 pt-[calc(var(--app-header-height)+1.25rem)] safe-bottom space-y-4">
         {/* 조건 */}
         <div className="grid grid-cols-3 gap-2">
           <FilterPill onClick={() => setCropOpen(true)} icon={<span className="text-base leading-none">{crop.emoji}</span>} label={crop.name} className="px-2.5" />
