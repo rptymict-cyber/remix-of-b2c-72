@@ -665,14 +665,14 @@ const IntroVisual = ({ kind }: { kind: string }) => {
   }
   if (kind === "map") {
     return (
-      <div className="relative w-[300px] h-[320px]">
+      <div className="relative w-[300px] h-[300px]">
         {/* Watercolor Korea peninsula */}
         <svg viewBox="0 0 200 220" className="absolute inset-0 w-full h-full" preserveAspectRatio="xMidYMid meet">
           <defs>
             <radialGradient id="koreaFill" cx="55%" cy="40%" r="70%">
-              <stop offset="0%" stopColor="hsl(152 50% 78%)" stopOpacity="0.95" />
-              <stop offset="70%" stopColor="hsl(152 45% 70%)" stopOpacity="0.85" />
-              <stop offset="100%" stopColor="hsl(152 40% 65%)" stopOpacity="0.6" />
+              <stop offset="0%" stopColor="hsl(150 42% 80%)" stopOpacity="0.85" />
+              <stop offset="65%" stopColor="hsl(150 38% 76%)" stopOpacity="0.7" />
+              <stop offset="100%" stopColor="hsl(150 35% 74%)" stopOpacity="0.45" />
             </radialGradient>
           </defs>
           {/* Mainland — rough Korean peninsula silhouette */}
@@ -682,25 +682,16 @@ const IntroVisual = ({ kind }: { kind: string }) => {
           />
           {/* Jeju island */}
           <ellipse cx="92" cy="208" rx="10" ry="5" fill="url(#koreaFill)" />
-          {/* Subtle inner province lines */}
-          <path
-            d="M82,60 Q105,68 130,55 M70,100 Q100,108 145,95 M75,140 Q100,150 140,135"
-            stroke="hsl(152 40% 60%)"
-            strokeWidth="0.4"
-            strokeOpacity="0.35"
-            fill="none"
-          />
         </svg>
 
         {/* Pins on map */}
-        <MapPinMarker className="top-[28%] left-[42%]" />
-        <MapPinMarker className="top-[44%] left-[58%]" />
-        <MapPinMarker className="top-[68%] left-[48%]" />
+        <MapPinMarker className="top-[42%] left-[42%]" />
+        <MapPinMarker className="top-[74%] left-[40%]" />
 
         {/* Floating cards */}
-        <PriceCard className="top-[10%] left-0" label="가락시장" price="3,240원" />
-        <PriceCard className="top-[36%] right-0" label="대구북부시장" price="2,980원" />
-        <PriceCard className="top-[68%] right-[2%]" label="부산엄궁시장" price="3,100원" />
+        <PriceCard className="top-[8%] left-0" label="가락시장" price="3,240원" />
+        <PriceCard className="top-[40%] right-0" label="대구북부시장" price="2,980원" />
+        <PriceCard className="top-[72%] right-[-4px]" label="부산엄궁시장" price="3,100원" />
       </div>
     );
   }
@@ -752,20 +743,22 @@ const IntroVisual = ({ kind }: { kind: string }) => {
 };
 
 const PriceCard = ({ className, label, price }: { className?: string; label: string; price: string }) => (
-  <div className={`absolute bg-white rounded-xl shadow-[0_6px_18px_rgba(0,0,0,0.12)] px-3 py-2 text-left ${className}`}>
+  <div className={`absolute bg-white rounded-2xl shadow-[0_8px_22px_rgba(0,0,0,0.10)] px-3.5 py-2 text-left ${className}`}>
     <p className="text-[11px] text-muted-foreground leading-tight">{label}</p>
-    <p className="text-[13px] font-extrabold text-foreground mt-0.5 leading-tight">{price}</p>
+    <p className="text-[15px] font-extrabold text-foreground mt-1 leading-tight tracking-tight">{price}</p>
   </div>
 );
 
 const MapPinMarker = ({ className }: { className?: string }) => (
   <div className={`absolute -translate-x-1/2 -translate-y-full ${className}`}>
-    <svg width="22" height="28" viewBox="0 0 22 28" fill="none">
+    <svg width="26" height="32" viewBox="0 0 22 28" fill="none">
       <path
         d="M11 0C5 0 0 4.5 0 10.5C0 18 11 28 11 28C11 28 22 18 22 10.5C22 4.5 17 0 11 0Z"
-        fill="hsl(152 55% 42%)"
+        fill="white"
+        stroke="hsl(150 25% 80%)"
+        strokeWidth="0.6"
       />
-      <circle cx="11" cy="10.5" r="3.5" fill="white" />
+      <circle cx="11" cy="10.5" r="3.2" fill="hsl(150 35% 72%)" />
     </svg>
   </div>
 );
