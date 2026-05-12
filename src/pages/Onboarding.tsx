@@ -639,26 +639,17 @@ const IntroVisual = ({ kind }: { kind: string }) => {
   }
   if (kind === "map") {
     return (
-      <div className="relative w-[260px] h-[280px]">
+      <div className="relative w-[280px] h-[300px]">
         {/* Stylized Korea peninsula */}
-        <svg viewBox="0 0 200 240" className="w-full h-full">
+        <svg viewBox="0 0 200 240" className="w-full h-full" fill="hsl(152 45% 80%)">
           <path
-            d="M95 10 C 80 18, 70 30, 72 48 C 60 55, 55 70, 65 82 C 55 92, 58 108, 70 115 C 60 128, 65 145, 78 152 C 70 168, 78 188, 92 198 C 88 215, 100 232, 118 228 C 132 222, 138 205, 132 188 C 145 180, 150 162, 140 148 C 152 138, 152 118, 140 110 C 150 98, 148 80, 135 72 C 142 58, 138 40, 122 32 C 118 18, 108 8, 95 10 Z"
-            fill="hsl(152 50% 78%)"
-            opacity="0.55"
-          />
-          <path
-            d="M95 10 C 80 18, 70 30, 72 48 C 60 55, 55 70, 65 82 C 55 92, 58 108, 70 115 C 60 128, 65 145, 78 152 C 70 168, 78 188, 92 198 C 88 215, 100 232, 118 228 C 132 222, 138 205, 132 188 C 145 180, 150 162, 140 148 C 152 138, 152 118, 140 110 C 150 98, 148 80, 135 72 C 142 58, 138 40, 122 32 C 118 18, 108 8, 95 10 Z"
-            fill="none"
-            stroke="hsl(152 45% 55%)"
-            strokeWidth="1.5"
-            strokeOpacity="0.5"
+            d="M92 8 C 78 14, 68 24, 66 40 C 56 44, 50 56, 56 70 C 46 76, 44 92, 56 100 C 46 108, 48 124, 60 130 C 52 142, 56 158, 70 164 C 60 178, 66 196, 82 204 C 78 218, 90 232, 108 230 C 126 226, 138 212, 138 196 C 152 192, 160 176, 154 160 C 166 154, 170 138, 162 124 C 172 116, 174 100, 164 90 C 174 80, 174 64, 162 56 C 170 44, 166 28, 150 22 C 144 10, 116 2, 92 8 Z M 70 50 C 62 48, 58 42, 64 36 C 70 32, 76 38, 74 46 Z"
           />
         </svg>
         {/* Map pins with price pills */}
-        <MapPin2 className="top-[12%] left-[8%]" label="가락시장" price="3,240원" />
-        <MapPin2 className="top-[28%] right-[2%]" label="대구북부시장" price="2,980원" />
-        <MapPin2 className="top-[50%] right-[6%]" label="부산엄궁시장" price="3,100원" />
+        <MapPin2 className="top-[6%] left-[2%]" label="가락시장" price="3,240원" />
+        <MapPin2 className="top-[34%] right-0" label="대구북부시장" price="2,980원" />
+        <MapPin2 className="top-[60%] right-[4%]" label="부산엄궁시장" price="3,100원" />
       </div>
     );
   }
