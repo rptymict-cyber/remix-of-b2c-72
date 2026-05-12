@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { ChevronRight, Sprout } from "lucide-react";
 import { Drawer, DrawerContent } from "@/components/ui/drawer";
 import { useApp, type Unit } from "@/store/appStore";
 import { findCrop } from "@/data/catalog";
@@ -7,18 +8,31 @@ interface Props {
   open: boolean;
   onOpenChange: (o: boolean) => void;
 }
-const UNITS: { id: Unit; label: string; toKg: (v: number, boxKg: number) => number; fromKg: (kg: number, boxKg: number) => number }[] = [
+
+const MAX_KG = 10000;
+
+const UNITS: {
+  id: Unit;
+  label: string;
+  toKg: (v: number, boxKg: number) => number;
+  fromKg: (kg: number, boxKg: number) => number;
+}[] = [
   { id: "kg", label: "kg", toKg: (v) => v, fromKg: (kg) => kg },
-  { id: "box", label: "상자", toKg: (v, b) => v * b, fromKg: (kg, b) => Math.round(kg / b) },
+  { id: "box", label: "상자", toKg: (v, b) => v * b, fromKg: (kg, b) => Math.max(1, Math.round(kg / b)) },
   { id: "ton", label: "톤", toKg: (v) => v * 1000, fromKg: (kg) => Math.round((kg / 1000) * 100) / 100 },
 ];
+
+const QUICK_CHIPS_KG = [100, 300, 500, 1000];
 
 const QtySheet = ({ open, onOpenChange }: Props) => {
   const { shipQtyKg, setShipQty, cropId, profile, unit, setUnit } = useApp();
   const crop = findCrop(cropId);
   const boxKg = crop.defaultUnitKg;
+
   const [u, setU] = useState<Unit>(unit);
-  const [val, setVal] = useState<number>(UNITS.find((x) => x.id === unit)!.fromKg(shipQtyKg, boxKg));
+  const [val, setVal] = useState<number>(
+    UNITS.find((x) => x.id === unit)!.fromKg(shipQtyKg, boxKg),
+  );
 
   useEffect(() => {
     if (open) {
@@ -27,61 +41,153 @@ const QtySheet = ({ open, onOpenChange }: Props) => {
     }
   }, [open, unit, shipQtyKg, boxKg]);
 
+  const cfg = UNITS.find((x) => x.id === u)!;
+  const valKg = useMemo(() => Math.round(cfg.toKg(Number(val) || 0, boxKg)), [val, cfg, boxKg]);
+
+  const error =
+    !val || valKg <= 0
+      ? "출하량을 입력해 주세요."
+      : valKg > MAX_KG
+        ? `최대 ${MAX_KG.toLocaleString()}kg까지 입력 가능합니다.`
+        : "";
+
+  const handleChangeUnit = (next: Unit) => {
+    const nextCfg = UNITS.find((x) => x.id === next)!;
+    const kg = cfg.toKg(Number(val) || 0, boxKg);
+    setU(next);
+    setVal(nextCfg.fromKg(kg, boxKg));
+  };
+
+  const setFromKg = (kg: number) => {
+    setVal(cfg.fromKg(kg, boxKg));
+  };
+
+  const estimatedKg = Math.round(profile.farmAreaM2 * 0.4);
+
   const apply = () => {
-    const cfg = UNITS.find((x) => x.id === u)!;
-    const kg = Math.max(1, Math.round(cfg.toKg(val, boxKg)));
+    if (error) return;
     setUnit(u);
-    setShipQty(kg);
+    setShipQty(valKg);
     onOpenChange(false);
   };
 
-  // 면적 기반 자동 추정 (단순: 1㎡ = 약 0.4kg)
-  const estimatedKg = Math.round(profile.farmAreaM2 * 0.4);
-  const cfg = UNITS.find((x) => x.id === u)!;
-  const valKg = cfg.toKg(val, boxKg);
+  const reset = () => {
+    setU("kg");
+    setVal(500);
+  };
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="px-4 pb-6">
-        <div className="pt-2">
-          <h3 className="text-base font-bold text-foreground text-center mb-4">출하량 입력</h3>
-          <div className="flex items-center gap-2 mb-3">
-            <input
-              type="number"
-              min={0}
-              value={val}
-              onChange={(e) => setVal(Number(e.target.value))}
-              className="flex-1 px-4 py-3 text-2xl font-bold text-foreground rounded-xl border border-border bg-background text-right"
-            />
-            <div className="flex bg-secondary rounded-xl p-1">
-              {UNITS.map((x) => (
+      <DrawerContent className="px-5 pb-6">
+        <div className="pt-2 text-center">
+          <h3 className="text-base font-bold text-foreground">출하량 입력</h3>
+          <p className="text-[12px] text-muted-foreground mt-1">
+            출하할 물량을 입력하고 단위를 선택해 주세요
+          </p>
+        </div>
+
+        {/* 입력 + 단위 세그먼트 */}
+        <div className="mt-4 rounded-2xl border border-border bg-card px-4 py-3 flex items-center gap-3">
+          <input
+            type="number"
+            inputMode="numeric"
+            min={0}
+            value={val === 0 ? "" : val}
+            onChange={(e) => {
+              const n = e.target.value === "" ? 0 : Number(e.target.value);
+              if (Number.isNaN(n)) return;
+              setVal(n);
+            }}
+            placeholder="0"
+            className="flex-1 min-w-0 bg-transparent text-3xl font-extrabold text-foreground outline-none"
+          />
+          <div className="flex bg-secondary rounded-full p-1 shrink-0">
+            {UNITS.map((x) => {
+              const sel = u === x.id;
+              return (
                 <button
                   key={x.id}
-                  onClick={() => setU(x.id)}
-                  className={`px-3 py-2 rounded-lg text-xs font-medium ${u === x.id ? "bg-white text-foreground shadow-sm" : "text-muted-foreground"}`}
+                  onClick={() => handleChangeUnit(x.id)}
+                  className={`px-3 h-8 inline-flex items-center justify-center rounded-full text-[12px] font-semibold whitespace-nowrap transition-all ${
+                    sel
+                      ? "bg-white text-primary border border-primary"
+                      : "text-muted-foreground"
+                  }`}
                 >
                   {x.label}
                 </button>
-              ))}
-            </div>
+              );
+            })}
           </div>
-          <p className="text-[11px] text-muted-foreground mb-4">
-            {crop.emoji} {crop.name} 기준 1상자 = {boxKg}kg · 입력값 {Math.round(valKg).toLocaleString()}kg
-          </p>
-          <button
-            onClick={() => {
-              setU("kg");
-              setVal(estimatedKg);
-            }}
-            className="w-full text-left bg-primary/5 border border-primary/20 rounded-xl px-4 py-3 mb-4"
-          >
-            <p className="text-xs font-semibold text-primary">내 농장 자동 입력</p>
-            <p className="text-[11px] text-muted-foreground mt-0.5">{profile.farmAreaM2.toLocaleString()}㎡ 예상 수확량 약 {estimatedKg.toLocaleString()}kg</p>
-          </button>
-          <button onClick={apply} className="w-full py-3 rounded-xl bg-primary text-white text-sm font-bold">입력 완료</button>
         </div>
+
+        {/* 기준 안내 */}
+        <p className="text-[11px] text-muted-foreground mt-2 px-1">
+          {crop.emoji} {crop.name} 기준 1상자 = {boxKg}kg · 입력값 최대 {MAX_KG.toLocaleString()}kg
+        </p>
+
+        {/* 빠른 입력 */}
+        <div className="mt-3 grid grid-cols-4 gap-2">
+          {QUICK_CHIPS_KG.map((kg) => {
+            const sel = valKg === kg;
+            return (
+              <button
+                key={kg}
+                onClick={() => setFromKg(kg)}
+                className={`h-10 rounded-full text-[13px] font-semibold border transition-all ${
+                  sel
+                    ? "border-primary text-primary bg-primary/5"
+                    : "border-border text-foreground bg-card"
+                }`}
+              >
+                {kg.toLocaleString()}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* 자동 입력 카드 */}
+        <button
+          onClick={() => {
+            setU("kg");
+            setVal(estimatedKg);
+          }}
+          className="mt-3 w-full bg-primary/5 border border-primary/20 rounded-2xl px-4 py-3 flex items-center gap-3 text-left active:scale-[0.99] transition-transform"
+        >
+          <div className="w-9 h-9 rounded-full bg-primary/15 flex items-center justify-center shrink-0">
+            <Sprout className="w-4 h-4 text-primary" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-bold text-foreground">내 농장 자동 입력</p>
+            <p className="text-[11px] text-muted-foreground mt-0.5">
+              {profile.farmAreaM2.toLocaleString()}㎡ 예상 수확량 약 {estimatedKg.toLocaleString()}kg
+            </p>
+          </div>
+          <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
+        </button>
+
+        {/* 에러 메시지 */}
+        {error && (
+          <p className="text-[11px] text-destructive mt-2 px-1">{error}</p>
+        )}
+
+        {/* CTA */}
+        <button
+          onClick={apply}
+          disabled={!!error}
+          className="mt-4 w-full py-3.5 rounded-2xl bg-primary text-white text-[15px] font-bold disabled:opacity-40"
+        >
+          입력 완료
+        </button>
+        <button
+          onClick={reset}
+          className="mt-2 w-full py-2 text-[13px] font-medium text-muted-foreground"
+        >
+          초기화
+        </button>
       </DrawerContent>
     </Drawer>
   );
 };
+
 export default QtySheet;
