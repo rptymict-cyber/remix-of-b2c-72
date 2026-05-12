@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { ChevronLeft, Search, Check, MapPin, Store, Pencil } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -18,6 +18,58 @@ import { Drawer, DrawerContent } from "@/components/ui/drawer";
 
 type RegType = "growing" | "interest";
 const ALL_LABEL = "전체 품종";
+
+// 마우스 드래그 + 터치 스와이프 가로 스크롤 래퍼
+const DragScroller = ({
+  className,
+  children,
+}: {
+  className?: string;
+  children: React.ReactNode;
+}) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const drag = useRef({ active: false, startX: 0, startLeft: 0, moved: false });
+
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    const el = ref.current;
+    if (!el) return;
+    drag.current = { active: true, startX: e.clientX, startLeft: el.scrollLeft, moved: false };
+    el.setPointerCapture(e.pointerId);
+  };
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!drag.current.active || !ref.current) return;
+    const dx = e.clientX - drag.current.startX;
+    if (Math.abs(dx) > 4) drag.current.moved = true;
+    ref.current.scrollLeft = drag.current.startLeft - dx;
+  };
+  const onPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    drag.current.active = false;
+    try {
+      ref.current?.releasePointerCapture(e.pointerId);
+    } catch {}
+  };
+  const onClickCapture = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (drag.current.moved) {
+      e.preventDefault();
+      e.stopPropagation();
+      drag.current.moved = false;
+    }
+  };
+
+  return (
+    <div
+      ref={ref}
+      className={`${className ?? ""} cursor-grab active:cursor-grabbing select-none`}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onPointerCancel={onPointerUp}
+      onClickCapture={onClickCapture}
+    >
+      {children}
+    </div>
+  );
+};
 
 const AddCrop = () => {
   const nav = useNavigate();
