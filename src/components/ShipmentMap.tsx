@@ -56,12 +56,11 @@ const ShipmentMap = ({ farm, markets, recommendedId, selectedId, onSelect }: Pro
               key={m.id}
               onClick={() => onSelect(m.id)}
               aria-label={`${m.name} 선택`}
-              className="absolute z-20 flex items-center gap-1.5"
+              className={`absolute z-20 flex items-center gap-1.5 ${labelRight ? "flex-row" : "flex-row-reverse"}`}
               style={{
                 left: `${pos.left}%`,
                 top: `${pos.top}%`,
-                transform: `translate(-50%, -50%) ${labelRight ? "" : "scaleX(-1)"}`,
-                flexDirection: "row",
+                transform: "translate(-50%, -50%)",
               }}
             >
               <span
@@ -83,7 +82,6 @@ const ShipmentMap = ({ farm, markets, recommendedId, selectedId, onSelect }: Pro
                 )}
               </span>
               <span
-                style={labelRight ? undefined : { transform: "scaleX(-1)" }}
                 className={`whitespace-nowrap rounded-full px-2.5 py-1 text-[12px] font-bold border ${
                   isRec
                     ? "bg-primary text-white border-primary shadow-md"
