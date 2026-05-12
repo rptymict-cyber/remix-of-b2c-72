@@ -78,10 +78,10 @@ const MarketPricePage = () => {
   const price = seedPrice(cropId, marketId, variety);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="h-full bg-background">
       <AppHeader title="실시간 시세" showRefresh />
 
-      <main className="px-4 pt-5 safe-bottom space-y-4">
+      <main className="h-full overflow-y-auto px-4 pt-[calc(var(--app-header-height)+1.25rem)] safe-bottom space-y-4">
         {/* 필터 칩 */}
         <div className="grid grid-cols-2 gap-2">
           <FilterPill onClick={() => setCropOpen(true)} icon={<span className="text-base leading-none">{crop.emoji}</span>} label={crop.name} />
