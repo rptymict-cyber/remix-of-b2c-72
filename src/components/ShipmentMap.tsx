@@ -45,27 +45,47 @@ const buildFarmIcon = (region: string) =>
   });
 
 const buildMarketIcon = (m: MapMarket, recommended: boolean) => {
-  const pinBg = recommended ? "hsl(142 70% 35%)" : "#fff";
-  const pinFg = recommended ? "#fff" : "hsl(142 70% 35%)";
-  const pinBorder = recommended ? "#fff" : "hsl(142 70% 35%)";
-  const inner = recommended
-    ? `<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='${pinFg}' stroke='${pinFg}' stroke-width='1.5' stroke-linejoin='round'><polygon points='12 2 15 9 22 9.5 17 14.5 18.5 22 12 18 5.5 22 7 14.5 2 9.5 9 9'/></svg>`
-    : `<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='${pinFg}'><circle cx='12' cy='12' r='5'/></svg>`;
-  const labelBg = recommended ? "hsl(142 70% 35%)" : "#fff";
-  const labelFg = recommended ? "#fff" : "#111827";
-  const labelBorder = recommended ? "hsl(142 70% 35%)" : "#e5e7eb";
-  const badge = recommended
-    ? `<span style="background:#fff;color:hsl(142 70% 35%);font-size:9px;font-weight:800;padding:1px 4px;border-radius:4px;margin-right:4px;">추천</span>`
-    : "";
+  const netRevenue = m.netRevenue?.toLocaleString() ?? "-";
+
+  if (recommended) {
+    return L.divIcon({
+      className: "",
+      html: `
+        <div style="display:flex;flex-direction:column;align-items:center;transform:translateY(-12px);cursor:pointer;position:relative;">
+          <style>
+            @keyframes shipment-recommend-pulse {
+              0% { transform: scale(.72); opacity: .42; }
+              70% { transform: scale(1.75); opacity: 0; }
+              100% { transform: scale(1.75); opacity: 0; }
+            }
+          </style>
+          <div style="position:relative;width:38px;height:38px;display:flex;align-items:center;justify-content:center;">
+            <span style="position:absolute;width:38px;height:38px;border-radius:999px;background:hsl(142 70% 35% / .32);animation:shipment-recommend-pulse 1.6s ease-out infinite;"></span>
+            <div style="position:relative;width:36px;height:36px;border-radius:50%;background:hsl(142 70% 35%);border:3px solid #fff;box-shadow:0 4px 12px rgba(22,101,52,.32);display:flex;align-items:center;justify-content:center;color:#fff;">
+              <svg xmlns='http://www.w3.org/2000/svg' width='17' height='17' viewBox='0 0 24 24' fill='#fff' stroke='#fff' stroke-width='1.5' stroke-linejoin='round'><polygon points='12 2 15 9 22 9.5 17 14.5 18.5 22 12 18 5.5 22 7 14.5 2 9.5 9 9'/></svg>
+            </div>
+          </div>
+          <div style="margin-top:5px;background:hsl(142 70% 35%);color:#fff;border:1px solid hsl(142 70% 35%);font-size:10px;font-weight:800;line-height:1.35;padding:5px 8px;border-radius:9px;white-space:nowrap;box-shadow:0 4px 12px rgba(22,101,52,.26);text-align:left;">
+            <div style="font-size:10px;font-weight:900;margin-bottom:2px;">🏆 순이익 1위</div>
+            <div>${m.name} <span style="margin-left:4px;font-weight:800;">${m.distanceKm}km</span></div>
+            <div style="font-size:9px;font-weight:700;opacity:.92;margin-top:1px;">예상 순이익 ${netRevenue}원</div>
+          </div>
+        </div>
+      `,
+      iconSize: [190, 96],
+      iconAnchor: [95, 42],
+    });
+  }
+
   return L.divIcon({
     className: "",
     html: `
       <div style="display:flex;flex-direction:column;align-items:center;transform:translateY(-6px);cursor:pointer;">
-        <div style="width:28px;height:28px;border-radius:50%;background:${pinBg};border:2.5px solid ${pinBorder};box-shadow:0 2px 6px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;">
-          ${inner}
+        <div style="width:28px;height:28px;border-radius:50%;background:#6b7280;border:2.5px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.22);display:flex;align-items:center;justify-content:center;color:#fff;">
+          <svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='#fff'><circle cx='12' cy='12' r='5'/></svg>
         </div>
-        <div style="margin-top:4px;background:${labelBg};color:${labelFg};border:1px solid ${labelBorder};font-size:10px;font-weight:700;padding:2px 6px;border-radius:6px;white-space:nowrap;box-shadow:0 1px 3px rgba(0,0,0,.15);display:flex;align-items:center;">
-          ${badge}${m.name} <span style="font-weight:600;margin-left:4px;color:${recommended ? "#fff" : "hsl(142 70% 35%)"};">${m.distanceKm}km</span>
+        <div style="margin-top:4px;background:#fff;color:#111827;border:1px solid #e5e7eb;font-size:10px;font-weight:700;padding:2px 6px;border-radius:6px;white-space:nowrap;box-shadow:0 1px 3px rgba(0,0,0,.15);">
+          ${m.name} <span style="font-weight:700;margin-left:4px;color:#6b7280;">${m.distanceKm}km</span>
         </div>
       </div>
     `,
@@ -84,7 +104,7 @@ const FitBounds = ({ points }: { points: [number, number][] }) => {
   return null;
 };
 
-const ShipmentMap = ({ farm, markets, recommendedId, onSelect }: Props) => {
+const ShipmentMap = ({ farm, markets, recommendedId, selectedId, onSelect }: Props) => {
   const points: [number, number][] = [
     [farm.lat, farm.lng],
     ...markets.map((m) => [m.lat, m.lng] as [number, number]),
@@ -101,14 +121,19 @@ const ShipmentMap = ({ farm, markets, recommendedId, onSelect }: Props) => {
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
         <FitBounds points={points} />
         <Marker position={[farm.lat, farm.lng]} icon={buildFarmIcon(farm.region)} />
-        {markets.map((m) => (
-          <Marker
-            key={m.id}
-            position={[m.lat, m.lng]}
-            icon={buildMarketIcon(m, m.id === recommendedId)}
-            eventHandlers={{ click: () => onSelect(m.id) }}
-          />
-        ))}
+        {markets.map((m) => {
+          const recommended = m.id === recommendedId;
+          const selected = m.id === selectedId;
+          return (
+            <Marker
+              key={`${m.id}-${recommended}-${selected}`}
+              zIndexOffset={recommended || selected ? 1000 : 0}
+              position={[m.lat, m.lng]}
+              icon={buildMarketIcon(m, recommended)}
+              eventHandlers={{ click: () => onSelect(m.id) }}
+            />
+          );
+        })}
       </MapContainer>
     </div>
   );
