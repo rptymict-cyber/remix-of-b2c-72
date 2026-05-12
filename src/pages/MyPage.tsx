@@ -29,9 +29,9 @@ const MyPage = () => {
   const myCropsLabel = profile.myCrops.map((id) => `${findCrop(id).emoji}${findCrop(id).name}`).join(", ") || "선택 없음";
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="h-full bg-background">
       <AppHeader title="마이페이지" variant="back" />
-      <main className="px-4 pt-4 safe-bottom space-y-3">
+      <main className="h-full overflow-y-auto px-4 pt-[calc(var(--app-header-height)+1rem)] safe-bottom space-y-3">
         {/* Profile */}
         <section className="bg-card border border-border rounded-2xl p-4 flex items-center gap-3">
           <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xl font-bold">{initials}</div>
