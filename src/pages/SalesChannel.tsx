@@ -22,7 +22,7 @@ const MARKET_COORDS: Record<string, { lat: number; lng: number }> = {
   suwon: { lat: 37.2636, lng: 127.0286 },
   cheongju: { lat: 36.6424, lng: 127.4890 },
 };
-const FARM_COORD = { lat: 36.9910, lng: 127.9259 }; // 충북 충주시
+const FARM_COORD = { lat: 36.4467, lng: 127.1188 }; // 충남 공주시
 
 type SortKey = "netRevenue" | "unitPrice" | "logistics" | "distance";
 
