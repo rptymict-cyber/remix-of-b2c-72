@@ -142,8 +142,8 @@ const AddCrop = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-32">
-      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-sm border-b border-border">
+    <div className="h-full bg-background">
+      <header className="fixed top-0 left-1/2 z-[100] w-full max-w-[430px] -translate-x-1/2 bg-white/95 backdrop-blur-sm border-b border-border">
         <MobileStatusBar />
         <div className="relative flex items-center justify-center h-14 px-4">
           <button
@@ -170,7 +170,7 @@ const AddCrop = () => {
       </header>
 
       {step === 1 ? (
-        <main className="px-4 pt-5 space-y-4">
+        <main className="h-full overflow-y-auto px-4 pt-[calc(var(--app-header-progress-height)+1.25rem)] pb-32 space-y-4">
           <div>
             <h2 className="text-[18px] font-extrabold text-foreground leading-tight">
               <span className="text-primary">작물</span>을 선택해 주세요
@@ -255,7 +255,7 @@ const AddCrop = () => {
           )}
         </main>
       ) : (
-        <main className="px-4 pt-5 space-y-5">
+        <main className="h-full overflow-y-auto px-4 pt-[calc(var(--app-header-progress-height)+1.25rem)] pb-32 space-y-5">
           {/* 선택 요약 */}
           {crop && (
             <div className="bg-primary/5 border border-primary/20 rounded-2xl px-4 py-3.5 flex items-center justify-between">

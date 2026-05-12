@@ -23,9 +23,9 @@ const Section = ({ title, children }: { title: string; children: React.ReactNode
 const NotificationSettings = () => {
   const { notif, setNotif } = useApp();
   return (
-    <div className="min-h-screen bg-background">
+    <div className="h-full bg-background">
       <AppHeader title="알림 설정" variant="back" />
-      <main className="px-4 pt-4 safe-bottom space-y-3">
+      <main className="h-full overflow-y-auto px-4 pt-[calc(var(--app-header-height)+1rem)] safe-bottom space-y-3">
         <Section title="가격 알림">
           <Row label="가격 급등락 알림" desc={`±${notif.priceThreshold}% 변동 시 푸시`}>
             <Switch checked={notif.priceAlert} onCheckedChange={(v) => setNotif({ priceAlert: v })} />

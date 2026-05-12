@@ -58,6 +58,11 @@ html, body, #root {
     --shadow-md: 0 4px 12px -2px hsl(220 20% 10% / 0.06);
     --shadow-lg: 0 8px 24px -4px hsl(220 20% 10% / 0.08);
 
+    /* Fixed mobile chrome heights */
+    --app-header-height: calc(84px + env(safe-area-inset-top, 0px));
+    --app-header-compact-height: calc(76px + env(safe-area-inset-top, 0px));
+    --app-header-progress-height: calc(112px + env(safe-area-inset-top, 0px));
+
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
     --sidebar-primary: 240 5.9% 10%;

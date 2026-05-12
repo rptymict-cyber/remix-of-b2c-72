@@ -16,7 +16,7 @@ const AppHeader = ({ title, subtitle, showRefresh, onRefresh, showBack, rightAct
   const nav = useNavigate();
   const useBack = showBack || variant === "back";
   return (
-    <header className="sticky top-0 z-[100] bg-white/95 backdrop-blur-sm border-b border-border">
+    <header className="fixed top-0 left-1/2 z-[100] w-full max-w-[430px] -translate-x-1/2 bg-white/95 backdrop-blur-sm border-b border-border">
       <MobileStatusBar />
       <div className="relative flex items-center justify-center h-14 px-4">
         {useBack ? (

@@ -19,11 +19,11 @@ const Notifications = () => {
   const [cat, setCat] = useState<Cat>("전체");
   const list = cat === "전체" ? items : items.filter((i) => i.cat === cat);
   return (
-    <div className="min-h-screen bg-background">
+    <div className="h-full bg-background">
       <AppHeader title="알림" variant="back" rightAction={
         <button onClick={() => nav("/notification-settings")} className="text-muted-foreground"><Settings className="w-5 h-5" /></button>
       } />
-      <main className="px-4 pt-4 safe-bottom space-y-3">
+      <main className="h-full overflow-y-auto px-4 pt-[calc(var(--app-header-height)+1rem)] safe-bottom space-y-3">
         <div className="flex gap-1.5 overflow-x-auto scrollbar-hide">
           {(["전체", "가격 알림", "AI 예측", "시스템"] as Cat[]).map((c) => (
             <button

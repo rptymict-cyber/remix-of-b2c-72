@@ -57,10 +57,10 @@ const PredictionPage = ({ defaultExpanded = false }: PredictionPageProps) => {
   const changePercent = ((predictedPrice - currentPrice) / currentPrice * 100).toFixed(1);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="h-full bg-background">
       <AppHeader title="AI 가격 예측" />
 
-      <main className="px-4 pt-5 safe-bottom space-y-5">
+      <main className="h-full overflow-y-auto px-4 pt-[calc(var(--app-header-height)+1.25rem)] safe-bottom space-y-5">
         {/* 상단 안내 */}
         <div>
           <p className="text-xs text-muted-foreground">언제 출하할지 고민되시나요?</p>
