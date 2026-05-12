@@ -482,8 +482,14 @@ const Onboarding = () => {
           label="완료"
           disabled={selectedCrops.length === 0}
           onClick={() => {
+            if ((window as any).__onbLock) return;
+            (window as any).__onbLock = true;
+            try {
+              if ("vibrate" in navigator) navigator.vibrate?.(10);
+            } catch {}
             setProfile({ myCrops: selectedCrops });
             setStep("done");
+            setTimeout(() => { (window as any).__onbLock = false; }, 500);
           }}
         />
       </div>
@@ -493,24 +499,41 @@ const Onboarding = () => {
   // ===================== DONE =====================
   const cropObjs = selectedCrops.map((id) => CROPS.find((c) => c.id === id)!).filter(Boolean);
   return (
-    <div className="absolute inset-0 bg-white flex flex-col px-5 pt-16 pb-8 animate-in fade-in duration-300">
-        <MobileStatusBar />
-      <div className="flex-1 flex flex-col items-center text-center">
-        <div className="w-20 h-20 rounded-full bg-[hsl(152_55%_42%)]/10 flex items-center justify-center animate-in zoom-in duration-300">
+    <div className="absolute inset-0 bg-white flex flex-col px-5 pt-12 pb-8 onb-done-enter">
+      <style>{`
+        @keyframes onbSlideIn { 0% { opacity: 0; transform: translateX(40px); } 100% { opacity: 1; transform: translateX(0); } }
+        @keyframes onbCheckPop { 0% { opacity: 0; transform: scale(0.4); } 60% { opacity: 1; transform: scale(1.08); } 100% { opacity: 1; transform: scale(1); } }
+        @keyframes onbDraw { to { stroke-dashoffset: 0; } }
+        @keyframes onbFadeUp { 0% { opacity: 0; transform: translateY(8px); } 100% { opacity: 1; transform: translateY(0); } }
+        .onb-done-enter { animation: onbSlideIn 360ms cubic-bezier(0.2,0.7,0.2,1) both; }
+        .onb-check-pop { opacity: 0; animation: onbCheckPop 700ms cubic-bezier(0.2,0.9,0.3,1.3) both; }
+        .onb-check-path { stroke-dasharray: 60; stroke-dashoffset: 60; animation: onbDraw 600ms cubic-bezier(0.4,0,0.2,1) 300ms forwards; }
+        .onb-fadeup { opacity: 0; animation: onbFadeUp 400ms ease-out both; }
+        @media (prefers-reduced-motion: reduce) {
+          .onb-done-enter { animation: onbFadeUp 200ms ease-out both; }
+          .onb-check-pop, .onb-fadeup { animation: onbFadeUp 200ms ease-out both !important; animation-delay: 0ms !important; }
+          .onb-check-path { stroke-dashoffset: 0; animation: none; }
+        }
+      `}</style>
+      <MobileStatusBar />
+      <div className="flex-1 flex flex-col items-center text-center pt-4">
+        <div className="w-20 h-20 rounded-full bg-[hsl(152_55%_42%)]/10 flex items-center justify-center onb-check-pop">
           <div className="w-14 h-14 rounded-full bg-[hsl(152_55%_42%)] flex items-center justify-center">
-            <Check className="w-8 h-8 text-white" strokeWidth={3} />
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+              <path d="M8 16.5 L14 22 L24 11" stroke="white" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" className="onb-check-path" onAnimationStart={() => { try { (navigator as any).vibrate?.([10,30,10]); } catch {} }} />
+            </svg>
           </div>
         </div>
-        <h2 className="mt-6 text-[20px] font-extrabold text-foreground">
+        <h2 className="mt-6 text-[20px] font-extrabold text-foreground onb-fadeup" style={{ animationDelay: "400ms" }}>
           {profile.name}님의 맞춤 설정이 완료됐어요!
         </h2>
-        <p className="mt-3 text-[13px] text-muted-foreground leading-relaxed">
+        <p className="mt-3 text-[13px] text-muted-foreground leading-relaxed onb-fadeup" style={{ animationDelay: "500ms" }}>
           {profile.region} · {cropObjs[0]?.name || "작물"}
           {cropObjs.length > 1 ? ` 외 ${cropObjs.length - 1}개 작물` : ""} 기준으로<br />
           시세와 예측을 준비했어요
         </p>
 
-        <div className="mt-8 w-full rounded-2xl border border-border p-4 space-y-3 text-left">
+        <div className="mt-8 w-full rounded-2xl border border-border p-4 space-y-3 text-left onb-fadeup" style={{ animationDelay: "600ms" }}>
           <Row icon="📍" text={profile.region} />
           <Row icon="📐" text={`${profile.farmAreaM2.toLocaleString()}㎡`} />
           <div className="flex items-center gap-2 flex-wrap">
@@ -528,11 +551,12 @@ const Onboarding = () => {
           completeOnboarding();
           nav("/", { replace: true });
         }}
-        className="w-full h-[52px] rounded-2xl bg-[hsl(152_55%_42%)] text-white text-[15px] font-bold"
+        className="w-full h-[52px] rounded-2xl bg-[hsl(152_55%_42%)] text-white text-[15px] font-bold onb-fadeup"
+        style={{ animationDelay: "700ms" }}
       >
         시세 확인하러 가기
       </button>
-      <p className="mt-3 text-center text-[12px] text-muted-foreground">
+      <p className="mt-3 text-center text-[12px] text-muted-foreground onb-fadeup" style={{ animationDelay: "750ms" }}>
         설정은 마이페이지에서 언제든지 변경할 수 있어요
       </p>
     </div>
