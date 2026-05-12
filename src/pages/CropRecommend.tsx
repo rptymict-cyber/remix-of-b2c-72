@@ -101,10 +101,10 @@ const CropRecommendPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="h-full bg-background">
       <AppHeader title="내 작물" />
 
-      <main className="px-4 pt-5 safe-bottom space-y-4">
+      <main className="h-full overflow-y-auto px-4 pt-[calc(var(--app-header-height)+1.25rem)] safe-bottom space-y-4">
         {/* 조건 */}
         <div className="grid grid-cols-2 gap-2">
           <FilterPill
