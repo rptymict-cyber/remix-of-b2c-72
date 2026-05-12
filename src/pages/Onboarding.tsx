@@ -681,11 +681,11 @@ const IntroVisual = ({ kind }: { kind: string }) => {
   // crop
   return (
     <div className="relative w-[280px]">
-      <div className="rounded-3xl bg-white shadow-[0_10px_30px_rgba(0,0,0,0.08)] border border-border/60 px-6 pt-5 pb-6">
-        <span className="inline-block text-[11px] px-2.5 py-1 rounded-md bg-[hsl(152_55%_42%)]/10 text-[hsl(152_55%_42%)] font-bold mb-4">AI 추천 작물</span>
-        <div className="flex flex-col items-center mb-5">
-          <span className="text-[56px] leading-none">🧅</span>
-          <span className="mt-2 text-[24px] font-extrabold text-foreground">양파</span>
+      <div className="rounded-3xl bg-[hsl(152_45%_94%)] shadow-[0_10px_30px_rgba(0,0,0,0.08)] border border-border/40 px-6 pt-5 pb-6">
+        <span className="inline-block text-[11px] text-[hsl(152_55%_42%)] font-bold mb-3">AI 추천 작물</span>
+        <div className="flex items-center justify-center gap-3 mb-5">
+          <span className="text-[40px] leading-none">🧅</span>
+          <span className="text-[24px] font-extrabold text-foreground">양파</span>
         </div>
         <div className="grid grid-cols-3 gap-2">
           <MetricChip label="수익성" value="높음" tone="green" />
@@ -693,7 +693,7 @@ const IntroVisual = ({ kind }: { kind: string }) => {
           <MetricChip label="지역 적합도" value="높음" tone="green" />
         </div>
       </div>
-      <span className="absolute -bottom-3 -right-2 text-3xl rotate-12 select-none">🌿</span>
+      <span className="absolute -bottom-2 right-2 text-3xl rotate-12 select-none">🌿</span>
     </div>
   );
 };
@@ -709,9 +709,9 @@ const MapPin2 = ({ className, label, price }: { className?: string; label: strin
 );
 
 const MetricChip = ({ label, value, tone }: { label: string; value: string; tone: "green" | "yellow" }) => (
-  <div className={`rounded-lg py-2 text-center ${tone === "green" ? "bg-[hsl(152_55%_42%)]/10" : "bg-[hsl(42_90%_55%)]/15"}`}>
+  <div className="rounded-xl bg-white py-2.5 text-center">
     <p className="text-[10px] text-muted-foreground leading-tight">{label}</p>
-    <p className={`text-[12px] font-bold mt-0.5 ${tone === "green" ? "text-[hsl(152_55%_42%)]" : "text-[hsl(35_85%_45%)]"}`}>{value}</p>
+    <p className={`text-[12px] font-bold mt-1 ${tone === "green" ? "text-[hsl(152_55%_42%)]" : "text-[hsl(28_85%_55%)]"}`}>{value}</p>
   </div>
 );
 
