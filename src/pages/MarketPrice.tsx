@@ -12,6 +12,7 @@ import MarketSheet from "@/components/sheets/MarketSheet";
 import VarietySheet from "@/components/sheets/VarietySheet";
 import UnitSheet from "@/components/sheets/UnitSheet";
 import FilterPill from "@/components/common/FilterPill";
+import SortSheet, { SortOption } from "@/components/sheets/SortSheet";
 
 const chartData = [
   { date: "4/8", price: 48200, volume: 1120 },
@@ -72,6 +73,23 @@ const MarketPricePage = () => {
   const [marketOpen, setMarketOpen] = useState(false);
   const [varietyOpen, setVarietyOpen] = useState(false);
   const [unitOpen, setUnitOpen] = useState(false);
+  const [sortOpen, setSortOpen] = useState(false);
+  type MarketSortKey = "priceDesc" | "priceAsc" | "dayChange" | "volume" | "share";
+  const [marketSort, setMarketSort] = useState<MarketSortKey>("priceDesc");
+  const sortLabels: Record<MarketSortKey, string> = {
+    priceDesc: "높은 가격순",
+    priceAsc: "낮은 가격순",
+    dayChange: "상승률순",
+    volume: "거래량순",
+    share: "점유율순",
+  };
+  const sortedMarketData = [...marketData].sort((a, b) => {
+    if (marketSort === "priceDesc") return b.price - a.price;
+    if (marketSort === "priceAsc") return a.price - b.price;
+    if (marketSort === "dayChange") return b.dayChange - a.dayChange;
+    if (marketSort === "volume") return b.volume - a.volume;
+    return b.share - a.share;
+  });
   const crop = findCrop(cropId);
   const [unitKg, setUnitKg] = useState<number>(crop.defaultUnitKg);
   const market = findMarket(marketId);
