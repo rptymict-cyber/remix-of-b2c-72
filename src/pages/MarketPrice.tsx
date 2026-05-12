@@ -62,6 +62,27 @@ const ChangeIndicator = ({ value }: { value: number }) => {
   return <span className="price-neutral text-xs font-semibold flex items-center"><Minus className="w-3 h-3" />0%</span>;
 };
 
+const FilterPill = ({
+  icon,
+  label,
+  onClick,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  onClick: () => void;
+}) => (
+  <button
+    onClick={onClick}
+    className="flex items-center justify-between gap-2 w-full h-10 px-3 rounded-full border border-border bg-card shadow-sm active:scale-[0.98] transition-transform"
+  >
+    <span className="flex items-center gap-1.5 min-w-0">
+      {icon}
+      <span className="text-[13px] font-semibold text-foreground truncate">{label}</span>
+    </span>
+    <ChevronDown className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+  </button>
+);
+
 const MarketPricePage = () => {
   const [activeTab, setActiveTab] = useState("종합");
   const [activePeriod, setActivePeriod] = useState("1주");
