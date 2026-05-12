@@ -21,10 +21,10 @@ const HomePage = () => {
   const suggestionList = CROPS.filter((c) => !profile.myCrops.includes(c.id)).slice(0, 3);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="h-full bg-background">
       <AppHeader title="농산물 시세 예측" />
 
-      <main className="px-4 pt-5 safe-bottom space-y-5">
+      <main className="h-full overflow-y-auto px-4 pt-[calc(var(--app-header-height)+1.25rem)] safe-bottom space-y-5">
         {/* 운영 컨텍스트 카드 */}
         <section className="bg-[#2d5a3d] rounded-2xl p-5 text-white">
           <div className="flex items-start justify-between">
