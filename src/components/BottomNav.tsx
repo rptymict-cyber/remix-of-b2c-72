@@ -70,10 +70,11 @@ const BottomNav = () => {
       className="fixed bottom-0 left-0 right-0 z-[100] mx-auto w-full max-w-[430px] bg-white"
       style={{
         paddingBottom: "env(safe-area-inset-bottom, 0px)",
-        boxShadow: "0 -1px 0 hsl(220 13% 91%)",
+        boxShadow: "0 -2px 12px rgba(17, 24, 39, 0.06)",
+        borderTop: "1px solid hsl(220 13% 94%)",
       }}
     >
-      <div className="flex items-center justify-around h-[64px] w-full px-2">
+      <div className="flex items-stretch justify-between gap-1 h-[72px] w-full px-3 pt-2 pb-2">
         {tabs.map((tab) => {
           const active = isActive(tab.id);
           const Icon = tab.icon;
@@ -81,12 +82,18 @@ const BottomNav = () => {
             <button
               key={tab.id}
               onClick={() => navigate(tab.id)}
-              className={`flex flex-col items-center justify-center gap-[2px] flex-1 h-full transition-colors ${
-                active ? "text-[#1a1a1a]" : "text-[#b8b8c0]"
+              className={`flex flex-col items-center justify-center gap-1 flex-1 rounded-2xl transition-colors ${
+                active
+                  ? "bg-[hsl(150_55%_94%)] text-[hsl(150_55%_38%)]"
+                  : "text-[hsl(220_8%_55%)]"
               }`}
             >
               <Icon active={active} />
-              <span className={`text-[11px] leading-none mt-[1px] ${active ? "font-bold" : "font-medium"}`}>
+              <span
+                className={`text-[11px] leading-none ${
+                  active ? "font-bold" : "font-medium"
+                }`}
+              >
                 {tab.label}
               </span>
             </button>
