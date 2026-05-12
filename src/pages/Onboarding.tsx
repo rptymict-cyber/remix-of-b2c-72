@@ -125,7 +125,7 @@ const Onboarding = () => {
       if (dx > 0 && intro > 0) setIntro(intro - 1);
     };
     return (
-      <div className="absolute inset-0 bg-white flex flex-col">
+      <div className={`absolute inset-0 bg-white flex flex-col ${splashOut ? "intro-enter" : ""}`}>
         <MobileStatusBar />
         <div className="h-12 flex items-center justify-between px-3">
           <button
@@ -185,6 +185,7 @@ const Onboarding = () => {
             {last ? "시작하기" : "다음"}
           </button>
         </div>
+        {splashOut && <SplashOverlay leaving />}
       </div>
     );
   }
