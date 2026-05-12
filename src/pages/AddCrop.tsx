@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { ChevronLeft, Search, Check, MapPin, Store, Pencil } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -19,6 +19,58 @@ import { Drawer, DrawerContent } from "@/components/ui/drawer";
 type RegType = "growing" | "interest";
 const ALL_LABEL = "전체 품종";
 
+// 마우스 드래그 + 터치 스와이프 가로 스크롤 래퍼
+const DragScroller = ({
+  className,
+  children,
+}: {
+  className?: string;
+  children: React.ReactNode;
+}) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const drag = useRef({ active: false, startX: 0, startLeft: 0, moved: false });
+
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    const el = ref.current;
+    if (!el) return;
+    drag.current = { active: true, startX: e.clientX, startLeft: el.scrollLeft, moved: false };
+    el.setPointerCapture(e.pointerId);
+  };
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!drag.current.active || !ref.current) return;
+    const dx = e.clientX - drag.current.startX;
+    if (Math.abs(dx) > 4) drag.current.moved = true;
+    ref.current.scrollLeft = drag.current.startLeft - dx;
+  };
+  const onPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    drag.current.active = false;
+    try {
+      ref.current?.releasePointerCapture(e.pointerId);
+    } catch {}
+  };
+  const onClickCapture = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (drag.current.moved) {
+      e.preventDefault();
+      e.stopPropagation();
+      drag.current.moved = false;
+    }
+  };
+
+  return (
+    <div
+      ref={ref}
+      className={`${className ?? ""} cursor-grab active:cursor-grabbing select-none`}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onPointerCancel={onPointerUp}
+      onClickCapture={onClickCapture}
+    >
+      {children}
+    </div>
+  );
+};
+
 const AddCrop = () => {
   const nav = useNavigate();
   const { profile, marketId, setMarket } = useApp();
@@ -36,10 +88,11 @@ const AddCrop = () => {
   const crop = selectedCropId ? findCropById(selectedCropId) : null;
   const market = findMarket(marketSel);
 
-  // 검색 + 카테고리 필터
+  // 검색어가 있으면 카테고리 필터 무시하고 전체 작물 기준 검색
   const listed = useMemo(() => {
-    const base = q.trim() ? searchCrops(q) : ALL_CROPS;
-    return category === "전체" ? base : base.filter((c) => c.category === category);
+    if (q.trim()) return searchCrops(q);
+    if (category === "전체") return ALL_CROPS;
+    return ALL_CROPS.filter((c) => c.category === category);
   }, [q, category]);
 
   const showRepresentative = !q.trim() && category === "전체";
@@ -131,8 +184,8 @@ const AddCrop = () => {
             />
           </div>
 
-          {/* 카테고리 칩 */}
-          <div className="-mx-4 overflow-x-auto scrollbar-hide">
+          {/* 카테고리 칩 — 마우스 드래그 + 터치 스크롤 */}
+          <DragScroller className="-mx-4 overflow-x-auto scrollbar-hide">
             <div className="flex gap-2 w-max px-4 pb-1">
               {(["전체", ...CATEGORIES] as const).map((cat) => {
                 const sel = category === cat;
@@ -151,7 +204,7 @@ const AddCrop = () => {
                 );
               })}
             </div>
-          </div>
+          </DragScroller>
 
           {crop && (
             <div className="bg-primary/5 border border-primary/20 rounded-2xl px-4 py-3.5 flex items-center justify-between">
