@@ -7,6 +7,13 @@ export type ShipmentBasis = "current" | "forecast";
 export type CultivationMethod = "노지" | "시설";
 export type SeasonBasis = "이번" | "다음";
 
+export type CropRegType = "growing" | "interest";
+export interface CropSetting {
+  regType: CropRegType;
+  region: string;
+  marketId: string;
+}
+
 export interface UserProfile {
   name: string;
   region: string; // "충남 공주시"
@@ -17,6 +24,7 @@ export interface UserProfile {
   onboarded: boolean;
   cultivationMethod?: CultivationMethod;
   seasonBasis?: SeasonBasis;
+  cropSettings?: Record<string, CropSetting>;
 }
 
 export interface NotificationSettings {
@@ -50,6 +58,8 @@ interface AppState {
   setProfile: (p: Partial<UserProfile>) => void;
   setNotif: (n: Partial<NotificationSettings>) => void;
   toggleMyCrop: (id: string) => void;
+  setCropSetting: (id: string, s: Partial<CropSetting>) => void;
+  removeMyCrop: (id: string) => void;
   completeOnboarding: () => void;
 }
 
@@ -100,6 +110,34 @@ export const useApp = create<AppState>()(
               ? s.profile.myCrops
               : [...s.profile.myCrops, id];
           return { profile: { ...s.profile, myCrops: next } };
+        }),
+      setCropSetting: (id, partial) =>
+        set((s) => {
+          const prev = s.profile.cropSettings?.[id] ?? {
+            regType: "growing" as CropRegType,
+            region: s.profile.region,
+            marketId: s.marketId,
+          };
+          return {
+            profile: {
+              ...s.profile,
+              cropSettings: {
+                ...(s.profile.cropSettings ?? {}),
+                [id]: { ...prev, ...partial },
+              },
+            },
+          };
+        }),
+      removeMyCrop: (id) =>
+        set((s) => {
+          const { [id]: _drop, ...rest } = s.profile.cropSettings ?? {};
+          return {
+            profile: {
+              ...s.profile,
+              myCrops: s.profile.myCrops.filter((c) => c !== id),
+              cropSettings: rest,
+            },
+          };
         }),
       completeOnboarding: () =>
         set((s) => ({ profile: { ...s.profile, onboarded: true } })),

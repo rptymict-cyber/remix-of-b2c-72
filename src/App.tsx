@@ -14,6 +14,7 @@ import NotificationSettings from "./pages/NotificationSettings.tsx";
 import MyPage from "./pages/MyPage.tsx";
 import AddCrop from "./pages/AddCrop.tsx";
 import FarmEdit from "./pages/FarmEdit.tsx";
+import CropSettings from "./pages/CropSettings.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import { useApp } from "./store/appStore";
 
@@ -43,6 +44,7 @@ const App = () => (
           <Route path="/crop" element={<Gate><CropRecommend /></Gate>} />
           <Route path="/crop/add" element={<Gate><AddCrop /></Gate>} />
           <Route path="/farm-edit" element={<Gate><FarmEdit /></Gate>} />
+          <Route path="/crop-settings/:id" element={<Gate><CropSettings /></Gate>} />
           <Route path="/notifications" element={<Gate><Notifications /></Gate>} />
           <Route path="/notification-settings" element={<Gate><NotificationSettings /></Gate>} />
           <Route path="/mypage" element={<Gate><MyPage /></Gate>} />

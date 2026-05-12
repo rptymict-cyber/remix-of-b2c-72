@@ -1,10 +1,10 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft, ChevronDown, MapPin, Search, Check, X, Plus } from "lucide-react";
+import { ChevronLeft, ChevronDown, MapPin, Search, Check, X, Plus, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import MobileStatusBar from "@/components/MobileStatusBar";
 import { useApp } from "@/store/appStore";
-import { CROPS, REGIONS_KR, findCrop } from "@/data/catalog";
+import { CROPS, REGIONS_KR, findCrop, findMarket } from "@/data/catalog";
 import {
   Dialog,
   DialogContent,
@@ -48,7 +48,7 @@ const shortenProvince = (p: string) =>
 
 const FarmEdit = () => {
   const nav = useNavigate();
-  const { profile, setProfile } = useApp();
+  const { profile, setProfile, marketId } = useApp();
 
   // ---------- Region ----------
   const initialParts = guessRegionParts(profile.region);
@@ -101,8 +101,6 @@ const FarmEdit = () => {
     toast.success("농장 정보가 업데이트됐어요");
     nav("/mypage");
   };
-
-  const removeCrop = (id: string) => setMyCrops((prev) => prev.filter((x) => x !== id));
 
   const filteredCrops = CROPS.filter((c) => c.name.includes(cropQuery.trim()));
   const aiList = filteredCrops.filter((c) => AI_CROPS.has(c.id));
@@ -301,24 +299,28 @@ const FarmEdit = () => {
             최대 3개까지 등록 가능합니다
           </p>
 
-          <div className="mt-4 flex flex-wrap gap-2">
+          <div className="mt-3 space-y-2">
             {myCrops.map((id) => {
               const c = findCrop(id);
+              const setting = profile.cropSettings?.[id];
+              const regType = setting?.regType ?? "growing";
+              const region = setting?.region ?? profile.region;
+              const mkt = findMarket(setting?.marketId ?? marketId);
               return (
-                <span
+                <button
                   key={id}
-                  className="inline-flex items-center gap-1 h-9 pl-2.5 pr-1.5 rounded-full bg-[hsl(152_55%_42%)]/10 text-[13px] text-[hsl(152_55%_42%)] font-semibold"
+                  onClick={() => nav(`/crop-settings/${id}`)}
+                  className="w-full min-h-[56px] flex items-center gap-3 px-3.5 py-3 rounded-2xl border border-border bg-white active:bg-muted/40 transition"
                 >
-                  <span className="text-base leading-none">{c.emoji}</span>
-                  {c.name}
-                  <button
-                    onClick={() => removeCrop(id)}
-                    className="w-5 h-5 ml-0.5 rounded-full bg-white/60 flex items-center justify-center"
-                    aria-label={`${c.name} 삭제`}
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </span>
+                  <span className="text-2xl leading-none shrink-0">{c.emoji}</span>
+                  <div className="flex-1 min-w-0 text-left">
+                    <p className="text-[14px] font-bold text-foreground">{c.name}</p>
+                    <p className="text-[11.5px] text-muted-foreground mt-0.5 truncate">
+                      {regType === "growing" ? "재배 중" : "관심 작물"} · {region} · {mkt.name}
+                    </p>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
+                </button>
               );
             })}
             {myCrops.length < 3 && (
@@ -327,9 +329,9 @@ const FarmEdit = () => {
                   setCropQuery("");
                   setCropSheetOpen(true);
                 }}
-                className="inline-flex items-center gap-1 h-9 px-3 rounded-full border border-dashed border-[hsl(152_55%_42%)] text-[13px] text-[hsl(152_55%_42%)] font-semibold"
+                className="w-full min-h-[48px] inline-flex items-center justify-center gap-1 rounded-2xl border border-dashed border-[hsl(152_55%_42%)] text-[13px] text-[hsl(152_55%_42%)] font-semibold"
               >
-                <Plus className="w-3.5 h-3.5" /> 작물 추가
+                <Plus className="w-4 h-4" /> 작물 추가
               </button>
             )}
           </div>
