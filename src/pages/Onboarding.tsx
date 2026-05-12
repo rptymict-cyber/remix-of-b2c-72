@@ -94,6 +94,17 @@ const Onboarding = () => {
   if (step === "intro") {
     const it = intros[intro];
     const last = intro === intros.length - 1;
+    const onTouchStart = (e: React.TouchEvent) => {
+      (introRef as any).startX = e.touches[0].clientX;
+    };
+    const onTouchEnd = (e: React.TouchEvent) => {
+      const startX = (introRef as any).startX;
+      if (startX == null) return;
+      const dx = e.changedTouches[0].clientX - startX;
+      if (Math.abs(dx) < 40) return;
+      if (dx < 0 && intro < intros.length - 1) setIntro(intro + 1);
+      if (dx > 0 && intro > 0) setIntro(intro - 1);
+    };
     return (
       <div className="fixed inset-0 bg-white flex flex-col">
         <div className="h-12 flex items-center justify-end px-5">
@@ -105,6 +116,8 @@ const Onboarding = () => {
         </div>
         <div
           ref={introRef}
+          onTouchStart={onTouchStart}
+          onTouchEnd={onTouchEnd}
           className="flex-1 flex flex-col items-center justify-center px-8 text-center"
         >
           <IntroVisual kind={it.visual} />
@@ -660,12 +673,12 @@ const IntroVisual = ({ kind }: { kind: string }) => {
   }
   // crop
   return (
-    <div className="relative w-[260px]">
-      <div className="rounded-2xl bg-white shadow-[0_8px_28px_rgba(0,0,0,0.08)] border border-border/60 p-5">
-        <span className="inline-block text-[10px] px-2 py-0.5 rounded-md bg-[hsl(152_55%_42%)]/10 text-[hsl(152_55%_42%)] font-bold mb-3">AI 추천 작물</span>
-        <div className="flex items-center gap-3 mb-4">
-          <span className="text-5xl">🧅</span>
-          <span className="text-[20px] font-extrabold text-foreground">양파</span>
+    <div className="relative w-[280px]">
+      <div className="rounded-3xl bg-white shadow-[0_10px_30px_rgba(0,0,0,0.08)] border border-border/60 px-6 pt-5 pb-6">
+        <span className="inline-block text-[11px] px-2.5 py-1 rounded-md bg-[hsl(152_55%_42%)]/10 text-[hsl(152_55%_42%)] font-bold mb-4">AI 추천 작물</span>
+        <div className="flex flex-col items-center mb-5">
+          <span className="text-[56px] leading-none">🧅</span>
+          <span className="mt-2 text-[24px] font-extrabold text-foreground">양파</span>
         </div>
         <div className="grid grid-cols-3 gap-2">
           <MetricChip label="수익성" value="높음" tone="green" />
@@ -673,7 +686,7 @@ const IntroVisual = ({ kind }: { kind: string }) => {
           <MetricChip label="지역 적합도" value="높음" tone="green" />
         </div>
       </div>
-      <span className="absolute -bottom-2 -right-1 text-2xl rotate-12">🌿</span>
+      <span className="absolute -bottom-3 -right-2 text-3xl rotate-12 select-none">🌿</span>
     </div>
   );
 };
