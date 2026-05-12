@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Settings, Bell } from "lucide-react";
+import { Settings, Bell, ChevronRight } from "lucide-react";
 import AppHeader from "@/components/AppHeader";
 import BottomNav from "@/components/BottomNav";
 
@@ -44,14 +44,14 @@ const Notifications = () => {
               <button
                 key={i}
                 onClick={() => nav(it.route)}
-                className="w-full text-left bg-card border border-border rounded-2xl p-4 active:scale-[0.99] transition-transform"
+                className="w-full text-left bg-card border border-border rounded-2xl p-4 pr-10 relative active:scale-[0.99] transition-transform"
               >
                 <div className="flex items-center justify-between mb-1.5">
                   <span className="text-[11px] text-muted-foreground">{it.emoji} [{it.cat}] · {it.time}</span>
                 </div>
                 <p className="text-sm font-bold text-foreground">{it.title}</p>
                 <p className="text-xs text-muted-foreground mt-1 whitespace-pre-line leading-relaxed">{it.body}</p>
-                <p className="text-xs text-primary font-medium mt-2">자세히 보기 →</p>
+                <ChevronRight className="w-5 h-5 text-muted-foreground absolute right-4 top-1/2 -translate-y-1/2" />
               </button>
             ))}
           </div>
