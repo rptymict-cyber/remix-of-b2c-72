@@ -24,6 +24,19 @@ const UNITS: {
 
 const QUICK_CHIPS_KG = [100, 300, 500, 1000];
 
+// 단위별 프리셋 값(해당 단위의 표시값 그대로)
+const QUICK_PRESETS: Record<Unit, number[]> = {
+  kg: [100, 300, 500, 1000],
+  box: [5, 15, 25, 50],
+  ton: [0.1, 0.3, 0.5, 1],
+};
+
+const UNIT_SUFFIX: Record<Unit, string> = {
+  kg: "kg",
+  box: "상자",
+  ton: "톤",
+};
+
 const QtySheet = ({ open, onOpenChange }: Props) => {
   const { shipQtyKg, setShipQty, cropId, profile, unit, setUnit } = useApp();
   const crop = findCrop(cropId);
@@ -126,21 +139,23 @@ const QtySheet = ({ open, onOpenChange }: Props) => {
           {crop.emoji} {crop.name} 기준 1상자 = {boxKg}kg · 입력값 최대 {MAX_KG.toLocaleString()}kg
         </p>
 
-        {/* 빠른 입력 */}
+        {/* 빠른 입력 — 선택된 단위 기준 프리셋 */}
         <div className="mt-3 grid grid-cols-4 gap-2">
-          {QUICK_CHIPS_KG.map((kg) => {
-            const sel = valKg === kg;
+          {QUICK_PRESETS[u].map((preset) => {
+            const presetKg = Math.round(cfg.toKg(preset, boxKg));
+            const sel = valKg === presetKg;
             return (
               <button
-                key={kg}
-                onClick={() => setFromKg(kg)}
+                key={preset}
+                onClick={() => setVal(preset)}
                 className={`h-10 rounded-full text-[13px] font-semibold border transition-all ${
                   sel
                     ? "border-primary text-primary bg-primary/5"
                     : "border-border text-foreground bg-card"
                 }`}
               >
-                {kg.toLocaleString()}
+                {preset.toLocaleString()}
+                {UNIT_SUFFIX[u]}
               </button>
             );
           })}
