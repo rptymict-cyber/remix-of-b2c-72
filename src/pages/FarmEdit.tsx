@@ -157,11 +157,10 @@ const FarmEdit = () => {
               onClick={() => {
                 setProvinceState("충청남도");
                 setCity("공주시");
-                toast("현재 위치로 설정했어요");
               }}
               className="text-[12px] text-[hsl(152_55%_42%)] font-semibold inline-flex items-center gap-0.5"
             >
-              <MapPin className="w-3.5 h-3.5" /> 현재 위치로 변경
+              <MapPin className="w-3.5 h-3.5" /> 현위치
             </button>
           </div>
 
