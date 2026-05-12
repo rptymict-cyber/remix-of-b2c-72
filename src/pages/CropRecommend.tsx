@@ -1,9 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChevronDown, ChevronUp, Sprout, TrendingUp, AlertTriangle, BarChart2, ThermometerSun, FileText, MapPin, Ruler, Leaf, Activity } from "lucide-react";
 import AppHeader from "@/components/AppHeader";
 import BottomNav from "@/components/BottomNav";
 import CropSheet from "@/components/sheets/CropSheet";
+import RegionSheet, { shortCity, expandRegion } from "@/components/sheets/RegionSheet";
+import FarmSizeSheet from "@/components/sheets/FarmSizeSheet";
+import CultivationSheet from "@/components/sheets/CultivationSheet";
 import FilterPill from "@/components/common/FilterPill";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useApp } from "@/store/appStore";
 import { findCrop } from "@/data/catalog";
 
@@ -65,8 +69,24 @@ const cropData = [
 const CropRecommendPage = () => {
   const [expandedCrop, setExpandedCrop] = useState<string | null>(null);
   const [cropOpen, setCropOpen] = useState(false);
-  const { cropId, profile } = useApp();
+  const [regionOpen, setRegionOpen] = useState(false);
+  const [sizeOpen, setSizeOpen] = useState(false);
+  const [cultivationOpen, setCultivationOpen] = useState(false);
+  const [recalculating, setRecalculating] = useState(false);
+  const { cropId, profile, setProfile } = useApp();
   const crop = findCrop(cropId);
+  const method = profile.cultivationMethod ?? "노지";
+  const season = profile.seasonBasis ?? "이번";
+  const seasonLabel = season === "이번" ? "이번 시즌" : "다음 시즌";
+
+  const triggerRecalc = () => {
+    setRecalculating(true);
+    window.setTimeout(() => setRecalculating(false), 700);
+  };
+
+  useEffect(() => {
+    // initial mount: nothing
+  }, []);
 
   const levelColor = (level: string) => {
     if (level === "높음" || level === "큼") return "text-red-500";
@@ -87,11 +107,40 @@ const CropRecommendPage = () => {
       <main className="px-4 pt-5 safe-bottom space-y-4">
         {/* 조건 */}
         <div className="grid grid-cols-2 gap-2">
-          <FilterPill onClick={() => setCropOpen(true)} icon={<span className="text-base leading-none">{crop.emoji}</span>} label={crop.name} />
-          <FilterPill icon={<MapPin className="w-4 h-4" />} label={profile.region} />
-          <FilterPill icon={<Ruler className="w-4 h-4" />} label={`${profile.farmAreaM2.toLocaleString()}㎡`} />
-          <FilterPill icon={<Leaf className="w-4 h-4" />} label="노지 · 시즌" />
+          <FilterPill
+            onClick={() => setCropOpen(true)}
+            icon={<span className="text-base leading-none">{crop.emoji}</span>}
+            label={crop.name}
+          />
+          <FilterPill
+            onClick={() => setRegionOpen(true)}
+            icon={<MapPin className="w-4 h-4" />}
+            label={shortCity(profile.region)}
+          />
+          <FilterPill
+            onClick={() => setSizeOpen(true)}
+            icon={<Ruler className="w-4 h-4" />}
+            label={`${profile.farmAreaM2.toLocaleString()}㎡`}
+          />
+          <FilterPill
+            onClick={() => setCultivationOpen(true)}
+            icon={<Leaf className="w-4 h-4" />}
+            label={`${method} · ${seasonLabel}`}
+          />
         </div>
+
+        {recalculating ? (
+          <div className="space-y-4">
+            <Skeleton className="h-40 w-full rounded-xl" />
+            <Skeleton className="h-4 w-32" />
+            <div className="space-y-2">
+              <Skeleton className="h-24 w-full rounded-xl" />
+              <Skeleton className="h-20 w-full rounded-xl" />
+              <Skeleton className="h-20 w-full rounded-xl" />
+            </div>
+          </div>
+        ) : (
+        <>
 
         {/* 추천 카드 */}
         <div className="bg-primary/5 rounded-xl border border-primary/20 p-4">
@@ -238,10 +287,42 @@ const CropRecommendPage = () => {
             <p>추천 결과는 과거 데이터와 통계 모델 기반의 참고 정보이며, 실제 재배 결정은 개별 농가 상황에 맞게 판단해주세요.</p>
           </div>
         </div>
+        </>
+        )}
       </main>
 
       <BottomNav />
       <CropSheet open={cropOpen} onOpenChange={setCropOpen} />
+      <RegionSheet
+        open={regionOpen}
+        onOpenChange={setRegionOpen}
+        currentRegion={profile.region}
+        selectedRegion={expandRegion(profile.region)}
+        onConfirm={(region) => {
+          setProfile({ region });
+          triggerRecalc();
+        }}
+      />
+      <FarmSizeSheet
+        open={sizeOpen}
+        onOpenChange={setSizeOpen}
+        currentAreaM2={profile.farmAreaM2}
+        cropName={crop.name}
+        onConfirm={(area) => {
+          setProfile({ farmAreaM2: area });
+          triggerRecalc();
+        }}
+      />
+      <CultivationSheet
+        open={cultivationOpen}
+        onOpenChange={setCultivationOpen}
+        method={method}
+        season={season}
+        onConfirm={(m, s) => {
+          setProfile({ cultivationMethod: m, seasonBasis: s });
+          triggerRecalc();
+        }}
+      />
     </div>
   );
 };
