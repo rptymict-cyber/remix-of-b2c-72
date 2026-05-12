@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronDown, ArrowUpRight, ArrowDownRight, Minus, Clock, SlidersHorizontal } from "lucide-react";
+import { ChevronDown, ArrowUpRight, ArrowDownRight, Minus, Clock, SlidersHorizontal, Package, MapPin, Scale } from "lucide-react";
 import {
   ComposedChart, Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
@@ -82,18 +82,10 @@ const MarketPricePage = () => {
       <main className="px-4 pt-5 safe-bottom space-y-4">
         {/* 필터 칩 */}
         <div className="grid grid-cols-2 gap-2">
-          <button onClick={() => setCropOpen(true)} className="filter-chip justify-center text-xs px-2 py-1.5">
-            <span className="text-sm">{crop.emoji}</span>{crop.name}<ChevronDown className="w-3 h-3 text-muted-foreground" />
-          </button>
-          <button onClick={() => setVarietyOpen(true)} className="filter-chip justify-center text-xs px-2 py-1.5">
-            {variety}<ChevronDown className="w-3 h-3 text-muted-foreground" />
-          </button>
-          <button onClick={() => setMarketOpen(true)} className="filter-chip justify-center text-xs px-2 py-1.5">
-            {market.name}<ChevronDown className="w-3 h-3 text-muted-foreground" />
-          </button>
-          <button onClick={() => setUnitOpen(true)} className="filter-chip justify-center text-xs px-2 py-1.5">
-            {unitKg}kg 기준<ChevronDown className="w-3 h-3 text-muted-foreground" />
-          </button>
+          <FilterPill onClick={() => setCropOpen(true)} icon={<span className="text-base leading-none">{crop.emoji}</span>} label={crop.name} />
+          <FilterPill onClick={() => setVarietyOpen(true)} icon={<Package className="w-3.5 h-3.5 text-muted-foreground" />} label={variety} />
+          <FilterPill onClick={() => setMarketOpen(true)} icon={<MapPin className="w-3.5 h-3.5 text-muted-foreground" />} label={market.name} />
+          <FilterPill onClick={() => setUnitOpen(true)} icon={<Scale className="w-3.5 h-3.5 text-muted-foreground" />} label={`${unitKg}kg 기준`} />
         </div>
 
         {/* 통합 시세 요약 */}
