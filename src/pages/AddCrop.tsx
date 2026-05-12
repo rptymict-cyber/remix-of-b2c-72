@@ -9,7 +9,6 @@ import {
   REPRESENTATIVE_CROPS,
   CATEGORIES,
   searchCrops,
-  filterByCategory,
   findCropById,
   type CropCategory,
   type CropItem,
