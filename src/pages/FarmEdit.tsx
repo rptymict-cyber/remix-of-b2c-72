@@ -118,10 +118,9 @@ const FarmEdit = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
-      <MobileStatusBar />
       {/* Header */}
-      <header className="sticky top-0 z-[100] bg-white border-b border-border">
+      <header className="fixed top-0 left-1/2 z-[100] w-full max-w-[430px] -translate-x-1/2 bg-white border-b border-border">
+        <MobileStatusBar />
         <div className="h-12 flex items-center justify-between px-2">
           <button
             onClick={handleBack}
@@ -143,7 +142,7 @@ const FarmEdit = () => {
         </div>
       </header>
 
-      <main className="flex-1 overflow-y-auto px-5 pt-4 pb-32 space-y-8">
+      <main className="h-full overflow-y-auto px-5 pt-[calc(var(--app-header-compact-height)+1rem)] pb-32 space-y-8">
         {/* === 농장 위치 === */}
         <section>
           <div className="flex items-end justify-between">
