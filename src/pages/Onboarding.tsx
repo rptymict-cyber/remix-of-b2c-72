@@ -761,9 +761,9 @@ const IntroVisual = ({ kind }: { kind: string }) => {
           </g>
 
           {/* Pins (Seoul, Daegu, Busan) */}
-          <MapPin cx={110} cy={78} />
-          <MapPin cx={158} cy={130} />
-          <MapPin cx={150} cy={200} />
+          <MapMarker cx={110} cy={78} />
+          <MapMarker cx={158} cy={130} />
+          <MapMarker cx={150} cy={200} />
         </svg>
 
         {/* Floating price cards */}
@@ -827,7 +827,7 @@ const PriceCard = ({ className, label, price }: { className?: string; label: str
   </div>
 );
 
-const MapPin = ({ cx, cy }: { cx: number; cy: number }) => (
+const MapMarker = ({ cx, cy }: { cx: number; cy: number }) => (
   <g transform={`translate(${cx} ${cy})`}>
     <ellipse cx="0" cy="2" rx="5" ry="1.5" fill="hsl(150 30% 40%)" opacity="0.18" />
     <path
