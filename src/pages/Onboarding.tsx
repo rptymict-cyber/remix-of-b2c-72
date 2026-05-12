@@ -1,33 +1,64 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Sprout, ChevronRight, Check } from "lucide-react";
+import { ChevronLeft, MapPin, Recycle, Search, Check, X } from "lucide-react";
 import { useApp } from "@/store/appStore";
 import { CROPS, REGIONS_KR } from "@/data/catalog";
+import { useToast } from "@/hooks/use-toast";
 
 type Step = "splash" | "intro" | "name" | "region" | "size" | "crops" | "done";
 
 const intros = [
-  { emoji: "📈", title: "AI가 농산물 가격을 예측합니다", desc: "향후 10일 가격 트렌드와 최적 출하 시점을 알려드립니다" },
-  { emoji: "🏪", title: "전국 도매시장 실시간 시세", desc: "가락·대구북부·부산엄궁 등 전국 5대 시장의 실시간 경락가를 한눈에" },
-  { emoji: "🗺️", title: "내 농장 기준 최적 판매처", desc: "물류비까지 계산한 실질 순이익 기준으로 가장 유리한 시장을 추천" },
-];
+  {
+    title: "오직 나를 위한\n맞춤형 시세 예측 AI",
+    desc: "내 작물과 지역에 맞는 시세 흐름을 분석해\n언제 팔면 좋을지 AI가 알려드려요",
+    visual: "chart",
+  },
+  {
+    title: "전국 도매시장\n실시간 시세 한눈에",
+    desc: "서울 가락시장부터 대구북부시장까지\n주요 도매시장의 경락가와 거래량을 확인하세요",
+    visual: "map",
+  },
+  {
+    title: "물류비까지 계산한\n진짜 순이익 판매처 추천",
+    desc: "단가와 물류비를 함께 계산해\n실질 순이익 기준으로 판매처를 추천해드려요",
+    visual: "rank",
+  },
+  {
+    title: "다음 시즌 유망 작물도\nAI가 추천",
+    desc: "장기 가격 전망과 지역 기후 적합도를\n분석해 수익성 높은 작물을 미리 알려드려요",
+    visual: "crop",
+  },
+] as const;
 
-const sizes = [
-  { id: "소규모" as const, label: "1,000㎡ 미만", area: 800, desc: "소규모 농가" },
-  { id: "중규모" as const, label: "1,000~5,000㎡", area: 3000, desc: "중규모 농가" },
-  { id: "대규모" as const, label: "5,000㎡ 이상", area: 8000, desc: "대규모 농가" },
+const AI_CROPS = new Set(["pepper", "apple", "cabbage", "onion", "radish"]);
+const READY_CROPS = new Set([
+  "pepper","apple","cabbage","onion","radish","tomato","strawberry","potato","garlic","corn",
+  "pear","watermelon","peach","lettuce","sweet_potato","green_onion","mandarin","rice","soybean",
+]);
+
+const sizePresets = [
+  { label: "1,000㎡ 미만", value: 800 },
+  { label: "1,000~3,000㎡", value: 2000 },
+  { label: "3,000~5,000㎡", value: 4000 },
+  { label: "5,000㎡ 이상", value: 6000 },
 ];
 
 const Onboarding = () => {
   const nav = useNavigate();
-  const { profile, setProfile, completeOnboarding, toggleMyCrop } = useApp();
+  const { toast } = useToast();
+  const { profile, setProfile, completeOnboarding } = useApp();
   const [step, setStep] = useState<Step>("splash");
   const [intro, setIntro] = useState(0);
   const [name, setName] = useState(profile.name === "농부" ? "" : profile.name);
-  const [doProvince, setProvince] = useState("충청남도");
-  const [city, setCity] = useState("공주시");
-  const [size, setSize] = useState<(typeof sizes)[number]["id"]>("중규모");
+  const [doProvince, setProvince] = useState("");
+  const [city, setCity] = useState("");
+  const [unit, setUnit] = useState<"평" | "㎡">("㎡");
+  const [sizeInput, setSizeInput] = useState("");
+  const [selectedCrops, setSelectedCrops] = useState<string[]>([]);
+  const [cropQuery, setCropQuery] = useState("");
+  const introRef = useRef<HTMLDivElement>(null);
 
+  // splash auto advance
   useEffect(() => {
     if (step === "splash") {
       const t = setTimeout(() => setStep("intro"), 1500);
@@ -35,152 +66,560 @@ const Onboarding = () => {
     }
   }, [step]);
 
+  // size in m2
+  const sizeM2 = useMemo(() => {
+    const n = Number(sizeInput.replace(/,/g, ""));
+    if (!n) return 0;
+    return unit === "평" ? Math.round(n * 3.3058) : n;
+  }, [sizeInput, unit]);
+
+  const expectedYieldKg = Math.round(sizeM2 * 0.3); // 고추 기준 대략 환산
+
+  const stepIndex = (["name", "region", "size", "crops"] as const).indexOf(step as any);
+  const progress = stepIndex >= 0 ? (stepIndex + 1) / 4 : 0;
+
+  // ===================== SPLASH =====================
   if (step === "splash") {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-primary to-[hsl(160_50%_40%)] text-white">
-        <Sprout className="w-16 h-16 mb-3" />
-        <h1 className="text-3xl font-extrabold tracking-tight">FarmInsight</h1>
-        <p className="text-sm text-white/80 mt-2">AI로 더 스마트한 농업을</p>
-        <div className="mt-10 w-32 h-1 bg-white/20 rounded-full overflow-hidden">
-          <div className="h-full bg-white animate-[loading_1.5s_ease-in-out]" style={{ width: "100%" }} />
+      <div className="fixed inset-0 flex flex-col items-center justify-center bg-gradient-to-b from-[hsl(152_55%_42%)] to-[hsl(152_60%_32%)] animate-in fade-in duration-300">
+        <div className="w-24 h-24 rounded-3xl bg-white shadow-xl flex items-center justify-center mb-5">
+          <Recycle className="w-12 h-12 text-[hsl(152_55%_42%)]" strokeWidth={2.4} />
         </div>
+        <h1 className="text-white text-[22px] font-extrabold tracking-tight">농산물 시세 예측 서비스</h1>
       </div>
     );
   }
 
+  // ===================== INTRO =====================
   if (step === "intro") {
     const it = intros[intro];
+    const last = intro === intros.length - 1;
     return (
-      <div className="min-h-screen bg-background flex flex-col px-6 pt-16 pb-8">
-        <button onClick={() => setStep("name")} className="absolute top-6 right-6 text-xs text-muted-foreground">건너뛰기</button>
-        <div className="flex-1 flex flex-col items-center justify-center text-center">
-          <div className="text-7xl mb-8">{it.emoji}</div>
-          <h2 className="text-xl font-bold text-foreground mb-3">{it.title}</h2>
-          <p className="text-sm text-muted-foreground leading-relaxed">{it.desc}</p>
+      <div className="fixed inset-0 bg-white flex flex-col">
+        <div className="h-12 flex items-center justify-end px-5">
+          {!last && (
+            <button onClick={() => setStep("name")} className="text-[13px] text-muted-foreground">
+              건너뛰기
+            </button>
+          )}
+        </div>
+        <div
+          ref={introRef}
+          className="flex-1 flex flex-col items-center justify-center px-8 text-center"
+        >
+          <IntroVisual kind={it.visual} />
+          <h2 className="mt-10 text-[22px] font-extrabold leading-snug text-foreground whitespace-pre-line">
+            {it.title}
+          </h2>
+          <p className="mt-4 text-[14px] leading-relaxed text-muted-foreground whitespace-pre-line">
+            {it.desc}
+          </p>
         </div>
         <div className="flex justify-center gap-1.5 mb-6">
           {intros.map((_, i) => (
-            <span key={i} className={`h-1.5 rounded-full transition-all ${i === intro ? "w-6 bg-primary" : "w-1.5 bg-border"}`} />
+            <span
+              key={i}
+              className={`h-1.5 rounded-full transition-all ${i === intro ? "w-5 bg-[hsl(152_55%_42%)]" : "w-1.5 bg-border"}`}
+            />
           ))}
         </div>
-        <button
-          onClick={() => (intro < intros.length - 1 ? setIntro(intro + 1) : setStep("name"))}
-          className="w-full py-3.5 rounded-xl bg-primary text-white text-sm font-bold"
-        >
-          {intro < intros.length - 1 ? "다음" : "시작하기"}
-        </button>
+        <div className="px-5 pb-8">
+          <button
+            onClick={() => (last ? setStep("name") : setIntro(intro + 1))}
+            className="w-full h-[52px] rounded-2xl bg-[hsl(152_55%_42%)] text-white text-[15px] font-bold active:scale-[0.99] transition"
+          >
+            {last ? "시작하기" : "다음"}
+          </button>
+        </div>
       </div>
     );
   }
 
+  // ===================== STEP HEADER =====================
+  const Header = ({ onBack, title }: { onBack?: () => void; title?: string }) => (
+    <div className="px-5 pt-3 pb-4">
+      <div className="h-12 flex items-center justify-between">
+        <button
+          onClick={onBack}
+          className="w-10 h-10 -ml-2 flex items-center justify-center"
+          aria-label="뒤로"
+        >
+          {onBack ? <ChevronLeft className="w-6 h-6 text-foreground" /> : <span />}
+        </button>
+        <p className="text-[15px] font-semibold text-foreground">{title || "프로필 설정"}</p>
+        <span className="w-10" />
+      </div>
+      <div className="mt-2 grid grid-cols-4 gap-1.5">
+        {[0, 1, 2, 3].map((i) => (
+          <span
+            key={i}
+            className={`h-1 rounded-full ${i < Math.ceil(progress * 4) ? "bg-[hsl(152_55%_42%)]" : "bg-border"}`}
+          />
+        ))}
+      </div>
+    </div>
+  );
+
+  // ===================== NAME =====================
   if (step === "name") {
     return (
-      <Frame title="안녕하세요, 농부님!" sub="성함을 알려주세요">
-        <input
-          autoFocus
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="예: 김철수"
-          className="w-full px-4 py-3.5 rounded-xl border border-border bg-background text-base"
-        />
-        <NextBtn disabled={!name.trim()} onClick={() => { setProfile({ name }); setStep("region"); }} />
-      </Frame>
-    );
-  }
-
-  if (step === "region") {
-    const cities = REGIONS_KR[doProvince] || [];
-    return (
-      <Frame title="농장 위치를 알려주세요" sub="기상 예측과 시세 분석의 기준 지역이 됩니다">
-        <div className="grid grid-cols-2 gap-2">
-          <select value={doProvince} onChange={(e) => { setProvince(e.target.value); setCity((REGIONS_KR[e.target.value] || [""])[0]); }} className="px-3 py-3 rounded-xl border border-border bg-background text-sm">
-            {Object.keys(REGIONS_KR).map((p) => <option key={p}>{p}</option>)}
-          </select>
-          <select value={city} onChange={(e) => setCity(e.target.value)} className="px-3 py-3 rounded-xl border border-border bg-background text-sm">
-            {cities.map((c) => <option key={c}>{c}</option>)}
-          </select>
+      <div className="fixed inset-0 bg-white flex flex-col">
+        <Header onBack={() => setStep("intro")} />
+        <div className="flex-1 px-5 pt-2 overflow-y-auto">
+          <h2 className="text-[22px] font-extrabold leading-snug text-foreground">
+            환영합니다!<br />이름을 입력해주세요.
+          </h2>
+          <div className="mt-8 relative">
+            <input
+              autoFocus
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="이름"
+              className="w-full h-14 px-4 pr-11 rounded-2xl border border-border bg-background text-[15px] focus:outline-none focus:border-[hsl(152_55%_42%)]"
+            />
+            {name && (
+              <button
+                onClick={() => setName("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-muted flex items-center justify-center"
+              >
+                <X className="w-4 h-4 text-muted-foreground" />
+              </button>
+            )}
+          </div>
         </div>
-        <NextBtn onClick={() => { setProfile({ region: `${doProvince.replace(/(특별시|광역시|특별자치시|특별자치도|도)$/, "")} ${city}`.trim() }); setStep("size"); }} />
-      </Frame>
+        <CTA
+          disabled={!name.trim()}
+          onClick={() => {
+            setProfile({ name: name.trim() });
+            // initialize region from existing profile if any
+            const parts = profile.region?.split(" ") || [];
+            if (parts.length === 2 && !doProvince) {
+              const guessProv = Object.keys(REGIONS_KR).find((p) =>
+                p.startsWith(parts[0]) || parts[0].includes(p.replace(/(특별시|광역시|특별자치시|특별자치도|도)$/, "")),
+              );
+              if (guessProv) {
+                setProvince(guessProv);
+                if ((REGIONS_KR[guessProv] || []).includes(parts[1])) setCity(parts[1]);
+              }
+            }
+            setStep("region");
+          }}
+        />
+      </div>
     );
   }
 
+  // ===================== REGION =====================
+  if (step === "region") {
+    const cities = doProvince ? REGIONS_KR[doProvince] || [] : [];
+    return (
+      <div className="fixed inset-0 bg-white flex flex-col">
+        <Header onBack={() => setStep("name")} />
+        <div className="flex-1 px-5 pt-2 overflow-y-auto">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h2 className="text-[20px] font-extrabold leading-snug text-foreground">
+                농장이 위치한 지역을<br />선택해주세요.
+              </h2>
+              <p className="mt-2 text-[13px] text-muted-foreground">
+                시세 조회와 판매처 추천의 기준 지역으로 사용됩니다.
+              </p>
+            </div>
+            <button
+              onClick={() => {
+                setProvince("충청남도");
+                setCity("공주시");
+                toast({ description: "현재 위치로 설정했어요" });
+              }}
+              className="shrink-0 mt-1 inline-flex items-center gap-1 text-[12px] text-[hsl(152_55%_42%)] font-medium"
+            >
+              <MapPin className="w-3.5 h-3.5" /> 현재 위치로 설정
+            </button>
+          </div>
+
+          <div className="mt-7 space-y-4">
+            <div>
+              <p className="text-[12px] text-muted-foreground mb-1.5">시·도 선택</p>
+              <select
+                value={doProvince}
+                onChange={(e) => {
+                  setProvince(e.target.value);
+                  setCity("");
+                }}
+                className={`w-full h-12 px-4 rounded-xl border bg-background text-[14px] appearance-none ${doProvince ? "border-[hsl(152_55%_42%)] text-foreground" : "border-border text-muted-foreground"}`}
+              >
+                <option value="">시·도를 선택해주세요</option>
+                {Object.keys(REGIONS_KR).map((p) => <option key={p}>{p}</option>)}
+              </select>
+            </div>
+            <div>
+              <p className="text-[12px] text-muted-foreground mb-1.5">시·군·구 선택</p>
+              <select
+                value={city}
+                disabled={!doProvince}
+                onChange={(e) => setCity(e.target.value)}
+                className={`w-full h-12 px-4 rounded-xl border bg-background text-[14px] appearance-none disabled:opacity-50 ${city ? "border-[hsl(152_55%_42%)] text-foreground" : "border-border text-muted-foreground"}`}
+              >
+                <option value="">{doProvince ? "시·군·구를 선택해주세요" : "시·도를 먼저 선택해주세요"}</option>
+                {cities.map((c) => <option key={c}>{c}</option>)}
+              </select>
+            </div>
+            <p className="text-[12px] text-muted-foreground pt-1">
+              읍·면·동 단위까지는 입력하지 않아도 됩니다.
+            </p>
+          </div>
+        </div>
+        <CTA
+          disabled={!doProvince || !city}
+          onClick={() => {
+            const short = doProvince.replace(/(특별시|광역시|특별자치시|특별자치도|도)$/, "");
+            setProfile({ region: `${short} ${city}`.trim() });
+            setStep("size");
+          }}
+        />
+      </div>
+    );
+  }
+
+  // ===================== SIZE =====================
   if (step === "size") {
     return (
-      <Frame title="농장 규모가 어떻게 되세요?" sub="수확량 추정에 사용됩니다">
-        <div className="space-y-2">
-          {sizes.map((s) => (
-            <button
-              key={s.id}
-              onClick={() => setSize(s.id)}
-              className={`w-full text-left px-4 py-3.5 rounded-xl border ${size === s.id ? "border-primary bg-primary/5" : "border-border bg-card"}`}
-            >
-              <p className="text-sm font-bold text-foreground">{s.label}</p>
-              <p className="text-xs text-muted-foreground mt-0.5">{s.desc}</p>
-            </button>
-          ))}
+      <div className="fixed inset-0 bg-white flex flex-col">
+        <Header onBack={() => setStep("region")} />
+        <div className="flex-1 px-5 pt-2 overflow-y-auto">
+          <h2 className="text-[20px] font-extrabold leading-snug text-foreground">
+            농장 규모를 입력해주세요.
+          </h2>
+          <p className="mt-2 text-[13px] text-muted-foreground">
+            예상 수확량과 출하량 계산의 기준이 됩니다.
+          </p>
+
+          <div className="mt-7 flex items-center gap-2">
+            <div className="relative flex-1">
+              <input
+                inputMode="numeric"
+                value={sizeInput}
+                onChange={(e) => setSizeInput(e.target.value.replace(/[^0-9,]/g, ""))}
+                placeholder="농장 규모"
+                className="w-full h-12 px-4 pr-10 rounded-xl border border-border bg-background text-[14px] focus:outline-none focus:border-[hsl(152_55%_42%)]"
+              />
+              {sizeInput && (
+                <button
+                  onClick={() => setSizeInput("")}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-muted flex items-center justify-center"
+                >
+                  <X className="w-3.5 h-3.5 text-muted-foreground" />
+                </button>
+              )}
+            </div>
+            <div className="flex rounded-xl border border-border overflow-hidden h-12">
+              {(["평", "㎡"] as const).map((u) => (
+                <button
+                  key={u}
+                  onClick={() => setUnit(u)}
+                  className={`w-12 text-[13px] font-medium ${unit === u ? "bg-[hsl(152_55%_42%)] text-white" : "bg-background text-muted-foreground"}`}
+                >
+                  {u}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {sizeM2 > 0 && (
+            <p className="mt-3 text-[13px] text-[hsl(152_55%_42%)] font-medium">
+              약 {sizeM2.toLocaleString()}㎡ · 고추 기준 예상 수확량 약 {expectedYieldKg.toLocaleString()}kg
+            </p>
+          )}
+
+          <p className="mt-7 text-[12px] text-muted-foreground mb-2">빠른 선택</p>
+          <div className="grid grid-cols-2 gap-2">
+            {sizePresets.map((p) => {
+              const active = unit === "㎡" && Number(sizeInput.replace(/,/g, "")) === p.value;
+              return (
+                <button
+                  key={p.label}
+                  onClick={() => {
+                    setUnit("㎡");
+                    setSizeInput(String(p.value));
+                  }}
+                  className={`h-12 rounded-xl border text-[13px] font-medium ${active ? "border-[hsl(152_55%_42%)] bg-[hsl(152_55%_42%)]/8 text-[hsl(152_55%_42%)]" : "border-border bg-background text-foreground"}`}
+                >
+                  {p.label}
+                </button>
+              );
+            })}
+          </div>
+
+          <p className="mt-4 text-[12px] text-muted-foreground">
+            ⓘ 입력하신 규모에 따라 예상 수확량이 계산됩니다.
+          </p>
         </div>
-        <NextBtn onClick={() => { const s = sizes.find((x) => x.id === size)!; setProfile({ farmSize: size, farmAreaM2: s.area }); setStep("crops"); }} />
-      </Frame>
+        <CTA
+          disabled={sizeM2 <= 0}
+          onClick={() => {
+            const farmSize: "소규모" | "중규모" | "대규모" =
+              sizeM2 < 1000 ? "소규모" : sizeM2 < 5000 ? "중규모" : "대규모";
+            setProfile({ farmAreaM2: sizeM2, farmSize });
+            setStep("crops");
+          }}
+        />
+      </div>
     );
   }
 
+  // ===================== CROPS =====================
   if (step === "crops") {
+    const filtered = CROPS.filter((c) => c.name.includes(cropQuery.trim()));
+    const aiCrops = filtered.filter((c) => AI_CROPS.has(c.id));
+    const normalCrops = filtered.filter((c) => !AI_CROPS.has(c.id));
+
+    const toggle = (id: string) => {
+      setSelectedCrops((prev) => {
+        if (prev.includes(id)) return prev.filter((x) => x !== id);
+        if (prev.length >= 3) {
+          toast({ description: "최대 3개까지 선택 가능합니다." });
+          return prev;
+        }
+        return [...prev, id];
+      });
+    };
+
     return (
-      <Frame title="현재 재배 작물을 선택해주세요" sub={`최대 3개까지 선택 (현재 ${profile.myCrops.length}/3)`}>
-        <div className="grid grid-cols-2 gap-2">
-          {CROPS.map((c) => {
-            const sel = profile.myCrops.includes(c.id);
-            return (
-              <button
-                key={c.id}
-                onClick={() => toggleMyCrop(c.id)}
-                className={`relative flex items-center gap-2 px-3 py-3 rounded-xl border ${sel ? "border-primary bg-primary/5" : "border-border bg-card"}`}
-              >
-                <span className="text-xl">{c.emoji}</span>
-                <span className="text-sm font-medium text-foreground">{c.name}</span>
-                {sel && <Check className="absolute top-1.5 right-1.5 w-3.5 h-3.5 text-primary" />}
-              </button>
-            );
-          })}
+      <div className="fixed inset-0 bg-white flex flex-col">
+        <Header onBack={() => setStep("size")} />
+        <div className="px-5 pt-2">
+          <h2 className="text-[20px] font-extrabold leading-snug text-foreground">
+            현재 재배 중인 작물을<br />모두 선택해주세요.
+          </h2>
+          <p className="mt-2 text-[13px] text-muted-foreground">최대 3개까지 선택 가능합니다.</p>
+
+          <div className="mt-5 relative">
+            <Search className="w-4 h-4 text-muted-foreground absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <input
+              value={cropQuery}
+              onChange={(e) => setCropQuery(e.target.value)}
+              placeholder="작물 이름 검색"
+              className="w-full h-11 pl-10 pr-4 rounded-xl border border-border bg-background text-[13px] focus:outline-none focus:border-[hsl(152_55%_42%)]"
+            />
+          </div>
         </div>
-        <NextBtn disabled={profile.myCrops.length === 0} label="완료 — 시작하기" onClick={() => setStep("done")} />
-      </Frame>
+
+        <div className="flex-1 overflow-y-auto px-5 pt-4 pb-2">
+          {aiCrops.length > 0 && (
+            <div className="mb-5">
+              <p className="text-[12px] font-semibold text-foreground mb-2">AI 예측 지원 작물</p>
+              <CropGrid crops={aiCrops} selected={selectedCrops} onToggle={toggle} aiSet={AI_CROPS} readySet={READY_CROPS} />
+            </div>
+          )}
+          {normalCrops.length > 0 && (
+            <div>
+              <p className="text-[12px] font-semibold text-foreground mb-2">일반 작물</p>
+              <CropGrid crops={normalCrops} selected={selectedCrops} onToggle={toggle} aiSet={AI_CROPS} readySet={READY_CROPS} />
+            </div>
+          )}
+        </div>
+
+        {selectedCrops.length > 0 && (
+          <div className="px-5 py-2 border-t border-border overflow-x-auto">
+            <div className="flex gap-2 w-max">
+              {selectedCrops.map((id) => {
+                const c = CROPS.find((x) => x.id === id)!;
+                return (
+                  <button
+                    key={id}
+                    onClick={() => toggle(id)}
+                    className="inline-flex items-center gap-1 h-8 pl-2 pr-1.5 rounded-full bg-[hsl(152_55%_42%)]/10 text-[12px] text-[hsl(152_55%_42%)] font-medium"
+                  >
+                    <span>{c.emoji}</span>{c.name}
+                    <X className="w-3 h-3 ml-0.5" />
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        <CTA
+          label="완료"
+          disabled={selectedCrops.length === 0}
+          onClick={() => {
+            setProfile({ myCrops: selectedCrops });
+            setStep("done");
+          }}
+        />
+      </div>
     );
   }
 
-  // done
+  // ===================== DONE =====================
+  const cropObjs = selectedCrops.map((id) => CROPS.find((c) => c.id === id)!).filter(Boolean);
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-8 text-center">
-      <div className="text-6xl mb-4">🎉</div>
-      <h2 className="text-xl font-bold text-foreground">{profile.name} 농부님, 준비됐습니다!</h2>
-      <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{profile.region} 기준으로<br />맞춤 시세와 예측을 제공해드릴게요</p>
+    <div className="fixed inset-0 bg-white flex flex-col px-5 pt-16 pb-8 animate-in fade-in duration-300">
+      <div className="flex-1 flex flex-col items-center text-center">
+        <div className="w-20 h-20 rounded-full bg-[hsl(152_55%_42%)]/10 flex items-center justify-center animate-in zoom-in duration-300">
+          <div className="w-14 h-14 rounded-full bg-[hsl(152_55%_42%)] flex items-center justify-center">
+            <Check className="w-8 h-8 text-white" strokeWidth={3} />
+          </div>
+        </div>
+        <h2 className="mt-6 text-[20px] font-extrabold text-foreground">
+          {profile.name}님의 맞춤 설정이 완료됐어요!
+        </h2>
+        <p className="mt-3 text-[13px] text-muted-foreground leading-relaxed">
+          {profile.region} · {cropObjs[0]?.name || "작물"}
+          {cropObjs.length > 1 ? ` 외 ${cropObjs.length - 1}개 작물` : ""} 기준으로<br />
+          시세와 예측을 준비했어요
+        </p>
+
+        <div className="mt-8 w-full rounded-2xl border border-border p-4 space-y-3 text-left">
+          <Row icon="📍" text={profile.region} />
+          <Row icon="📐" text={`${profile.farmAreaM2.toLocaleString()}㎡`} />
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-[14px]">🌾</span>
+            {cropObjs.map((c) => (
+              <span key={c.id} className="text-[13px] text-foreground">
+                {c.emoji} {c.name}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
       <button
-        onClick={() => { completeOnboarding(); nav("/", { replace: true }); }}
-        className="mt-10 w-full max-w-sm py-3.5 rounded-xl bg-primary text-white text-sm font-bold"
+        onClick={() => {
+          completeOnboarding();
+          nav("/", { replace: true });
+        }}
+        className="w-full h-[52px] rounded-2xl bg-[hsl(152_55%_42%)] text-white text-[15px] font-bold"
       >
-        앱 시작하기
+        시세 확인하러 가기
       </button>
+      <p className="mt-3 text-center text-[12px] text-muted-foreground">
+        설정은 마이페이지에서 언제든지 변경할 수 있어요
+      </p>
     </div>
   );
 };
 
-const Frame = ({ title, sub, children }: { title: string; sub: string; children: React.ReactNode }) => (
-  <div className="min-h-screen bg-background flex flex-col px-6 pt-16 pb-8">
-    <h2 className="text-xl font-bold text-foreground">{title}</h2>
-    <p className="text-sm text-muted-foreground mt-1.5 mb-8">{sub}</p>
-    <div className="flex-1 space-y-3">{children}</div>
+const Row = ({ icon, text }: { icon: string; text: string }) => (
+  <div className="flex items-center gap-2 text-[13px] text-foreground">
+    <span>{icon}</span>
+    <span>{text}</span>
   </div>
 );
 
-const NextBtn = ({ onClick, disabled, label = "다음" }: { onClick: () => void; disabled?: boolean; label?: string }) => (
-  <button
-    onClick={onClick}
-    disabled={disabled}
-    className="w-full py-3.5 rounded-xl bg-primary text-white text-sm font-bold disabled:opacity-40 mt-auto flex items-center justify-center gap-1"
-  >
-    {label}
-  </button>
+const CTA = ({
+  onClick,
+  disabled,
+  label = "다음",
+}: {
+  onClick: () => void;
+  disabled?: boolean;
+  label?: string;
+}) => (
+  <div className="px-5 pt-3 pb-6 bg-white border-t border-transparent">
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className="w-full h-[52px] rounded-2xl bg-[hsl(152_55%_42%)] text-white text-[15px] font-bold disabled:bg-muted disabled:text-muted-foreground transition active:scale-[0.99]"
+    >
+      {label}
+    </button>
+  </div>
 );
+
+const CropGrid = ({
+  crops,
+  selected,
+  onToggle,
+  aiSet,
+  readySet,
+}: {
+  crops: typeof CROPS;
+  selected: string[];
+  onToggle: (id: string) => void;
+  aiSet: Set<string>;
+  readySet: Set<string>;
+}) => (
+  <div className="grid grid-cols-3 gap-2">
+    {crops.map((c) => {
+      const sel = selected.includes(c.id);
+      const isAI = aiSet.has(c.id);
+      const ready = readySet.has(c.id);
+      return (
+        <button
+          key={c.id}
+          onClick={() => ready && onToggle(c.id)}
+          disabled={!ready}
+          className={`relative aspect-square rounded-2xl border flex flex-col items-center justify-center gap-1 transition ${
+            sel
+              ? "border-[hsl(152_55%_42%)] bg-[hsl(152_55%_42%)]/8"
+              : "border-border bg-background"
+          } ${!ready ? "opacity-50" : ""}`}
+        >
+          <span className="text-2xl">{c.emoji}</span>
+          <span className="text-[12px] font-medium text-foreground">{c.name}</span>
+          {isAI && (
+            <span className="absolute top-1.5 left-1.5 text-[9px] px-1.5 py-0.5 rounded-full bg-[hsl(152_55%_42%)] text-white font-bold">
+              AI예측
+            </span>
+          )}
+          {!ready && (
+            <span className="absolute top-1.5 left-1.5 text-[9px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground">
+              준비중
+            </span>
+          )}
+          {sel && (
+            <span className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full bg-[hsl(152_55%_42%)] flex items-center justify-center">
+              <Check className="w-2.5 h-2.5 text-white" strokeWidth={3} />
+            </span>
+          )}
+        </button>
+      );
+    })}
+  </div>
+);
+
+const IntroVisual = ({ kind }: { kind: string }) => {
+  if (kind === "chart") {
+    return (
+      <div className="w-full max-w-[260px] aspect-[4/3] rounded-3xl bg-[hsl(152_55%_42%)]/8 flex items-center justify-center relative">
+        <div className="text-6xl">📈</div>
+        <div className="absolute bottom-3 right-3 bg-white rounded-xl shadow px-3 py-2 text-left">
+          <p className="text-[10px] text-muted-foreground">AI 예측</p>
+          <p className="text-[11px] font-bold">5월 12일(화) 출하 추천</p>
+          <p className="text-[10px] text-[hsl(152_55%_42%)] font-bold">예상 수익 +8.1%</p>
+        </div>
+      </div>
+    );
+  }
+  if (kind === "map") {
+    return (
+      <div className="w-full max-w-[260px] aspect-[4/3] rounded-3xl bg-[hsl(152_55%_42%)]/8 flex items-center justify-center">
+        <div className="text-7xl">🗺️</div>
+      </div>
+    );
+  }
+  if (kind === "rank") {
+    return (
+      <div className="w-full max-w-[260px] aspect-[4/3] rounded-3xl bg-[hsl(152_55%_42%)]/8 p-4 flex flex-col gap-2 justify-center">
+        <p className="text-[11px] font-bold text-foreground">추천 판매처 TOP 3</p>
+        {["대구북부시장", "부산엄궁시장", "광주서부시장"].map((m, i) => (
+          <div key={m} className="bg-white rounded-lg px-3 py-2 flex items-center gap-2">
+            <span className="w-5 h-5 rounded-full bg-[hsl(152_55%_42%)] text-white text-[10px] font-bold flex items-center justify-center">
+              {i + 1}
+            </span>
+            <span className="text-[11px] font-semibold">{m}</span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  return (
+    <div className="w-full max-w-[260px] aspect-[4/3] rounded-3xl bg-[hsl(152_55%_42%)]/8 flex flex-col items-center justify-center gap-2">
+      <span className="text-[11px] px-2 py-0.5 rounded-full bg-white text-[hsl(152_55%_42%)] font-bold">AI 추천 작물</span>
+      <div className="text-6xl">🧅</div>
+      <p className="text-[12px] font-bold">양파</p>
+    </div>
+  );
+};
 
 export default Onboarding;
