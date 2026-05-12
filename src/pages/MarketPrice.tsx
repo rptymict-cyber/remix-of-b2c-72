@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronDown, ArrowUpRight, ArrowDownRight, Minus, Clock, SlidersHorizontal } from "lucide-react";
+import { ChevronDown, ArrowUpRight, ArrowDownRight, Minus, Clock, SlidersHorizontal, Package, MapPin, Scale } from "lucide-react";
 import {
   ComposedChart, Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
@@ -62,6 +62,27 @@ const ChangeIndicator = ({ value }: { value: number }) => {
   return <span className="price-neutral text-xs font-semibold flex items-center"><Minus className="w-3 h-3" />0%</span>;
 };
 
+const FilterPill = ({
+  icon,
+  label,
+  onClick,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  onClick: () => void;
+}) => (
+  <button
+    onClick={onClick}
+    className="flex items-center justify-between gap-2 w-full h-10 px-3 rounded-full border border-border bg-card shadow-sm active:scale-[0.98] transition-transform"
+  >
+    <span className="flex items-center gap-1.5 min-w-0">
+      {icon}
+      <span className="text-[13px] font-semibold text-foreground truncate">{label}</span>
+    </span>
+    <ChevronDown className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+  </button>
+);
+
 const MarketPricePage = () => {
   const [activeTab, setActiveTab] = useState("종합");
   const [activePeriod, setActivePeriod] = useState("1주");
@@ -82,18 +103,10 @@ const MarketPricePage = () => {
       <main className="px-4 pt-5 safe-bottom space-y-4">
         {/* 필터 칩 */}
         <div className="grid grid-cols-2 gap-2">
-          <button onClick={() => setCropOpen(true)} className="filter-chip justify-center text-xs px-2 py-1.5">
-            <span className="text-sm">{crop.emoji}</span>{crop.name}<ChevronDown className="w-3 h-3 text-muted-foreground" />
-          </button>
-          <button onClick={() => setVarietyOpen(true)} className="filter-chip justify-center text-xs px-2 py-1.5">
-            {variety}<ChevronDown className="w-3 h-3 text-muted-foreground" />
-          </button>
-          <button onClick={() => setMarketOpen(true)} className="filter-chip justify-center text-xs px-2 py-1.5">
-            {market.name}<ChevronDown className="w-3 h-3 text-muted-foreground" />
-          </button>
-          <button onClick={() => setUnitOpen(true)} className="filter-chip justify-center text-xs px-2 py-1.5">
-            {unitKg}kg 기준<ChevronDown className="w-3 h-3 text-muted-foreground" />
-          </button>
+          <FilterPill onClick={() => setCropOpen(true)} icon={<span className="text-base leading-none">{crop.emoji}</span>} label={crop.name} />
+          <FilterPill onClick={() => setVarietyOpen(true)} icon={<Package className="w-3.5 h-3.5 text-muted-foreground" />} label={variety} />
+          <FilterPill onClick={() => setMarketOpen(true)} icon={<MapPin className="w-3.5 h-3.5 text-muted-foreground" />} label={market.name} />
+          <FilterPill onClick={() => setUnitOpen(true)} icon={<Scale className="w-3.5 h-3.5 text-muted-foreground" />} label={`${unitKg}kg 기준`} />
         </div>
 
         {/* 통합 시세 요약 */}
