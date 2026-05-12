@@ -31,11 +31,6 @@ const project = (lat: number, lng: number) => ({
 
 const shortName = (n: string) => n.replace("시장", "").replace("서울 ", "").trim();
 
-// 단순화된 남한 실루엣 (viewBox 0 0 100 120 기준, 위 bbox와 정렬)
-// 형태: 서해안→남해안→동해안 순으로 부드럽게 폐곡선
-const KOREA_PATH =
-  "M28,8 C36,4 44,6 50,10 C58,14 60,20 62,24 C66,26 72,28 74,32 C78,38 80,46 78,52 C76,58 74,64 70,70 C66,78 62,86 56,92 C50,98 44,102 38,100 C32,98 28,92 26,86 C22,78 20,70 22,62 C20,54 16,46 18,38 C20,30 22,22 24,16 C25,12 26,10 28,8 Z";
-
 const ShipmentMap = ({ farm, markets, recommendedId, selectedId, onSelect }: Props) => {
   const farmPos = useMemo(() => project(farm.lat, farm.lng), [farm.lat, farm.lng]);
   const points = useMemo(
