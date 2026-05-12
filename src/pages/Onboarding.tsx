@@ -4,6 +4,7 @@ import { ChevronLeft, MapPin, Recycle, Search, Check, X } from "lucide-react";
 import { useApp } from "@/store/appStore";
 import { CROPS, REGIONS_KR } from "@/data/catalog";
 import { useToast } from "@/hooks/use-toast";
+import MobileStatusBar from "@/components/MobileStatusBar";
 
 type Step = "splash" | "intro" | "name" | "region" | "size" | "crops" | "done";
 
