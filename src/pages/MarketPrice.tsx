@@ -223,8 +223,8 @@ const MarketPricePage = () => {
             {/* 시장별 시세 테이블 */}
             <div className="flex items-center justify-between mt-1">
               <span className="text-sm font-semibold text-foreground">시장별 시세</span>
-              <button className="text-[11px] text-primary flex items-center gap-0.5 font-medium">
-                높은가격순 <ChevronDown className="w-3 h-3" />
+              <button onClick={() => setSortOpen(true)} className="text-[11px] text-primary flex items-center gap-0.5 font-medium">
+                {sortLabels[marketSort]} <ChevronDown className="w-3 h-3" />
               </button>
             </div>
             <div className="bg-card rounded-xl border border-border overflow-hidden">
@@ -237,7 +237,7 @@ const MarketPricePage = () => {
                   <span className="text-right">거래량</span>
                   <span className="text-right">점유율</span>
                 </div>
-                {marketData.map((m) => (
+                {sortedMarketData.map((m) => (
                   <div key={m.name} className="grid grid-cols-[2fr_2.2fr_1.6fr_1.6fr_1.8fr_1.6fr] px-2.5 py-2 text-[11px] active:bg-secondary/50 cursor-pointer">
                     <span className="font-medium text-foreground truncate">{m.name}</span>
                     <span className="text-right font-semibold text-foreground whitespace-nowrap">{m.price.toLocaleString()}</span>
@@ -261,8 +261,8 @@ const MarketPricePage = () => {
           <div className="space-y-3 animate-fade-in">
             <div className="flex items-center justify-between mt-1">
               <span className="text-sm font-semibold text-foreground">시장별 시세 비교</span>
-              <button className="text-[11px] text-primary flex items-center gap-0.5 font-medium">
-                높은가격순 <ChevronDown className="w-3 h-3" />
+              <button onClick={() => setSortOpen(true)} className="text-[11px] text-primary flex items-center gap-0.5 font-medium">
+                {sortLabels[marketSort]} <ChevronDown className="w-3 h-3" />
               </button>
             </div>
             <div className="bg-card rounded-xl border border-border overflow-hidden">
@@ -275,7 +275,7 @@ const MarketPricePage = () => {
                   <span className="text-right">거래량</span>
                   <span className="text-right">점유율</span>
                 </div>
-                {marketData.map((m) => (
+                {sortedMarketData.map((m) => (
                   <div key={m.name} className="grid grid-cols-[2fr_2.2fr_1.6fr_1.6fr_1.8fr_1.6fr] px-2.5 py-2 text-[11px] active:bg-secondary/50 cursor-pointer">
                     <span className="font-medium text-foreground truncate">{m.name}</span>
                     <span className="text-right font-semibold text-foreground whitespace-nowrap">{m.price.toLocaleString()}</span>
