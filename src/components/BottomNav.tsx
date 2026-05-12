@@ -67,7 +67,7 @@ const BottomNav = () => {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-50 mx-auto w-full max-w-[430px] bg-white"
+      className="fixed bottom-0 left-0 right-0 z-[100] mx-auto w-full max-w-[430px] bg-white"
       style={{
         paddingBottom: "env(safe-area-inset-bottom, 0px)",
         boxShadow: "0 -1px 0 hsl(220 13% 91%)",
