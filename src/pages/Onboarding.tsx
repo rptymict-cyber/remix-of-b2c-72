@@ -696,33 +696,80 @@ const IntroVisual = ({ kind }: { kind: string }) => {
   }
   if (kind === "map") {
     return (
-      <div className="relative w-[300px] h-[300px]">
-        {/* Watercolor Korea peninsula */}
-        <svg viewBox="0 0 200 220" className="absolute inset-0 w-full h-full" preserveAspectRatio="xMidYMid meet">
+      <div className="relative w-[300px] h-[320px]">
+        {/* Refined South Korea silhouette */}
+        <svg viewBox="0 0 220 280" className="absolute inset-0 w-full h-full" preserveAspectRatio="xMidYMid meet">
           <defs>
-            <radialGradient id="koreaFill" cx="55%" cy="40%" r="70%">
-              <stop offset="0%" stopColor="hsl(150 42% 80%)" stopOpacity="0.85" />
-              <stop offset="65%" stopColor="hsl(150 38% 76%)" stopOpacity="0.7" />
-              <stop offset="100%" stopColor="hsl(150 35% 74%)" stopOpacity="0.45" />
-            </radialGradient>
+            <linearGradient id="koreaFill" x1="0%" y1="0%" x2="60%" y2="100%">
+              <stop offset="0%" stopColor="hsl(150 45% 82%)" />
+              <stop offset="100%" stopColor="hsl(150 38% 72%)" />
+            </linearGradient>
+            <linearGradient id="koreaStroke" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="hsl(150 35% 60%)" stopOpacity="0.55" />
+              <stop offset="100%" stopColor="hsl(150 30% 55%)" stopOpacity="0.35" />
+            </linearGradient>
           </defs>
-          {/* Mainland — rough Korean peninsula silhouette */}
+
+          {/* Soft halo */}
+          <ellipse cx="110" cy="140" rx="100" ry="120" fill="hsl(150 45% 85%)" opacity="0.18" />
+
+          {/* Mainland — South Korea peninsula */}
           <path
             fill="url(#koreaFill)"
-            d="M105,8 C95,6 85,10 82,20 C70,18 60,24 62,38 C54,42 48,52 56,62 C44,66 40,80 52,88 C42,96 44,110 56,114 C46,124 50,138 62,142 C52,154 58,170 72,172 C66,184 72,196 86,198 C82,210 92,222 108,218 C124,214 132,202 130,190 C144,188 152,176 148,164 C160,160 168,148 162,136 C172,128 172,114 162,108 C172,100 172,86 160,82 C168,72 166,58 154,54 C158,42 152,30 138,28 C136,16 122,8 105,8 Z"
+            stroke="url(#koreaStroke)"
+            strokeWidth="0.8"
+            strokeLinejoin="round"
+            d="
+              M 96 22
+              C 80 24 70 32 72 46
+              C 58 48 48 56 52 70
+              C 40 74 34 86 42 96
+              C 30 100 26 114 36 122
+              C 28 132 30 148 42 152
+              C 32 164 38 182 52 186
+              C 46 200 56 214 72 214
+              C 70 224 82 232 96 230
+              C 102 240 116 240 124 230
+              C 138 232 152 226 156 214
+              C 172 214 184 202 180 188
+              C 192 182 196 168 188 158
+              C 198 150 200 134 190 126
+              C 200 116 198 100 186 96
+              C 194 84 188 70 174 70
+              C 178 56 168 42 154 44
+              C 152 30 138 22 122 26
+              C 114 18 102 18 96 22 Z
+            "
           />
+
+          {/* Subtle province divisions */}
+          <g stroke="hsl(150 30% 55%)" strokeOpacity="0.22" strokeWidth="0.6" fill="none" strokeLinecap="round">
+            <path d="M 78 70 Q 110 78 152 66" />
+            <path d="M 60 110 Q 110 120 178 108" />
+            <path d="M 70 156 Q 120 168 184 152" />
+            <path d="M 110 78 Q 116 130 124 200" />
+          </g>
+
           {/* Jeju island */}
-          <ellipse cx="92" cy="208" rx="10" ry="5" fill="url(#koreaFill)" />
+          <ellipse cx="92" cy="262" rx="13" ry="6" fill="url(#koreaFill)" stroke="url(#koreaStroke)" strokeWidth="0.6" />
+
+          {/* Connector hairlines from cards to pins */}
+          <g stroke="hsl(150 25% 60%)" strokeOpacity="0.4" strokeWidth="0.6" strokeDasharray="2 2" fill="none">
+            <path d="M 50 60 L 110 78" />
+            <path d="M 200 130 L 158 130" />
+            <path d="M 200 220 L 150 200" />
+          </g>
+
+          {/* Pins (Seoul, Daegu, Busan) */}
+          <MapPin cx={110} cy={78} />
+          <MapPin cx={158} cy={130} />
+          <MapPin cx={150} cy={200} />
         </svg>
 
-        {/* Pins on map */}
-        <MapPinMarker className="top-[42%] left-[42%]" />
-        <MapPinMarker className="top-[74%] left-[40%]" />
-
-        {/* Floating cards */}
-        <PriceCard className="top-[8%] left-0" label="가락시장" price="3,240원" />
-        <PriceCard className="top-[40%] right-0" label="대구북부시장" price="2,980원" />
-        <PriceCard className="top-[72%] right-[-4px]" label="부산엄궁시장" price="3,100원" />
+        {/* Floating price cards */}
+        <PriceCard className="top-[6%] left-[2%]" label="서울 가락시장" price="2,650원" />
+        <PriceCard className="top-[38%] right-[2%]" label="대구북부시장" price="2,300원" />
+        <PriceCard className="top-[70%] right-[2%]" label="부산엄궁시장" price="3,100원" />
       </div>
     );
   }
