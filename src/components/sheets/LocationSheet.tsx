@@ -72,7 +72,7 @@ const LocationSheet = ({ open, onOpenChange, currentRegion, selectedRegion, rece
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent>
         <div className="flex flex-col h-full min-h-0 px-4 pt-2 pb-[max(env(safe-area-inset-bottom),16px)]">
-          <div className="shrink-0 pb-3">
+          <div className="shrink-0 pb-3 text-center">
           <h3 className="text-base font-bold text-foreground">내 출발 위치</h3>
           <p className="text-[12px] text-muted-foreground mt-1">
             물류비 계산의 기준이 되는 농장 위치입니다.
