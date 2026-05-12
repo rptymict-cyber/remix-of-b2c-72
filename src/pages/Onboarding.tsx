@@ -605,45 +605,51 @@ const CropGrid = ({
 const IntroVisual = ({ kind }: { kind: string }) => {
   if (kind === "chart") {
     return (
-      <div className="relative w-[260px] h-[300px] flex items-center justify-center">
-        {/* Phone mockup */}
-        <div className="relative w-[180px] h-[280px] rounded-[32px] bg-white border-[6px] border-foreground shadow-[0_20px_40px_rgba(0,0,0,0.18)] overflow-hidden">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-16 h-4 bg-foreground rounded-b-2xl z-10" />
-          <div className="absolute inset-0 pt-8 px-3 flex flex-col">
-            <div className="flex items-center justify-between px-1 mb-2">
-              <span className="text-[8px] text-muted-foreground">‹</span>
-              <span className="text-[8px] text-muted-foreground">시세</span>
-              <span className="w-2" />
+      <div className="relative w-[280px] h-[320px] flex items-start justify-center pt-2">
+        {/* Soft green blurred backdrop */}
+        <div className="absolute top-6 left-1/2 -translate-x-1/2 w-[230px] h-[260px] rounded-[40px] bg-[hsl(152_55%_42%)]/12 blur-2xl" />
+
+        {/* Phone mockup (iPhone-style) */}
+        <div className="relative w-[190px] h-[280px] rounded-[34px] bg-white shadow-[0_24px_48px_rgba(0,0,0,0.18)] ring-[3px] ring-foreground/85 ring-offset-0 overflow-hidden">
+          {/* Dynamic island */}
+          <div className="absolute top-2 left-1/2 -translate-x-1/2 w-[58px] h-[14px] bg-foreground rounded-full z-10" />
+          {/* App content */}
+          <div className="absolute inset-0 pt-7 px-3 flex flex-col">
+            {/* Header bar */}
+            <div className="flex items-center justify-between px-1.5 mt-1 mb-1">
+              <span className="text-[14px] leading-none text-foreground/80">‹</span>
+              <span className="text-[10px] text-muted-foreground">❤</span>
             </div>
-            <svg viewBox="0 0 140 140" className="w-full flex-1" preserveAspectRatio="none">
-              <defs>
-                <linearGradient id="chartFill" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="hsl(152 55% 42%)" stopOpacity="0.18" />
-                  <stop offset="100%" stopColor="hsl(152 55% 42%)" stopOpacity="0" />
-                </linearGradient>
-              </defs>
-              <polyline
-                fill="none"
-                stroke="hsl(152 55% 42%)"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                points="6,110 22,95 38,100 54,72 72,80 90,52 108,60 132,18"
-              />
-              <polygon
-                fill="url(#chartFill)"
-                points="6,110 22,95 38,100 54,72 72,80 90,52 108,60 132,18 132,140 6,140"
-              />
-              <circle cx="132" cy="18" r="4" fill="hsl(152 55% 42%)" />
-              <circle cx="132" cy="18" r="2" fill="white" />
-            </svg>
+            {/* Chart area */}
+            <div className="relative flex-1">
+              <svg viewBox="0 0 160 140" className="absolute inset-0 w-full h-full" preserveAspectRatio="none">
+                {/* horizontal grid */}
+                <line x1="20" y1="30" x2="155" y2="30" stroke="hsl(0 0% 90%)" strokeDasharray="2 3" strokeWidth="0.6" />
+                <line x1="20" y1="65" x2="155" y2="65" stroke="hsl(0 0% 90%)" strokeDasharray="2 3" strokeWidth="0.6" />
+                <line x1="20" y1="100" x2="155" y2="100" stroke="hsl(0 0% 90%)" strokeDasharray="2 3" strokeWidth="0.6" />
+                {/* y-axis labels */}
+                <text x="4" y="32" fontSize="7" fill="hsl(0 0% 60%)">99</text>
+                <text x="4" y="67" fontSize="7" fill="hsl(0 0% 60%)">66</text>
+                <text x="4" y="102" fontSize="7" fill="hsl(0 0% 60%)">33</text>
+                {/* jagged line */}
+                <polyline
+                  fill="none"
+                  stroke="hsl(152 55% 42%)"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  points="22,108 32,96 40,102 50,86 58,94 68,72 78,80 86,64 96,70 104,50 114,58 124,40 134,46 144,28 152,34"
+                />
+              </svg>
+            </div>
           </div>
         </div>
-        {/* Floating AI card */}
-        <div className="absolute bottom-2 -left-2 bg-white rounded-2xl shadow-[0_10px_28px_rgba(0,0,0,0.14)] px-4 py-3 text-left border border-border/60 min-w-[140px]">
-          <span className="inline-block text-[10px] px-1.5 py-0.5 rounded-md bg-[hsl(152_55%_42%)]/12 text-[hsl(152_55%_42%)] font-bold mb-1.5">AI 예측</span>
-          <p className="text-[12px] font-bold text-foreground leading-tight">5월 12일(화) 출하 추천</p>
-          <p className="text-[11px] text-muted-foreground mt-1">예상 수익 <span className="text-[hsl(152_55%_42%)] font-bold">+8.1%</span></p>
+
+        {/* Floating AI card — overlapping bottom of phone */}
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[230px] bg-white rounded-2xl shadow-[0_14px_32px_rgba(0,0,0,0.14)] px-4 py-3 text-left">
+          <p className="text-[13px] font-extrabold text-[hsl(152_55%_42%)] mb-1.5">AI 예측</p>
+          <p className="text-[13px] font-bold text-foreground leading-tight">5월 12일(화) 출하 추천</p>
+          <p className="text-[12px] text-muted-foreground mt-1">예상 수익 <span className="text-[hsl(152_55%_42%)] font-extrabold">+8.1%</span></p>
         </div>
       </div>
     );
