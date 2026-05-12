@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft, MapPin, Recycle, Search, Check, X } from "lucide-react";
+import { ChevronLeft, MapPin, Recycle, Search, Check, X, ChevronDown } from "lucide-react";
 import { useApp } from "@/store/appStore";
 import { CROPS, REGIONS_KR } from "@/data/catalog";
 import { useToast } from "@/hooks/use-toast";
