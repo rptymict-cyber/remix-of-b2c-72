@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import MobileStatusBar from "@/components/MobileStatusBar";
 import koreaMapImg from "@/assets/korea-map.png";
 import chartImg from "@/assets/onboarding-chart.png";
+import splashLogo from "@/assets/splash-logo.png";
 
 type Step = "splash" | "intro" | "name" | "region" | "size" | "crops" | "done";
 
