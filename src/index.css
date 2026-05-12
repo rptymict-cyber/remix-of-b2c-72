@@ -224,21 +224,46 @@ html, body, #root {
     padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
   }
 
-  /* === Map z-index clamp ===
-     Leaflet uses internal z-index (panes 200–700, controls/popups 800+).
-     Force everything map-related to stay below app chrome and bottom sheets. */
+  /* === Map z-index clamp === */
+  .map-wrapper {
+    isolation: isolate;
+    contain: layout style;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+  }
+
+  .map-container,
   .leaflet-container,
   .leaflet-pane,
+  .leaflet-map-pane,
+  .leaflet-tile-pane,
+  .leaflet-overlay-pane,
+  .leaflet-shadow-pane,
+  .leaflet-marker-pane,
+  .leaflet-popup-pane,
   .leaflet-top,
   .leaflet-bottom,
   .leaflet-control,
   .leaflet-popup,
   .leaflet-tooltip,
   .leaflet-marker-icon,
-  .leaflet-marker-shadow {
+  .leaflet-marker-shadow,
+  iframe[src*="map"],
+  [class*="map"] {
     z-index: 1 !important;
+    position: relative !important;
   }
-  .leaflet-container { position: relative; }
+
+  .map-container {
+    touch-action: none;
+    pointer-events: auto;
+  }
+
+  .map-wrapper[data-map-disabled="true"],
+  .map-wrapper[data-map-disabled="true"] * {
+    pointer-events: none !important;
+  }
 }
 
 @layer utilities {
