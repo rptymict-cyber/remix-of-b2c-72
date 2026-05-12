@@ -827,6 +827,19 @@ const PriceCard = ({ className, label, price }: { className?: string; label: str
   </div>
 );
 
+const MapPin = ({ cx, cy }: { cx: number; cy: number }) => (
+  <g transform={`translate(${cx} ${cy})`}>
+    <ellipse cx="0" cy="2" rx="5" ry="1.5" fill="hsl(150 30% 40%)" opacity="0.18" />
+    <path
+      d="M 0 -14 C -5 -14 -8 -10 -8 -6 C -8 -1 0 6 0 6 C 0 6 8 -1 8 -6 C 8 -10 5 -14 0 -14 Z"
+      fill="white"
+      stroke="hsl(150 35% 55%)"
+      strokeWidth="1"
+    />
+    <circle cx="0" cy="-7" r="2.6" fill="hsl(152 55% 42%)" />
+  </g>
+);
+
 const MapPinMarker = ({ className }: { className?: string }) => (
   <div className={`absolute -translate-x-1/2 -translate-y-full ${className}`}>
     <svg width="26" height="32" viewBox="0 0 22 28" fill="none">
