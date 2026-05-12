@@ -27,7 +27,7 @@ const AddCrop = () => {
   const [q, setQ] = useState("");
   const [category, setCategory] = useState<CropCategory | "전체">("전체");
   const [selectedCropId, setSelectedCropId] = useState<string>("");
-  const [variety, setVariety] = useState<string>(ALL_LABEL);
+  const [varieties, setVarieties] = useState<string[]>([ALL_LABEL]);
   const [varOpen, setVarOpen] = useState(false);
   const [regType, setRegType] = useState<RegType>("growing");
   const [marketSel, setMarketSel] = useState<string>(marketId || "gwangju");
@@ -45,10 +45,30 @@ const AddCrop = () => {
   const showRepresentative = !q.trim() && category === "전체";
 
   const handlePickCrop = (c: CropItem) => {
+    if (c.id !== selectedCropId) {
+      setVarieties([ALL_LABEL]);
+    }
     setSelectedCropId(c.id);
-    setVariety(ALL_LABEL);
     setVarOpen(true);
   };
+
+  const toggleVariety = (v: string) => {
+    setVarieties((prev) => {
+      if (v === ALL_LABEL) return [ALL_LABEL];
+      const without = prev.filter((x) => x !== ALL_LABEL);
+      const next = without.includes(v)
+        ? without.filter((x) => x !== v)
+        : [...without, v];
+      return next.length === 0 ? [ALL_LABEL] : next;
+    });
+  };
+
+  const varietyLabel = (() => {
+    if (varieties.length === 0 || varieties[0] === ALL_LABEL) return ALL_LABEL;
+    if (varieties.length === 1) return varieties[0];
+    if (varieties.length === 2) return varieties.join(", ");
+    return `${varieties[0]} 외 ${varieties.length - 1}개`;
+  })();
 
   const goNext = () => {
     if (!selectedCropId) return;
@@ -139,8 +159,8 @@ const AddCrop = () => {
                 <span className="text-2xl">{crop.icon}</span>
                 <div>
                   <p className="text-[11px] text-muted-foreground">선택한 작물</p>
-                  <p className="text-sm font-bold text-foreground">
-                    {crop.name} · {variety}
+                  <p className="text-sm font-bold text-foreground truncate max-w-[200px]">
+                    {crop.name} · {varietyLabel}
                   </p>
                 </div>
               </div>
@@ -184,8 +204,8 @@ const AddCrop = () => {
                 <span className="text-2xl">{crop.icon}</span>
                 <div>
                   <p className="text-[11px] text-muted-foreground">선택한 작물</p>
-                  <p className="text-sm font-bold text-foreground">
-                    {crop.name} · {variety}
+                  <p className="text-sm font-bold text-foreground truncate max-w-[200px]">
+                    {crop.name} · {varietyLabel}
                   </p>
                 </div>
               </div>
@@ -295,26 +315,31 @@ const AddCrop = () => {
           <div className="space-y-1.5 max-h-[55vh] overflow-y-auto">
             {crop &&
               [ALL_LABEL, ...crop.varieties].map((v) => {
-                const sel = v === variety;
+                const sel = varieties.includes(v);
                 return (
                   <button
                     key={v}
-                    onClick={() => {
-                      setVariety(v);
-                    }}
+                    onClick={() => toggleVariety(v)}
                     className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl border ${
                       sel ? "border-primary bg-primary/5" : "border-border bg-card"
                     }`}
                   >
                     <span className="text-sm font-medium text-foreground">{v}</span>
-                    {sel && <Check className="w-4 h-4 text-primary" />}
+                    <span
+                      className={`w-5 h-5 rounded-md border-2 flex items-center justify-center ${
+                        sel ? "border-primary bg-primary" : "border-border bg-card"
+                      }`}
+                    >
+                      {sel && <Check className="w-3 h-3 text-white" strokeWidth={3} />}
+                    </span>
                   </button>
                 );
               })}
           </div>
           <button
             onClick={() => setVarOpen(false)}
-            className="w-full mt-4 py-3.5 rounded-2xl bg-primary text-white text-sm font-bold"
+            disabled={varieties.length === 0}
+            className="w-full mt-4 py-3.5 rounded-2xl bg-primary text-white text-sm font-bold disabled:opacity-40"
           >
             선택 완료
           </button>
