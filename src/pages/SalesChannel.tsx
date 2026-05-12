@@ -10,7 +10,7 @@ import MarketDetailSheet from "@/components/sheets/MarketDetailSheet";
 import LocationSheet, { shortCity } from "@/components/sheets/LocationSheet";
 import FilterPill from "@/components/common/FilterPill";
 import ShipmentMap from "@/components/ShipmentMap";
-import SortSheet from "@/components/sheets/SortSheet";
+import SortSheet, { SortOption } from "@/components/sheets/SortSheet";
 
 // 시장별 대략 좌표 (한국 지도상 위치)
 const MARKET_COORDS: Record<string, { lat: number; lng: number }> = {
@@ -332,7 +332,7 @@ const SalesChannelPage = () => {
           unitWeight,
         } : null}
       />
-      <SortSheet
+      <SortSheet<SortKey>
         open={sortOpen}
         onOpenChange={setSortOpen}
         title="정렬 기준"
@@ -343,7 +343,7 @@ const SalesChannelPage = () => {
           { key: "unitPrice", label: "단가 높은순" },
           { key: "logistics", label: "물류비 낮은순" },
           { key: "distance", label: "가까운순" },
-        ]}
+        ] as SortOption<SortKey>[]}
       />
     </div>
   );
