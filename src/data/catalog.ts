@@ -20,15 +20,24 @@ export interface Market {
 }
 
 export const CROPS: Crop[] = [
+  { id: "rice", name: "벼", emoji: "🌾", varieties: ["일반계", "찰벼"], defaultUnitKg: 40, weatherSensitivity: "중간", harvestSeason: "9월~10월" },
   { id: "pepper", name: "고추", emoji: "🌶️", varieties: ["건고추(화건)", "건고추(양건)", "풋고추", "청양고추"], defaultUnitKg: 20, weatherSensitivity: "높음", harvestSeason: "8월~10월" },
   { id: "apple", name: "사과", emoji: "🍎", varieties: ["후지", "홍로", "감홍"], defaultUnitKg: 20, weatherSensitivity: "높음", harvestSeason: "9월~11월" },
+  { id: "pear", name: "배", emoji: "🍐", varieties: ["신고", "원황", "추황"], defaultUnitKg: 15, weatherSensitivity: "높음", harvestSeason: "9월~10월" },
   { id: "cabbage", name: "배추", emoji: "🥬", varieties: ["봄배추", "고랭지배추", "가을배추"], defaultUnitKg: 10, weatherSensitivity: "높음", harvestSeason: "5월~11월" },
   { id: "onion", name: "양파", emoji: "🧅", varieties: ["황양파", "자색양파"], defaultUnitKg: 15, weatherSensitivity: "중간", harvestSeason: "5월~6월" },
   { id: "radish", name: "무", emoji: "🌿", varieties: ["봄무", "가을무", "월동무"], defaultUnitKg: 18, weatherSensitivity: "중간", harvestSeason: "10월~11월" },
   { id: "tomato", name: "토마토", emoji: "🍅", varieties: ["일반토마토", "방울토마토", "대추방울"], defaultUnitKg: 5, weatherSensitivity: "중간", harvestSeason: "5월~10월" },
   { id: "strawberry", name: "딸기", emoji: "🍓", varieties: ["설향", "장희", "죽향"], defaultUnitKg: 2, weatherSensitivity: "높음", harvestSeason: "12월~5월" },
   { id: "potato", name: "감자", emoji: "🥔", varieties: ["수미", "대지", "두백"], defaultUnitKg: 20, weatherSensitivity: "낮음", harvestSeason: "6월~9월" },
+  { id: "sweet_potato", name: "고구마", emoji: "🍠", varieties: ["호박고구마", "밤고구마", "꿀고구마"], defaultUnitKg: 10, weatherSensitivity: "낮음", harvestSeason: "9월~11월" },
   { id: "garlic", name: "마늘", emoji: "🧄", varieties: ["남도마늘", "한지형"], defaultUnitKg: 10, weatherSensitivity: "중간", harvestSeason: "6월~7월" },
+  { id: "soybean", name: "콩", emoji: "🫘", varieties: ["백태", "서리태", "쥐눈이콩"], defaultUnitKg: 30, weatherSensitivity: "중간", harvestSeason: "10월~11월" },
+  { id: "green_onion", name: "대파", emoji: "🌱", varieties: ["대파", "쪽파"], defaultUnitKg: 5, weatherSensitivity: "중간", harvestSeason: "연중" },
+  { id: "mandarin", name: "감귤", emoji: "🍊", varieties: ["노지감귤", "한라봉", "천혜향"], defaultUnitKg: 10, weatherSensitivity: "높음", harvestSeason: "11월~2월" },
+  { id: "peach", name: "복숭아", emoji: "🍑", varieties: ["백도", "황도", "천도"], defaultUnitKg: 5, weatherSensitivity: "높음", harvestSeason: "7월~9월" },
+  { id: "watermelon", name: "수박", emoji: "🍉", varieties: ["일반수박", "씨없는수박"], defaultUnitKg: 8, weatherSensitivity: "높음", harvestSeason: "6월~8월" },
+  { id: "lettuce", name: "상추", emoji: "🥗", varieties: ["청상추", "적상추", "꽃상추"], defaultUnitKg: 4, weatherSensitivity: "중간", harvestSeason: "연중" },
   { id: "corn", name: "옥수수", emoji: "🌽", varieties: ["찰옥수수", "단옥수수"], defaultUnitKg: 10, weatherSensitivity: "중간", harvestSeason: "7월~9월" },
 ];
 
