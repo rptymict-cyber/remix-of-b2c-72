@@ -134,7 +134,10 @@ const LockedView = ({ points, onBackgroundClick }: { points: [number, number][];
   useEffect(() => {
     if (!points.length) return;
     const bounds = L.latLngBounds(points);
-    map.fitBounds(bounds, { padding: [48, 48] });
+    map.fitBounds(bounds, { padding: [60, 60] });
+    // Zoom in one extra step so markers occupy ~70-80% of the viewport
+    const targetZoom = Math.min(map.getZoom() + 1, 12);
+    map.setView(bounds.getCenter(), targetZoom, { animate: false });
     // Lock viewport completely
     map.dragging.disable();
     map.scrollWheelZoom.disable();
