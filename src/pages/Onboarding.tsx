@@ -581,45 +581,118 @@ const CropGrid = ({
 const IntroVisual = ({ kind }: { kind: string }) => {
   if (kind === "chart") {
     return (
-      <div className="w-full max-w-[260px] aspect-[4/3] rounded-3xl bg-[hsl(152_55%_42%)]/8 flex items-center justify-center relative">
-        <div className="text-6xl">📈</div>
-        <div className="absolute bottom-3 right-3 bg-white rounded-xl shadow px-3 py-2 text-left">
-          <p className="text-[10px] text-muted-foreground">AI 예측</p>
-          <p className="text-[11px] font-bold">5월 12일(화) 출하 추천</p>
-          <p className="text-[10px] text-[hsl(152_55%_42%)] font-bold">예상 수익 +8.1%</p>
+      <div className="relative w-[240px] h-[240px] flex items-center justify-center">
+        {/* Phone mockup */}
+        <div className="relative w-[150px] h-[230px] rounded-[28px] bg-white border-[6px] border-foreground/90 shadow-xl overflow-hidden">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-14 h-3 bg-foreground/90 rounded-b-xl" />
+          <div className="absolute inset-0 pt-7 px-3">
+            <svg viewBox="0 0 120 120" className="w-full h-full">
+              <polyline
+                fill="none"
+                stroke="hsl(152 55% 42%)"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                points="5,90 20,75 35,82 50,55 65,60 80,38 95,45 115,15"
+              />
+              <circle cx="115" cy="15" r="3.5" fill="hsl(152 55% 42%)" />
+            </svg>
+          </div>
+        </div>
+        {/* Floating AI card */}
+        <div className="absolute -bottom-2 -left-4 bg-white rounded-2xl shadow-[0_8px_24px_rgba(0,0,0,0.12)] px-3.5 py-2.5 text-left border border-border/60">
+          <span className="inline-block text-[10px] px-1.5 py-0.5 rounded-md bg-[hsl(152_55%_42%)]/10 text-[hsl(152_55%_42%)] font-bold mb-1">AI 예측</span>
+          <p className="text-[11px] font-bold text-foreground leading-tight">5월 12일(화) 출하 추천</p>
+          <p className="text-[10px] text-muted-foreground mt-0.5">예상 수익 <span className="text-[hsl(152_55%_42%)] font-bold">+8.1%</span></p>
         </div>
       </div>
     );
   }
   if (kind === "map") {
     return (
-      <div className="w-full max-w-[260px] aspect-[4/3] rounded-3xl bg-[hsl(152_55%_42%)]/8 flex items-center justify-center">
-        <div className="text-7xl">🗺️</div>
+      <div className="relative w-[260px] h-[280px]">
+        {/* Stylized Korea peninsula */}
+        <svg viewBox="0 0 200 240" className="w-full h-full">
+          <path
+            d="M95 10 C 80 18, 70 30, 72 48 C 60 55, 55 70, 65 82 C 55 92, 58 108, 70 115 C 60 128, 65 145, 78 152 C 70 168, 78 188, 92 198 C 88 215, 100 232, 118 228 C 132 222, 138 205, 132 188 C 145 180, 150 162, 140 148 C 152 138, 152 118, 140 110 C 150 98, 148 80, 135 72 C 142 58, 138 40, 122 32 C 118 18, 108 8, 95 10 Z"
+            fill="hsl(152 50% 78%)"
+            opacity="0.55"
+          />
+          <path
+            d="M95 10 C 80 18, 70 30, 72 48 C 60 55, 55 70, 65 82 C 55 92, 58 108, 70 115 C 60 128, 65 145, 78 152 C 70 168, 78 188, 92 198 C 88 215, 100 232, 118 228 C 132 222, 138 205, 132 188 C 145 180, 150 162, 140 148 C 152 138, 152 118, 140 110 C 150 98, 148 80, 135 72 C 142 58, 138 40, 122 32 C 118 18, 108 8, 95 10 Z"
+            fill="none"
+            stroke="hsl(152 45% 55%)"
+            strokeWidth="1.5"
+            strokeOpacity="0.5"
+          />
+        </svg>
+        {/* Map pins with price pills */}
+        <MapPin2 className="top-[12%] left-[8%]" label="가락시장" price="3,240원" />
+        <MapPin2 className="top-[28%] right-[2%]" label="대구북부시장" price="2,980원" />
+        <MapPin2 className="top-[50%] right-[6%]" label="부산엄궁시장" price="3,100원" />
       </div>
     );
   }
   if (kind === "rank") {
     return (
-      <div className="w-full max-w-[260px] aspect-[4/3] rounded-3xl bg-[hsl(152_55%_42%)]/8 p-4 flex flex-col gap-2 justify-center">
-        <p className="text-[11px] font-bold text-foreground">추천 판매처 TOP 3</p>
-        {["대구북부시장", "부산엄궁시장", "광주서부시장"].map((m, i) => (
-          <div key={m} className="bg-white rounded-lg px-3 py-2 flex items-center gap-2">
-            <span className="w-5 h-5 rounded-full bg-[hsl(152_55%_42%)] text-white text-[10px] font-bold flex items-center justify-center">
-              {i + 1}
-            </span>
-            <span className="text-[11px] font-semibold">{m}</span>
-          </div>
-        ))}
+      <div className="w-[260px] rounded-2xl bg-white shadow-[0_8px_28px_rgba(0,0,0,0.08)] border border-border/60 p-4">
+        <p className="text-[12px] font-bold text-foreground mb-3">추천 판매처 TOP 3</p>
+        <div className="space-y-2">
+          {[
+            { name: "대구북부시장", profit: "1,245,000원", badge: true },
+            { name: "부산엄궁시장", profit: "1,128,000원" },
+            { name: "광주서부시장", profit: "1,087,000원" },
+          ].map((m, i) => (
+            <div key={m.name} className="flex items-center gap-2.5 py-1.5">
+              <span className={`w-6 h-6 rounded-md text-[11px] font-bold flex items-center justify-center ${i === 0 ? "bg-[hsl(152_55%_42%)] text-white" : "bg-muted text-muted-foreground"}`}>
+                {i + 1}
+              </span>
+              <div className="flex-1 text-left">
+                <p className="text-[12px] font-bold text-foreground leading-tight">{m.name}</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">예상 순이익 {m.profit}</p>
+              </div>
+              {m.badge && <span className="w-6 h-6 rounded-full bg-[hsl(42_90%_60%)]/20 flex items-center justify-center text-[12px]">🏆</span>}
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
+  // crop
   return (
-    <div className="w-full max-w-[260px] aspect-[4/3] rounded-3xl bg-[hsl(152_55%_42%)]/8 flex flex-col items-center justify-center gap-2">
-      <span className="text-[11px] px-2 py-0.5 rounded-full bg-white text-[hsl(152_55%_42%)] font-bold">AI 추천 작물</span>
-      <div className="text-6xl">🧅</div>
-      <p className="text-[12px] font-bold">양파</p>
+    <div className="relative w-[260px]">
+      <div className="rounded-2xl bg-white shadow-[0_8px_28px_rgba(0,0,0,0.08)] border border-border/60 p-5">
+        <span className="inline-block text-[10px] px-2 py-0.5 rounded-md bg-[hsl(152_55%_42%)]/10 text-[hsl(152_55%_42%)] font-bold mb-3">AI 추천 작물</span>
+        <div className="flex items-center gap-3 mb-4">
+          <span className="text-5xl">🧅</span>
+          <span className="text-[20px] font-extrabold text-foreground">양파</span>
+        </div>
+        <div className="grid grid-cols-3 gap-2">
+          <MetricChip label="수익성" value="높음" tone="green" />
+          <MetricChip label="리스크" value="보통" tone="yellow" />
+          <MetricChip label="지역 적합도" value="높음" tone="green" />
+        </div>
+      </div>
+      <span className="absolute -bottom-2 -right-1 text-2xl rotate-12">🌿</span>
     </div>
   );
 };
+
+const MapPin2 = ({ className, label, price }: { className?: string; label: string; price: string }) => (
+  <div className={`absolute flex flex-col items-center ${className}`}>
+    <div className="bg-white rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.1)] border border-border/60 px-2.5 py-1.5 text-left mb-1">
+      <p className="text-[10px] text-muted-foreground leading-none">{label}</p>
+      <p className="text-[12px] font-bold text-foreground mt-0.5 leading-none">{price}</p>
+    </div>
+    <span className="w-3 h-3 rounded-full bg-[hsl(152_55%_42%)] border-2 border-white shadow" />
+  </div>
+);
+
+const MetricChip = ({ label, value, tone }: { label: string; value: string; tone: "green" | "yellow" }) => (
+  <div className={`rounded-lg py-2 text-center ${tone === "green" ? "bg-[hsl(152_55%_42%)]/10" : "bg-[hsl(42_90%_55%)]/15"}`}>
+    <p className="text-[10px] text-muted-foreground leading-tight">{label}</p>
+    <p className={`text-[12px] font-bold mt-0.5 ${tone === "green" ? "text-[hsl(152_55%_42%)]" : "text-[hsl(35_85%_45%)]"}`}>{value}</p>
+  </div>
+);
 
 export default Onboarding;
