@@ -1,7 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
-import { MapContainer, TileLayer, Marker, Polyline, useMap } from "react-leaflet";
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
+import { useMemo } from "react";
 
 export interface MapMarket {
   id: string;
@@ -22,140 +19,160 @@ interface Props {
   onSelect: (id: string) => void;
 }
 
-const PRIMARY = "hsl(142, 71%, 35%)"; // 초록 강조
-const GREY = "#9ca3af";
+// 위경도 → 카드 내 % 좌표 (한반도 남부 대략 bbox)
+const LAT_MAX = 38.7; // 위쪽
+const LAT_MIN = 33.0; // 아래쪽
+const LNG_MIN = 125.5;
+const LNG_MAX = 130.2;
+const project = (lat: number, lng: number) => ({
+  left: ((lng - LNG_MIN) / (LNG_MAX - LNG_MIN)) * 100,
+  top: ((LAT_MAX - lat) / (LAT_MAX - LAT_MIN)) * 100,
+});
 
-const shortMarketName = (name: string) =>
-  name.replace("시장", "").replace("서울 ", "").trim();
+const shortName = (n: string) => n.replace("시장", "").replace("서울 ", "").trim();
 
-// 내 농장 (초록 집)
-const farmIcon = (region: string) =>
-  L.divIcon({
-    className: "",
-    html: `
-      <div style="display:flex;flex-direction:column;align-items:center;transform:translateY(-4px)">
-        <div style="width:38px;height:38px;border-radius:9999px;background:${PRIMARY};color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 10px rgba(0,0,0,.18);border:3px solid #fff">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2h-4v-7H10v7H5a2 2 0 0 1-2-2z"/></svg>
-        </div>
-        <div style="margin-top:4px;padding:2px 8px;border-radius:9999px;background:#111827;color:#fff;font-size:10px;font-weight:700;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.15)">
-          내 농장 <span style="opacity:.75;font-weight:400;margin-left:2px">${region}</span>
-        </div>
-      </div>`,
-    iconSize: [120, 60],
-    iconAnchor: [60, 38],
-  });
-
-// 시장 핀
-const marketIcon = (label: string, distanceKm: number, isRec: boolean, isSel: boolean) => {
-  const bg = isRec ? PRIMARY : "#ffffff";
-  const fg = isRec ? "#ffffff" : "#374151";
-  const ring = isRec ? PRIMARY : "#d1d5db";
-  const labelColor = isRec ? PRIMARY : "#374151";
-  const labelBorder = isRec ? `1px solid ${PRIMARY}40` : "1px solid #e5e7eb";
-  const scale = isRec ? 1.1 : isSel ? 1.05 : 1;
-  return L.divIcon({
-    className: "",
-    html: `
-      <div style="display:flex;flex-direction:column;align-items:center;transform:scale(${scale}) translateY(-4px);transform-origin:bottom center">
-        <div style="width:32px;height:32px;border-radius:9999px;background:${bg};color:${fg};display:flex;align-items:center;justify-content:center;box-shadow:0 3px 8px rgba(0,0,0,.18);border:2px solid ${ring}">
-          ${
-            isRec
-              ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linejoin="round"><polygon points="12 2 15 9 22 9 17 14 19 22 12 18 5 22 7 14 2 9 9 9"/></svg>'
-              : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>'
-          }
-        </div>
-        <div style="margin-top:4px;padding:2px 7px;border-radius:9999px;background:#fff;color:${labelColor};font-size:10px;font-weight:600;white-space:nowrap;box-shadow:0 2px 4px rgba(0,0,0,.1);border:${labelBorder}">
-          ${label} <span style="color:#6b7280;font-weight:400;margin-left:2px">${distanceKm}km</span>
-        </div>
-      </div>`,
-    iconSize: [120, 60],
-    iconAnchor: [60, 32],
-  });
-};
-
-const FitBounds = ({ points }: { points: [number, number][] }) => {
-  const map = useMap();
-  useEffect(() => {
-    if (points.length === 0) return;
-    const bounds = L.latLngBounds(points.map(([lat, lng]) => L.latLng(lat, lng)));
-    map.fitBounds(bounds, { padding: [40, 40], maxZoom: 9 });
-  }, [map, JSON.stringify(points)]);
-  return null;
-};
+// 단순화된 남한 실루엣 (viewBox 0 0 100 120 기준, 위 bbox와 정렬)
+// 형태: 서해안→남해안→동해안 순으로 부드럽게 폐곡선
+const KOREA_PATH =
+  "M28,8 C36,4 44,6 50,10 C58,14 60,20 62,24 C66,26 72,28 74,32 C78,38 80,46 78,52 C76,58 74,64 70,70 C66,78 62,86 56,92 C50,98 44,102 38,100 C32,98 28,92 26,86 C22,78 20,70 22,62 C20,54 16,46 18,38 C20,30 22,22 24,16 C25,12 26,10 28,8 Z";
 
 const ShipmentMap = ({ farm, markets, recommendedId, selectedId, onSelect }: Props) => {
-  const allPoints = useMemo<[number, number][]>(
-    () => [[farm.lat, farm.lng], ...markets.map((m) => [m.lat, m.lng] as [number, number])],
-    [farm.lat, farm.lng, markets],
+  const farmPos = useMemo(() => project(farm.lat, farm.lng), [farm.lat, farm.lng]);
+  const points = useMemo(
+    () => markets.map((m) => ({ ...m, ...project(m.lat, m.lng) })),
+    [markets],
   );
-  const containerRef = useRef<HTMLDivElement | null>(null);
 
   return (
     <div
-      ref={containerRef}
-      className="relative rounded-2xl overflow-hidden border border-border bg-card"
-      style={{ height: 280 }}
+      className="relative rounded-2xl overflow-hidden border border-border"
+      style={{
+        height: 280,
+        background:
+          "linear-gradient(180deg, hsl(200 60% 96%) 0%, hsl(200 50% 92%) 100%)",
+        zIndex: 1,
+      }}
     >
-      <style>{`.leaflet-control-attribution{display:none !important}`}</style>
-      <MapContainer
-        center={[farm.lat, farm.lng]}
-        zoom={8}
-        scrollWheelZoom={false}
-        zoomControl={false}
-        attributionControl={false}
-        style={{ height: "100%", width: "100%", background: "#eef3f7" }}
+      {/* 한반도 실루엣 + 연결선 + 마커 모두 동일 SVG 안에서 그려 레이어 충돌 방지 */}
+      <svg
+        viewBox="0 0 100 120"
+        preserveAspectRatio="xMidYMid meet"
+        className="absolute inset-0 w-full h-full"
       >
-        <TileLayer
-          url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-          maxZoom={19}
-        />
-        <FitBounds points={allPoints} />
+        {/* 바다 grid 패턴 (옅은 격자) */}
+        <defs>
+          <pattern id="grid" width="6" height="6" patternUnits="userSpaceOnUse">
+            <path d="M6 0 L0 0 0 6" fill="none" stroke="hsl(200 40% 88%)" strokeWidth="0.2" />
+          </pattern>
+          <linearGradient id="land" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="hsl(142 45% 88%)" />
+            <stop offset="100%" stopColor="hsl(142 40% 78%)" />
+          </linearGradient>
+        </defs>
+        <rect width="100" height="120" fill="url(#grid)" />
 
-        {/* 농장→시장 연결선 */}
-        {markets.map((m) => {
-          const isRec = m.id === recommendedId;
-          const isSel = m.id === selectedId;
+        {/* 남한 실루엣 (ViewBox는 0~100 가로, 0~120 세로 — bbox 비율과 맞춤) */}
+        <g transform="translate(0,0) scale(1, 1.05)">
+          <path
+            d={KOREA_PATH}
+            fill="url(#land)"
+            stroke="hsl(142 35% 60%)"
+            strokeWidth="0.6"
+            strokeLinejoin="round"
+          />
+        </g>
+
+        {/* 농장 → 시장 연결선 */}
+        {points.map((p) => {
+          const isRec = p.id === recommendedId;
           return (
-            <Polyline
-              key={`line-${m.id}`}
-              positions={[
-                [farm.lat, farm.lng],
-                [m.lat, m.lng],
-              ]}
-              pathOptions={{
-                color: isRec ? PRIMARY : GREY,
-                weight: isRec ? 3 : 1.5,
-                opacity: isRec ? 0.85 : isSel ? 0.6 : 0.35,
-                dashArray: isRec ? undefined : "4 6",
-                lineCap: "round",
+            <line
+              key={`l-${p.id}`}
+              x1={farmPos.left}
+              y1={farmPos.top * 1.2}
+              x2={p.left}
+              y2={p.top * 1.2}
+              stroke={isRec ? "hsl(142 71% 35%)" : "hsl(220 10% 60%)"}
+              strokeWidth={isRec ? "0.7" : "0.4"}
+              strokeDasharray={isRec ? undefined : "1.2 1.4"}
+              opacity={isRec ? 0.9 : 0.5}
+              strokeLinecap="round"
+            />
+          );
+        })}
+      </svg>
+
+      {/* 시장 마커 (HTML — 클릭 가능) */}
+      {points.map((p) => {
+        const isRec = p.id === recommendedId;
+        const isSel = p.id === selectedId;
+        return (
+          <button
+            key={p.id}
+            onClick={() => onSelect(p.id)}
+            className="absolute -translate-x-1/2 -translate-y-full flex flex-col items-center"
+            style={{ left: `${p.left}%`, top: `${p.top}%`, zIndex: 2 }}
+          >
+            <div
+              className={`flex items-center justify-center rounded-full border-2 border-white shadow-md transition-transform ${
+                isRec ? "w-9 h-9" : "w-7 h-7"
+              } ${isSel ? "scale-110" : ""}`}
+              style={{
+                background: isRec ? "hsl(142 71% 35%)" : "#ffffff",
+                color: isRec ? "#fff" : "hsl(220 15% 35%)",
+                borderColor: isRec ? "#fff" : isSel ? "hsl(142 71% 35%)" : "#fff",
               }}
-            />
-          );
-        })}
+            >
+              {isRec ? (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                  <polygon points="12 2 15 9 22 9 17 14 19 22 12 18 5 22 7 14 2 9 9 9" />
+                </svg>
+              ) : (
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
+              )}
+            </div>
+            <div
+              className={`mt-1 px-1.5 py-0.5 rounded-full bg-white whitespace-nowrap shadow-sm ${
+                isRec ? "border border-primary/40" : "border border-border"
+              }`}
+              style={{ fontSize: 10, fontWeight: 600, color: isRec ? "hsl(142 71% 35%)" : "#374151" }}
+            >
+              {shortName(p.name)}
+              <span className="ml-1 font-normal text-muted-foreground">{p.distanceKm}km</span>
+            </div>
+          </button>
+        );
+      })}
 
-        {/* 시장 마커 */}
-        {markets.map((m) => {
-          const isRec = m.id === recommendedId;
-          const isSel = m.id === selectedId;
-          return (
-            <Marker
-              key={m.id}
-              position={[m.lat, m.lng]}
-              icon={marketIcon(shortMarketName(m.name), m.distanceKm, isRec, isSel)}
-              zIndexOffset={isRec ? 1000 : isSel ? 500 : 0}
-              eventHandlers={{ click: () => onSelect(m.id) }}
-            />
-          );
-        })}
+      {/* 농장 마커 */}
+      <div
+        className="absolute -translate-x-1/2 -translate-y-full flex flex-col items-center pointer-events-none"
+        style={{ left: `${farmPos.left}%`, top: `${farmPos.top}%`, zIndex: 3 }}
+      >
+        <div
+          className="flex items-center justify-center w-10 h-10 rounded-full border-[3px] border-white shadow-lg"
+          style={{ background: "hsl(142 71% 35%)", color: "#fff" }}
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2h-4v-7H10v7H5a2 2 0 0 1-2-2z" />
+          </svg>
+        </div>
+        <div
+          className="mt-1 px-2 py-0.5 rounded-full whitespace-nowrap shadow-sm"
+          style={{ fontSize: 10, fontWeight: 700, background: "#111827", color: "#fff" }}
+        >
+          내 농장
+          <span className="ml-1 font-normal opacity-80">{farm.region}</span>
+        </div>
+      </div>
 
-        {/* 농장 마커 */}
-        <Marker
-          position={[farm.lat, farm.lng]}
-          icon={farmIcon(farm.region)}
-          zIndexOffset={2000}
-          interactive={false}
-        />
-      </MapContainer>
+      {/* 범례 */}
+      <div className="absolute left-3 top-3 bg-white/90 backdrop-blur rounded-lg px-2 py-1 text-[10px] text-muted-foreground border border-border" style={{ zIndex: 2 }}>
+        대한민국 출하 위치도
+      </div>
     </div>
   );
 };
