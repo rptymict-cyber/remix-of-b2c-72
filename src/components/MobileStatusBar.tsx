@@ -1,6 +1,6 @@
 const MobileStatusBar = () => {
   return (
-    <div className="flex items-center justify-between px-6 py-1.5 bg-white">
+    <div className="flex items-center justify-between px-6 pb-1.5 pt-[calc(env(safe-area-inset-top,0px)+0.375rem)] bg-white">
       <span className="text-xs font-semibold text-foreground tracking-tight">9:41</span>
       <div className="flex items-center gap-1">
         {/* Cellular signal */}
