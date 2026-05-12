@@ -104,8 +104,10 @@ const ShipmentMap = ({ farm, markets, recommendedId, selectedId, onSelect }: Pro
         style={{ height: "100%", width: "100%", background: "#eef3f7" }}
       >
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-          url="https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
+          url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+          subdomains={["a", "b", "c", "d"]}
+          maxZoom={19}
         />
         <FitBounds points={allPoints} />
 

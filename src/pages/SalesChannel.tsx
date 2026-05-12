@@ -75,16 +75,21 @@ const SalesChannelPage = () => {
     setSelectedMapId(best.m.id);
   }, [best.m.id]);
 
-  const mapMarkets = sorted.slice(0, 5).map((s) => ({
-    id: s.m.id,
-    name: s.m.name,
-    distanceKm: s.m.distanceKm,
-    lat: MARKET_COORDS[s.m.id]?.lat ?? 37,
-    lng: MARKET_COORDS[s.m.id]?.lng ?? 127.5,
-    netRevenue: s.netRevenue,
-    unitPrice: s.unitPrice,
-    logistics: s.logistics,
-  }));
+  // 출하 위치 비교 지도: 주요 3개 시장만 노출 (마커 겹침 방지)
+  const MAP_MARKET_IDS = ["suwon", "garak", "daegu"] as const;
+  const mapMarkets = MAP_MARKET_IDS
+    .map((id) => sorted.find((s) => s.m.id === id))
+    .filter((s): s is NonNullable<typeof s> => Boolean(s))
+    .map((s) => ({
+      id: s.m.id,
+      name: s.m.name,
+      distanceKm: s.m.distanceKm,
+      lat: MARKET_COORDS[s.m.id]?.lat ?? 37,
+      lng: MARKET_COORDS[s.m.id]?.lng ?? 127.5,
+      netRevenue: s.netRevenue,
+      unitPrice: s.unitPrice,
+      logistics: s.logistics,
+    }));
   const selectedMap = mapMarkets.find((m) => m.id === selectedMapId) || mapMarkets[0];
 
   return (
