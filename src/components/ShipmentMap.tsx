@@ -30,7 +30,7 @@ const HIT_AREAS: Record<string, { left: number; top: number; w: number; h: numbe
 const ShipmentMap = ({ markets, onSelect }: Props) => {
   return (
     <div
-      className="relative rounded-3xl overflow-hidden border border-border bg-white shadow-[0_4px_16px_rgba(17,24,39,0.06)]"
+      className="relative rounded-3xl overflow-hidden bg-white shadow-[0_4px_16px_rgba(17,24,39,0.06)]"
     >
       <img
         src={mapStatic}
