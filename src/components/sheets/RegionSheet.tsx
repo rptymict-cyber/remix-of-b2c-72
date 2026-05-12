@@ -39,7 +39,15 @@ interface Props {
   onConfirm: (region: string) => void;
 }
 
-const RegionSheet = ({ open, onOpenChange, currentRegion, selectedRegion, recents = [], onConfirm }: Props) => {
+const DEFAULT_RECENTS = [
+  "충청남도 천안시",
+  "충청남도 논산시",
+  "전라북도 김제시",
+  "경기도 평택시",
+  "충청북도 청주시",
+];
+
+const RegionSheet = ({ open, onOpenChange, currentRegion, selectedRegion, recents = DEFAULT_RECENTS, onConfirm }: Props) => {
   const expandedCurrent = useMemo(() => expandRegion(currentRegion), [currentRegion]);
   const [draft, setDraft] = useState(selectedRegion);
   const [q, setQ] = useState("");
@@ -59,7 +67,7 @@ const RegionSheet = ({ open, onOpenChange, currentRegion, selectedRegion, recent
 
   const recentList = useMemo(() => {
     const merged = [expandedCurrent, ...recents.map(expandRegion)];
-    return Array.from(new Set(merged));
+    return Array.from(new Set(merged)).slice(0, 5);
   }, [expandedCurrent, recents]);
 
   const disabled = draft === selectedRegion;
