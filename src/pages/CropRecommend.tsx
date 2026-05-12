@@ -299,13 +299,13 @@ const SummaryStat = ({
 }) => {
   const s = TONE_STYLES[tone];
   return (
-    <div className={`rounded-full border ${s.bg} pl-1.5 pr-2 py-1.5 flex items-center gap-2`}>
-      <span className={`w-7 h-7 rounded-full ${s.iconBg} ${s.iconText} inline-flex items-center justify-center shrink-0`}>
+    <div className={`rounded-xl border ${s.bg} px-2 py-2 flex items-center gap-2`}>
+      <span className={`w-7 h-7 rounded-lg ${s.iconBg} ${s.iconText} inline-flex items-center justify-center shrink-0`}>
         {icon}
       </span>
       <p className="flex-1 min-w-0 text-[12px] font-bold text-foreground truncate">{label}</p>
       <span
-        className={`shrink-0 px-2.5 py-1 rounded-full text-[11px] font-bold ${s.badgeBg} ${s.badgeText}`}
+        className={`shrink-0 px-2 py-0.5 rounded-md text-[11px] font-bold ${s.badgeBg} ${s.badgeText}`}
       >
         {value}
       </span>
