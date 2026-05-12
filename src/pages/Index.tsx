@@ -171,7 +171,7 @@ const HomePage = () => {
 
         {/* 빠른 진입 4개 */}
         <section>
-          <h2 className="text-sm font-semibold text-foreground mb-2.5">빠른 진입</h2>
+          <h2 className="text-sm font-semibold text-foreground mb-2.5">주요 서비스</h2>
           <div className="grid grid-cols-2 gap-3">
             {[
               { icon: BarChart3, title: "실시간 시세", desc: "전국 도매시장 시세", color: "bg-primary/10", iconColor: "text-primary", route: "/market" },
