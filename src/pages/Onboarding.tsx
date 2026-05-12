@@ -656,17 +656,42 @@ const IntroVisual = ({ kind }: { kind: string }) => {
   }
   if (kind === "map") {
     return (
-      <div className="relative w-[280px] h-[300px]">
-        {/* Stylized Korea peninsula */}
-        <svg viewBox="0 0 200 240" className="w-full h-full" fill="hsl(152 45% 80%)">
+      <div className="relative w-[300px] h-[320px]">
+        {/* Watercolor Korea peninsula */}
+        <svg viewBox="0 0 200 220" className="absolute inset-0 w-full h-full" preserveAspectRatio="xMidYMid meet">
+          <defs>
+            <radialGradient id="koreaFill" cx="55%" cy="40%" r="70%">
+              <stop offset="0%" stopColor="hsl(152 50% 78%)" stopOpacity="0.95" />
+              <stop offset="70%" stopColor="hsl(152 45% 70%)" stopOpacity="0.85" />
+              <stop offset="100%" stopColor="hsl(152 40% 65%)" stopOpacity="0.6" />
+            </radialGradient>
+          </defs>
+          {/* Mainland — rough Korean peninsula silhouette */}
           <path
-            d="M92 8 C 78 14, 68 24, 66 40 C 56 44, 50 56, 56 70 C 46 76, 44 92, 56 100 C 46 108, 48 124, 60 130 C 52 142, 56 158, 70 164 C 60 178, 66 196, 82 204 C 78 218, 90 232, 108 230 C 126 226, 138 212, 138 196 C 152 192, 160 176, 154 160 C 166 154, 170 138, 162 124 C 172 116, 174 100, 164 90 C 174 80, 174 64, 162 56 C 170 44, 166 28, 150 22 C 144 10, 116 2, 92 8 Z M 70 50 C 62 48, 58 42, 64 36 C 70 32, 76 38, 74 46 Z"
+            fill="url(#koreaFill)"
+            d="M105,8 C95,6 85,10 82,20 C70,18 60,24 62,38 C54,42 48,52 56,62 C44,66 40,80 52,88 C42,96 44,110 56,114 C46,124 50,138 62,142 C52,154 58,170 72,172 C66,184 72,196 86,198 C82,210 92,222 108,218 C124,214 132,202 130,190 C144,188 152,176 148,164 C160,160 168,148 162,136 C172,128 172,114 162,108 C172,100 172,86 160,82 C168,72 166,58 154,54 C158,42 152,30 138,28 C136,16 122,8 105,8 Z"
+          />
+          {/* Jeju island */}
+          <ellipse cx="92" cy="208" rx="10" ry="5" fill="url(#koreaFill)" />
+          {/* Subtle inner province lines */}
+          <path
+            d="M82,60 Q105,68 130,55 M70,100 Q100,108 145,95 M75,140 Q100,150 140,135"
+            stroke="hsl(152 40% 60%)"
+            strokeWidth="0.4"
+            strokeOpacity="0.35"
+            fill="none"
           />
         </svg>
-        {/* Map pins with price pills */}
-        <MapPin2 className="top-[6%] left-[2%]" label="가락시장" price="3,240원" />
-        <MapPin2 className="top-[34%] right-0" label="대구북부시장" price="2,980원" />
-        <MapPin2 className="top-[60%] right-[4%]" label="부산엄궁시장" price="3,100원" />
+
+        {/* Pins on map */}
+        <MapPinMarker className="top-[28%] left-[42%]" />
+        <MapPinMarker className="top-[44%] left-[58%]" />
+        <MapPinMarker className="top-[68%] left-[48%]" />
+
+        {/* Floating cards */}
+        <PriceCard className="top-[10%] left-0" label="가락시장" price="3,240원" />
+        <PriceCard className="top-[36%] right-0" label="대구북부시장" price="2,980원" />
+        <PriceCard className="top-[68%] right-[2%]" label="부산엄궁시장" price="3,100원" />
       </div>
     );
   }
