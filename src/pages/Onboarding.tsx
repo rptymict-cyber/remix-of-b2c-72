@@ -254,53 +254,56 @@ const Onboarding = () => {
         <MobileStatusBar />
         <Header onBack={() => setStep("name")} />
         <div className="flex-1 px-5 pt-2 overflow-y-auto">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <h2 className="text-[20px] font-extrabold leading-snug text-foreground">
-                농장이 위치한 지역을<br />선택해주세요.
-              </h2>
-              <p className="mt-2 text-[13px] text-muted-foreground">
-                시세 조회와 판매처 추천의 기준 지역으로 사용됩니다.
-              </p>
-            </div>
-            <button
-              onClick={() => {
-                setProvince("충청남도");
-                setCity("공주시");
-                toast({ description: "현재 위치로 설정했어요" });
-              }}
-              className="shrink-0 mt-1 inline-flex items-center gap-1 text-[12px] text-[hsl(152_55%_42%)] font-medium"
-            >
-              <MapPin className="w-3.5 h-3.5" /> 현재 위치로 설정
-            </button>
-          </div>
+          <h2 className="text-[22px] font-extrabold leading-snug text-foreground tracking-tight">
+            농장이 위치한<br />지역을 선택해주세요.
+          </h2>
+          <p className="mt-2.5 text-[13px] text-muted-foreground">
+            시세 조회와 판매처 추천의 기준 지역으로 사용됩니다.
+          </p>
 
-          <div className="mt-7 space-y-4">
+          <button
+            onClick={() => {
+              setProvince("충청남도");
+              setCity("공주시");
+              toast({ description: "현재 위치로 설정했어요" });
+            }}
+            className="mt-5 inline-flex items-center gap-1.5 h-9 pl-3 pr-3.5 rounded-full border border-border bg-white text-[12.5px] text-foreground font-medium active:scale-[0.98] transition"
+          >
+            <MapPin className="w-3.5 h-3.5 text-[hsl(152_55%_42%)]" /> 현재 위치로 설정
+          </button>
+
+          <div className="mt-7 space-y-5">
             <div>
-              <p className="text-[12px] text-muted-foreground mb-1.5">시·도 선택</p>
-              <select
-                value={doProvince}
-                onChange={(e) => {
-                  setProvince(e.target.value);
-                  setCity("");
-                }}
-                className={`w-full h-12 px-4 rounded-xl border bg-background text-[14px] appearance-none ${doProvince ? "border-[hsl(152_55%_42%)] text-foreground" : "border-border text-muted-foreground"}`}
-              >
-                <option value="">시·도를 선택해주세요</option>
-                {Object.keys(REGIONS_KR).map((p) => <option key={p}>{p}</option>)}
-              </select>
+              <p className="text-[12.5px] text-muted-foreground mb-2">시·도</p>
+              <div className="relative">
+                <select
+                  value={doProvince}
+                  onChange={(e) => {
+                    setProvince(e.target.value);
+                    setCity("");
+                  }}
+                  className={`w-full h-12 pl-4 pr-10 rounded-xl border border-border bg-white text-[14px] appearance-none focus:outline-none focus:border-[hsl(152_55%_42%)] ${doProvince ? "text-foreground" : "text-muted-foreground"}`}
+                >
+                  <option value="">시·도를 선택해주세요</option>
+                  {Object.keys(REGIONS_KR).map((p) => <option key={p}>{p}</option>)}
+                </select>
+                <ChevronDown className="w-4 h-4 text-muted-foreground absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              </div>
             </div>
             <div>
-              <p className="text-[12px] text-muted-foreground mb-1.5">시·군·구 선택</p>
-              <select
-                value={city}
-                disabled={!doProvince}
-                onChange={(e) => setCity(e.target.value)}
-                className={`w-full h-12 px-4 rounded-xl border bg-background text-[14px] appearance-none disabled:opacity-50 ${city ? "border-[hsl(152_55%_42%)] text-foreground" : "border-border text-muted-foreground"}`}
-              >
-                <option value="">{doProvince ? "시·군·구를 선택해주세요" : "시·도를 먼저 선택해주세요"}</option>
-                {cities.map((c) => <option key={c}>{c}</option>)}
-              </select>
+              <p className="text-[12.5px] text-muted-foreground mb-2">시·군·구</p>
+              <div className="relative">
+                <select
+                  value={city}
+                  disabled={!doProvince}
+                  onChange={(e) => setCity(e.target.value)}
+                  className={`w-full h-12 pl-4 pr-10 rounded-xl border border-border bg-white text-[14px] appearance-none focus:outline-none focus:border-[hsl(152_55%_42%)] disabled:opacity-60 ${city ? "text-foreground" : "text-muted-foreground"}`}
+                >
+                  <option value="">{doProvince ? "시·군·구를 선택해주세요" : "시·도를 먼저 선택해주세요"}</option>
+                  {cities.map((c) => <option key={c}>{c}</option>)}
+                </select>
+                <ChevronDown className="w-4 h-4 text-muted-foreground absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              </div>
             </div>
             <p className="text-[12px] text-muted-foreground pt-1">
               읍·면·동 단위까지는 입력하지 않아도 됩니다.
