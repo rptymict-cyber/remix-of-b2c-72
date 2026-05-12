@@ -23,7 +23,44 @@ const MARKET_COORDS: Record<string, { lat: number; lng: number }> = {
   suwon: { lat: 37.2636, lng: 127.0286 },
   cheongju: { lat: 36.6424, lng: 127.4890 },
 };
-const FARM_COORD = { lat: 36.4467, lng: 127.1188 }; // 충남 공주시
+const FARM_COORDS: Record<string, { lat: number; lng: number }> = {
+  "충남 공주시": { lat: 36.4467, lng: 127.1188 },
+  "충청남도 공주시": { lat: 36.4467, lng: 127.1188 },
+  "충청남도 천안시": { lat: 36.8151, lng: 127.1139 },
+  "충청남도 논산시": { lat: 36.1871, lng: 127.0987 },
+  "충청남도 부여군": { lat: 36.2756, lng: 126.9098 },
+  "충청남도 서산시": { lat: 36.7845, lng: 126.4503 },
+  "충청북도 청주시": { lat: 36.6424, lng: 127.4890 },
+  "충청북도 충주시": { lat: 36.9910, lng: 127.9259 },
+  "충청북도 제천시": { lat: 37.1326, lng: 128.1910 },
+  "전라북도 김제시": { lat: 35.8036, lng: 126.8808 },
+  "전라북도 전주시": { lat: 35.8242, lng: 127.1480 },
+  "전라북도 익산시": { lat: 35.9483, lng: 126.9576 },
+  "전라북도 정읍시": { lat: 35.5699, lng: 126.8560 },
+  "전라북도 남원시": { lat: 35.4164, lng: 127.3904 },
+  "전라남도 나주시": { lat: 35.0161, lng: 126.7108 },
+  "전라남도 순천시": { lat: 34.9506, lng: 127.4872 },
+  "전라남도 해남군": { lat: 34.5735, lng: 126.5993 },
+  "전라남도 영암군": { lat: 34.8002, lng: 126.6968 },
+  "경상북도 안동시": { lat: 36.5684, lng: 128.7294 },
+  "경상북도 경주시": { lat: 35.8562, lng: 129.2247 },
+  "경상북도 상주시": { lat: 36.4109, lng: 128.1591 },
+  "경상북도 영천시": { lat: 35.9733, lng: 128.9386 },
+  "경상북도 의성군": { lat: 36.3527, lng: 128.6972 },
+  "경상남도 진주시": { lat: 35.1800, lng: 128.1076 },
+  "경상남도 창원시": { lat: 35.2285, lng: 128.6811 },
+  "경상남도 김해시": { lat: 35.2285, lng: 128.8894 },
+  "경기도 안성시": { lat: 37.0080, lng: 127.2798 },
+  "경기도 평택시": { lat: 36.9921, lng: 127.1128 },
+  "경기도 이천시": { lat: 37.2722, lng: 127.4350 },
+  "경기도 여주시": { lat: 37.2980, lng: 127.6372 },
+  "강원특별자치도 춘천시": { lat: 37.8813, lng: 127.7298 },
+  "강원특별자치도 원주시": { lat: 37.3422, lng: 127.9202 },
+  "강원특별자치도 강릉시": { lat: 37.7519, lng: 128.8761 },
+  "제주특별자치도 제주시": { lat: 33.4996, lng: 126.5312 },
+  "제주특별자치도 서귀포시": { lat: 33.2539, lng: 126.5598 },
+};
+const DEFAULT_FARM_COORD = FARM_COORDS["충남 공주시"];
 
 type SortKey = "netRevenue" | "unitPrice" | "logistics" | "distance";
 
@@ -77,12 +114,10 @@ const SalesChannelPage = () => {
     setSelectedMapId(best.m.id);
   }, [best.m.id]);
 
-  // 출하 위치 비교 지도: 주요 3개 시장만 노출 (마커 겹침 방지)
-  const MAP_MARKET_IDS = ["suwon", "garak", "daegu"] as const;
-  const mapMarkets = MAP_MARKET_IDS
-    .map((id) => sorted.find((s) => s.m.id === id))
-    .filter((s): s is NonNullable<typeof s> => Boolean(s))
-    .map((s) => ({
+  const farmCoord = FARM_COORDS[profile.region] ?? DEFAULT_FARM_COORD;
+
+  // 지도 마커는 하단 시장 랭킹과 동일한 정렬 데이터의 상위 5개만 사용
+  const mapMarkets = sorted.slice(0, 5).map((s) => ({
       id: s.m.id,
       name: s.m.name,
       distanceKm: s.m.distanceKm,
@@ -92,7 +127,6 @@ const SalesChannelPage = () => {
       unitPrice: s.unitPrice,
       logistics: s.logistics,
     }));
-  const selectedMap = mapMarkets.find((m) => m.id === selectedMapId) || mapMarkets[0];
 
   return (
     <div className="h-full bg-background">
@@ -170,7 +204,7 @@ const SalesChannelPage = () => {
             </div>
           </div>
           <ShipmentMap
-            farm={{ name: "내 농장", region: profile.region, lat: FARM_COORD.lat, lng: FARM_COORD.lng }}
+            farm={{ name: "내 농장", region: profile.region, lat: farmCoord.lat, lng: farmCoord.lng }}
             markets={mapMarkets}
             recommendedId={best.m.id}
             selectedId={selectedMapId}
