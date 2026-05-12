@@ -67,13 +67,13 @@ const BottomNav = () => {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-50 bg-white"
+      className="fixed bottom-0 left-0 right-0 z-50 mx-auto w-full max-w-[430px] bg-white"
       style={{
         paddingBottom: "env(safe-area-inset-bottom, 0px)",
         boxShadow: "0 -1px 0 hsl(220 13% 91%)",
       }}
     >
-      <div className="flex items-center justify-around h-[64px] max-w-lg mx-auto px-2">
+      <div className="flex items-center justify-around h-[64px] w-full px-2">
         {tabs.map((tab) => {
           const active = isActive(tab.id);
           const Icon = tab.icon;
