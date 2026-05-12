@@ -7,6 +7,7 @@ import { CROPS, MARKETS, findCrop, seedPrice, transportCost } from "@/data/catal
 import CropSheet from "@/components/sheets/CropSheet";
 import QtySheet from "@/components/sheets/QtySheet";
 import MarketDetailSheet from "@/components/sheets/MarketDetailSheet";
+import LocationSheet, { shortCity } from "@/components/sheets/LocationSheet";
 import ShipmentMap from "@/components/ShipmentMap";
 
 // 시장별 대략 좌표 (한국 지도상 위치)
@@ -32,12 +33,17 @@ const sortLabels: Record<SortKey, string> = {
 };
 
 const SalesChannelPage = () => {
-  const { cropId, profile, shipQtyKg, basis, setBasis } = useApp();
+  const { cropId, profile, shipQtyKg, basis, setBasis, setProfile } = useApp();
   const [sortBy, setSortBy] = useState<SortKey>("netRevenue");
   const [cropOpen, setCropOpen] = useState(false);
   const [qtyOpen, setQtyOpen] = useState(false);
   const [detailMarketId, setDetailMarketId] = useState<string | null>(null);
   const [selectedMapId, setSelectedMapId] = useState<string | null>(null);
+  const [locOpen, setLocOpen] = useState(false);
+  const [recents, setRecents] = useState<string[]>([
+    "전라북도 김제시",
+    "경상북도 안동시",
+  ]);
 
   const crop = findCrop(cropId);
   const unitWeight = crop.defaultUnitKg;
@@ -95,8 +101,13 @@ const SalesChannelPage = () => {
             {shipQtyKg.toLocaleString()}kg · {boxes}상자
             <ChevronDown className="w-3 h-3 text-muted-foreground" />
           </button>
-          <button className="filter-chip justify-center text-xs px-2 py-1.5">
-            출발 {profile.region}
+          <button
+            onClick={() => setLocOpen(true)}
+            className="filter-chip justify-center text-xs px-2 py-1.5"
+          >
+            <MapPin className="w-3 h-3 text-primary" />
+            {shortCity(profile.region)}
+            <ChevronDown className="w-3 h-3 text-muted-foreground" />
           </button>
         </div>
 
@@ -295,6 +306,20 @@ const SalesChannelPage = () => {
       <BottomNav />
       <CropSheet open={cropOpen} onOpenChange={setCropOpen} />
       <QtySheet open={qtyOpen} onOpenChange={setQtyOpen} />
+      <LocationSheet
+        open={locOpen}
+        onOpenChange={setLocOpen}
+        currentRegion={profile.region}
+        selectedRegion={profile.region}
+        recents={recents}
+        onConfirm={(region) => {
+          setProfile({ region });
+          setRecents((prev) => {
+            const next = [region, ...prev.filter((r) => r !== region && r !== profile.region)];
+            return next.slice(0, 5);
+          });
+        }}
+      />
       <MarketDetailSheet
         open={!!detailMarketId}
         onOpenChange={(o) => !o && setDetailMarketId(null)}
