@@ -208,3 +208,41 @@ html, body, #root {
     padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
   }
 }
+
+@layer utilities {
+  @keyframes splash-card-pop {
+    0% { transform: scale(0.7); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  @keyframes splash-text-up {
+    0% { transform: translateY(8px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+  }
+  @keyframes splash-fade-out {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+  @keyframes intro-slide-in {
+    0% { transform: translateX(40px); opacity: 0; }
+    100% { transform: translateX(0); opacity: 1; }
+  }
+  .splash-card {
+    animation: splash-card-pop 800ms cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+  }
+  .splash-text {
+    animation: splash-text-up 600ms ease-out 250ms both;
+  }
+  .splash-out {
+    animation: splash-fade-out 400ms ease forwards;
+  }
+  .intro-enter {
+    animation: intro-slide-in 360ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    @keyframes rm-fade-in { 0% { opacity: 0; } 100% { opacity: 1; } }
+    .splash-card { animation: rm-fade-in 300ms ease both; }
+    .splash-text { animation: rm-fade-in 300ms ease both; }
+    .splash-out { animation: splash-fade-out 200ms ease forwards; }
+    .intro-enter { animation: rm-fade-in 200ms ease both; }
+  }
+}
