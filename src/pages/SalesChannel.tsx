@@ -225,10 +225,7 @@ const SalesChannelPage = () => {
           <span className="text-sm font-semibold text-foreground">시장 랭킹</span>
           <button
             className="text-[11px] text-primary flex items-center gap-0.5 font-medium"
-            onClick={() => {
-              const keys: SortKey[] = ["netRevenue", "unitPrice", "logistics", "distance"];
-              setSortBy(keys[(keys.indexOf(sortBy) + 1) % keys.length]);
-            }}
+            onClick={() => setSortOpen(true)}
           >
             {sortLabels[sortBy]} <ChevronDown className="w-3 h-3" />
           </button>
