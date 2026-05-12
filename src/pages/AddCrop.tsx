@@ -3,64 +3,62 @@ import { ChevronLeft, Search, Check, MapPin, Store, Pencil } from "lucide-react"
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useApp } from "@/store/appStore";
-import { CROPS, MARKETS, findCrop, findMarket } from "@/data/catalog";
+import { MARKETS, findMarket } from "@/data/catalog";
+import {
+  ALL_CROPS,
+  REPRESENTATIVE_CROPS,
+  CATEGORIES,
+  searchCrops,
+  filterByCategory,
+  findCropById,
+  type CropCategory,
+  type CropItem,
+} from "@/data/cropCatalog";
 import MobileStatusBar from "@/components/MobileStatusBar";
 import { Drawer, DrawerContent } from "@/components/ui/drawer";
 
 type RegType = "growing" | "interest";
-
-const PRIORITY_IDS = ["apple", "cabbage", "onion", "radish"];
-const EXTRA_IDS = ["pepper", "tomato", "strawberry"];
-
-// 작물별 품종/품목 (스펙 기준)
-const VARIETY_MAP: Record<string, { label: "품종" | "품목"; items: string[] }> = {
-  apple: { label: "품종", items: ["후지", "홍로", "감홍"] },
-  cabbage: { label: "품목", items: ["봄배추", "고랭지배추", "김장배추"] },
-  onion: { label: "품목", items: ["황양파", "적양파", "조생양파"] },
-  radish: { label: "품목", items: ["봄무", "고랭지무", "가을무"] },
-  pepper: { label: "품종", items: ["건고추", "홍고추", "풋고추"] },
-  tomato: { label: "품종", items: ["완숙토마토", "방울토마토", "대추방울토마토"] },
-  strawberry: { label: "품종", items: ["설향", "금실", "킹스베리"] },
-};
+const ALL_LABEL = "전체 품종";
 
 const AddCrop = () => {
   const nav = useNavigate();
-  const { profile, marketId, setMarket, toggleMyCrop } = useApp();
+  const { profile, marketId, setMarket } = useApp();
 
   const [step, setStep] = useState<1 | 2>(1);
   const [q, setQ] = useState("");
-  const [selectedCrop, setSelectedCrop] = useState<string>("");
-  const [variety, setVariety] = useState<string>("");
+  const [category, setCategory] = useState<CropCategory | "전체">("전체");
+  const [selectedCropId, setSelectedCropId] = useState<string>("");
+  const [variety, setVariety] = useState<string>(ALL_LABEL);
   const [varOpen, setVarOpen] = useState(false);
   const [regType, setRegType] = useState<RegType>("growing");
   const [marketSel, setMarketSel] = useState<string>(marketId || "gwangju");
   const [marketOpen, setMarketOpen] = useState(false);
 
-  const allCrops = useMemo(() => {
-    const ids = [...PRIORITY_IDS, ...EXTRA_IDS];
-    return ids.map((id) => CROPS.find((c) => c.id === id)!).filter(Boolean);
-  }, []);
-  const filtered = q ? allCrops.filter((c) => c.name.includes(q)) : allCrops;
-
-  const crop = selectedCrop ? findCrop(selectedCrop) : null;
+  const crop = selectedCropId ? findCropById(selectedCropId) : null;
   const market = findMarket(marketSel);
-  const varSpec = selectedCrop ? VARIETY_MAP[selectedCrop] : null;
-  const allLabel = varSpec ? `전체 ${varSpec.label}` : "전체 품종";
 
-  const handlePickCrop = (id: string) => {
-    setSelectedCrop(id);
-    setVariety(`전체 ${VARIETY_MAP[id].label}`);
+  // 검색 + 카테고리 필터
+  const listed = useMemo(() => {
+    const base = q.trim() ? searchCrops(q) : ALL_CROPS;
+    return category === "전체" ? base : base.filter((c) => c.category === category);
+  }, [q, category]);
+
+  const showRepresentative = !q.trim() && category === "전체";
+  const fullList = useMemo(() => filterByCategory(category), [category]);
+
+  const handlePickCrop = (c: CropItem) => {
+    setSelectedCropId(c.id);
+    setVariety(ALL_LABEL);
     setVarOpen(true);
   };
 
   const goNext = () => {
-    if (!selectedCrop || !variety) return;
+    if (!selectedCropId) return;
     setStep(2);
   };
 
   const submit = () => {
     if (!crop) return;
-    if (!profile.myCrops.includes(crop.id)) toggleMyCrop(crop.id);
     setMarket(marketSel);
     toast.success(`${crop.name}이(가) 내 작물에 추가되었습니다.`);
     nav("/crop");
@@ -115,10 +113,32 @@ const AddCrop = () => {
             />
           </div>
 
+          {/* 카테고리 칩 */}
+          <div className="-mx-4 px-4 overflow-x-auto scrollbar-hide">
+            <div className="flex gap-2 w-max pb-1">
+              {(["전체", ...CATEGORIES] as const).map((cat) => {
+                const sel = category === cat;
+                return (
+                  <button
+                    key={cat}
+                    onClick={() => setCategory(cat)}
+                    className={`px-3.5 py-1.5 rounded-full text-[12px] font-semibold whitespace-nowrap border transition-all ${
+                      sel
+                        ? "bg-primary text-white border-primary"
+                        : "bg-card text-foreground border-border"
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           {crop && (
             <div className="bg-primary/5 border border-primary/20 rounded-2xl px-4 py-3.5 flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <span className="text-2xl">{crop.emoji}</span>
+                <span className="text-2xl">{crop.icon}</span>
                 <div>
                   <p className="text-[11px] text-muted-foreground">선택한 작물</p>
                   <p className="text-sm font-bold text-foreground">
@@ -136,45 +156,29 @@ const AddCrop = () => {
             </div>
           )}
 
-          <div>
-            <p className="text-[13px] font-bold text-foreground mb-3">대표 작물</p>
-            {filtered.length === 0 ? (
+          {/* 검색/카테고리 모드 */}
+          {q.trim() || category !== "전체" ? (
+            listed.length === 0 ? (
               <div className="text-center py-10">
                 <p className="text-sm text-foreground font-medium">검색 결과가 없습니다.</p>
                 <p className="text-xs text-muted-foreground mt-1">다른 작물명으로 다시 검색해 주세요.</p>
               </div>
             ) : (
-              <div className="grid grid-cols-3 gap-x-3 gap-y-5">
-                {filtered.map((c) => {
-                  const sel = selectedCrop === c.id;
-                  return (
-                    <button
-                      key={c.id}
-                      onClick={() => handlePickCrop(c.id)}
-                      className="flex flex-col items-center gap-2"
-                    >
-                      <div
-                        className={`w-[72px] h-[72px] rounded-full flex items-center justify-center text-[34px] border-2 transition-all ${
-                          sel
-                            ? "border-primary bg-primary/10 shadow-[0_4px_14px_-4px_hsl(var(--primary)/0.4)]"
-                            : "border-border bg-card"
-                        }`}
-                      >
-                        {c.emoji}
-                      </div>
-                      <span
-                        className={`text-[13px] font-semibold ${
-                          sel ? "text-primary" : "text-foreground"
-                        }`}
-                      >
-                        {c.name}
-                      </span>
-                    </button>
-                  );
-                })}
+              <CropGrid items={listed} selectedId={selectedCropId} onPick={handlePickCrop} />
+            )
+          ) : (
+            <>
+              <div>
+                <p className="text-[13px] font-bold text-foreground mb-3">대표 작물</p>
+                <CropGrid items={REPRESENTATIVE_CROPS} selectedId={selectedCropId} onPick={handlePickCrop} />
               </div>
-            )}
-          </div>
+              <div className="pt-1">
+                <p className="text-[13px] font-bold text-foreground mb-3">전체 작물</p>
+                <CropGrid items={fullList} selectedId={selectedCropId} onPick={handlePickCrop} />
+              </div>
+            </>
+          )}
+          {showRepresentative && false}
         </main>
       ) : (
         <main className="px-4 pt-5 space-y-5">
@@ -182,7 +186,7 @@ const AddCrop = () => {
           {crop && (
             <div className="bg-primary/5 border border-primary/20 rounded-2xl px-4 py-3.5 flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <span className="text-2xl">{crop.emoji}</span>
+                <span className="text-2xl">{crop.icon}</span>
                 <div>
                   <p className="text-[11px] text-muted-foreground">선택한 작물</p>
                   <p className="text-sm font-bold text-foreground">
@@ -272,7 +276,7 @@ const AddCrop = () => {
         {step === 1 ? (
           <button
             onClick={goNext}
-            disabled={!selectedCrop || !variety}
+            disabled={!selectedCropId}
             className="w-full py-3.5 rounded-2xl bg-primary text-white text-[15px] font-bold disabled:opacity-40"
           >
             다음
@@ -291,18 +295,17 @@ const AddCrop = () => {
       <Drawer open={varOpen} onOpenChange={setVarOpen}>
         <DrawerContent className="px-4 pb-6">
           <h3 className="text-base font-bold text-foreground text-center mb-3 pt-2">
-            {crop && varSpec ? `${crop.name} ${varSpec.label} 선택` : "선택"}
+            {crop ? `${crop.name} 품종 선택` : "품종 선택"}
           </h3>
-          <div className="space-y-1.5">
-            {varSpec &&
-              [allLabel, ...varSpec.items].map((v) => {
+          <div className="space-y-1.5 max-h-[55vh] overflow-y-auto">
+            {crop &&
+              [ALL_LABEL, ...crop.varieties].map((v) => {
                 const sel = v === variety;
                 return (
                   <button
                     key={v}
                     onClick={() => {
                       setVariety(v);
-                      setVarOpen(false);
                     }}
                     className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl border ${
                       sel ? "border-primary bg-primary/5" : "border-border bg-card"
@@ -316,8 +319,7 @@ const AddCrop = () => {
           </div>
           <button
             onClick={() => setVarOpen(false)}
-            disabled={!variety}
-            className="w-full mt-4 py-3.5 rounded-2xl bg-primary text-white text-sm font-bold disabled:opacity-40"
+            className="w-full mt-4 py-3.5 rounded-2xl bg-primary text-white text-sm font-bold"
           >
             선택 완료
           </button>
@@ -356,6 +358,46 @@ const AddCrop = () => {
     </div>
   );
 };
+
+const CropGrid = ({
+  items,
+  selectedId,
+  onPick,
+}: {
+  items: CropItem[];
+  selectedId: string;
+  onPick: (c: CropItem) => void;
+}) => (
+  <div className="grid grid-cols-3 gap-x-3 gap-y-5">
+    {items.map((c) => {
+      const sel = selectedId === c.id;
+      return (
+        <button
+          key={c.id}
+          onClick={() => onPick(c)}
+          className="flex flex-col items-center gap-2"
+        >
+          <div
+            className={`w-[72px] h-[72px] rounded-full flex items-center justify-center text-[32px] border-2 transition-all ${
+              sel
+                ? "border-primary bg-primary/10 shadow-[0_4px_14px_-4px_hsl(var(--primary)/0.4)]"
+                : "border-border bg-card"
+            }`}
+          >
+            {c.icon}
+          </div>
+          <span
+            className={`text-[12px] font-semibold text-center leading-tight ${
+              sel ? "text-primary" : "text-foreground"
+            }`}
+          >
+            {c.name}
+          </span>
+        </button>
+      );
+    })}
+  </div>
+);
 
 const Section = ({
   title,
