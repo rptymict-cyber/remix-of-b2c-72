@@ -218,6 +218,22 @@ html, body, #root {
   .safe-bottom {
     padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
   }
+
+  /* === Map z-index clamp ===
+     Leaflet uses internal z-index (panes 200–700, controls/popups 800+).
+     Force everything map-related to stay below app chrome and bottom sheets. */
+  .leaflet-container,
+  .leaflet-pane,
+  .leaflet-top,
+  .leaflet-bottom,
+  .leaflet-control,
+  .leaflet-popup,
+  .leaflet-tooltip,
+  .leaflet-marker-icon,
+  .leaflet-marker-shadow {
+    z-index: 1 !important;
+  }
+  .leaflet-container { position: relative; }
 }
 
 @layer utilities {
