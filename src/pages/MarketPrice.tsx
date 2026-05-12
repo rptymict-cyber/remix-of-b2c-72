@@ -10,6 +10,7 @@ import { findCrop, findMarket, seedPrice } from "@/data/catalog";
 import CropSheet from "@/components/sheets/CropSheet";
 import MarketSheet from "@/components/sheets/MarketSheet";
 import VarietySheet from "@/components/sheets/VarietySheet";
+import UnitSheet from "@/components/sheets/UnitSheet";
 
 const chartData = [
   { date: "4/8", price: 48200, volume: 1120 },
@@ -68,7 +69,9 @@ const MarketPricePage = () => {
   const [cropOpen, setCropOpen] = useState(false);
   const [marketOpen, setMarketOpen] = useState(false);
   const [varietyOpen, setVarietyOpen] = useState(false);
+  const [unitOpen, setUnitOpen] = useState(false);
   const crop = findCrop(cropId);
+  const [unitKg, setUnitKg] = useState<number>(crop.defaultUnitKg);
   const market = findMarket(marketId);
   const price = seedPrice(cropId, marketId, variety);
 
@@ -88,8 +91,8 @@ const MarketPricePage = () => {
           <button onClick={() => setMarketOpen(true)} className="filter-chip justify-center text-xs px-2 py-1.5">
             {market.name}<ChevronDown className="w-3 h-3 text-muted-foreground" />
           </button>
-          <button className="filter-chip justify-center text-xs px-2 py-1.5">
-            {crop.defaultUnitKg}kg 기준<ChevronDown className="w-3 h-3 text-muted-foreground" />
+          <button onClick={() => setUnitOpen(true)} className="filter-chip justify-center text-xs px-2 py-1.5">
+            {unitKg}kg 기준<ChevronDown className="w-3 h-3 text-muted-foreground" />
           </button>
         </div>
 
@@ -106,7 +109,7 @@ const MarketPricePage = () => {
             <div className="flex items-end justify-between mt-3">
               <div className="flex items-baseline gap-1.5">
                 <span className="text-[32px] font-extrabold text-foreground leading-none tracking-tight">{price.toLocaleString()}</span>
-                <span className="text-sm font-medium text-muted-foreground">원/{crop.defaultUnitKg}kg</span>
+                <span className="text-sm font-medium text-muted-foreground">원/{unitKg}kg</span>
               </div>
               <div className="flex flex-col items-end">
                 <div className="flex items-center gap-0.5">
@@ -367,6 +370,14 @@ const MarketPricePage = () => {
       <CropSheet open={cropOpen} onOpenChange={setCropOpen} />
       <MarketSheet open={marketOpen} onOpenChange={setMarketOpen} />
       <VarietySheet open={varietyOpen} onOpenChange={setVarietyOpen} />
+      <UnitSheet
+        open={unitOpen}
+        onOpenChange={setUnitOpen}
+        cropId={cropId}
+        variety={variety}
+        selectedKg={unitKg}
+        onConfirm={setUnitKg}
+      />
     </div>
   );
 };
