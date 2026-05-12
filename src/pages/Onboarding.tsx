@@ -734,18 +734,25 @@ const IntroVisual = ({ kind }: { kind: string }) => {
   // crop
   return (
     <div className="relative w-[290px]">
-      <div className="relative rounded-3xl bg-[hsl(150_25%_94%)] shadow-[0_10px_30px_rgba(0,0,0,0.08)] px-5 pt-5 pb-6 overflow-hidden">
-        <span className="block text-[12px] text-[hsl(152_55%_42%)] font-extrabold mb-4">AI 추천 작물</span>
-        <div className="flex items-center gap-3 mb-5">
-          <span className="text-[40px] leading-none">🧅</span>
-          <span className="text-[26px] font-extrabold text-foreground">양파</span>
+      <div className="relative rounded-3xl bg-white ring-1 ring-[hsl(150_40%_88%)] shadow-[0_10px_30px_rgba(0,0,0,0.08)] px-5 pt-5 pb-5">
+        {/* Top center pill badge */}
+        <div className="flex justify-center mb-3">
+          <div className="inline-flex items-center gap-1.5 bg-[hsl(150_55%_92%)] rounded-full pl-1.5 pr-3 py-1">
+            <span className="w-5 h-5 rounded-full bg-[hsl(150_55%_42%)] text-white text-[9px] font-extrabold flex items-center justify-center">AI</span>
+            <span className="text-[12px] font-bold text-[hsl(150_45%_28%)]">AI 추천 작물</span>
+          </div>
         </div>
+        {/* Hero: onion + 양파 */}
+        <div className="flex items-center justify-center gap-3 mb-4">
+          <span className="text-[56px] leading-none">🧅</span>
+          <span className="text-[40px] font-extrabold text-[hsl(150_45%_22%)] tracking-tight">양파</span>
+        </div>
+        {/* 3 metric tiles */}
         <div className="grid grid-cols-3 gap-2">
-          <MetricChip label="수익성" value="높음" tone="green" />
-          <MetricChip label="리스크" value="보통" tone="yellow" />
-          <MetricChip label="지역 적합도" value="높음" tone="green" />
+          <MetricChip label="수익성" value="높음" tone="green" icon="profit" />
+          <MetricChip label="리스크" value="보통" tone="yellow" icon="risk" />
+          <MetricChip label="지역 적합도" value="높음" tone="green" icon="region" />
         </div>
-        <span className="absolute bottom-2 right-3 text-[28px] rotate-[20deg] select-none">🌿</span>
       </div>
     </div>
   );
@@ -799,11 +806,47 @@ const MapPinMarker = ({ className }: { className?: string }) => (
   </div>
 );
 
-const MetricChip = ({ label, value, tone }: { label: string; value: string; tone: "green" | "yellow" }) => (
-  <div className="rounded-xl bg-white py-2.5 text-center">
-    <p className="text-[10px] text-muted-foreground leading-tight">{label}</p>
-    <p className={`text-[12px] font-bold mt-1 ${tone === "green" ? "text-[hsl(152_55%_42%)]" : "text-[hsl(28_85%_55%)]"}`}>{value}</p>
-  </div>
-);
+const MetricChip = ({
+  label,
+  value,
+  tone,
+  icon,
+}: {
+  label: string;
+  value: string;
+  tone: "green" | "yellow";
+  icon: "profit" | "risk" | "region";
+}) => {
+  const valueColor = tone === "green" ? "text-[hsl(150_55%_38%)]" : "text-[hsl(28_90%_52%)]";
+  const ringBg = tone === "green" ? "bg-[hsl(150_55%_92%)]" : "bg-[hsl(35_95%_92%)]";
+  const iconColor = tone === "green" ? "hsl(150 55% 38%)" : "hsl(28 90% 52%)";
+  return (
+    <div className="rounded-2xl bg-[hsl(0_0%_98%)] ring-1 ring-[hsl(0_0%_92%)] py-3 px-2 flex flex-col items-center">
+      <div className={`w-9 h-9 rounded-full ${ringBg} flex items-center justify-center mb-1.5`}>
+        {icon === "profit" && (
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={iconColor} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3 17l6-6 4 4 7-8" /><path d="M14 7h6v6" />
+          </svg>
+        )}
+        {icon === "risk" && (
+          <svg width="18" height="18" viewBox="0 0 24 24" fill={iconColor} stroke="none">
+            <path d="M12 2 4 5v6c0 5 3.4 9.3 8 11 4.6-1.7 8-6 8-11V5l-8-3z" />
+            <rect x="11" y="7" width="2" height="6" rx="1" fill="white" />
+            <circle cx="12" cy="16" r="1.2" fill="white" />
+          </svg>
+        )}
+        {icon === "region" && (
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={iconColor} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 22s7-7 7-12a7 7 0 1 0-14 0c0 5 7 12 7 12z" />
+            <circle cx="12" cy="10" r="2.5" fill={iconColor} stroke="none" />
+          </svg>
+        )}
+      </div>
+      <p className="text-[11px] text-muted-foreground leading-tight">{label}</p>
+      <div className="w-6 h-px bg-border my-1.5" />
+      <p className={`text-[13px] font-extrabold ${valueColor}`}>{value}</p>
+    </div>
+  );
+};
 
 export default Onboarding;
