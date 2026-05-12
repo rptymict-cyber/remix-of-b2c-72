@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Drawer, DrawerContent } from "@/components/ui/drawer";
 import { CROPS } from "@/data/catalog";
 import { useApp } from "@/store/appStore";
@@ -18,6 +18,15 @@ const CropSheet = ({ open, onOpenChange }: Props) => {
   const { cropId, setCrop, profile } = useApp();
   const [tab, setTab] = useState<"my" | "all">("my");
   const [q, setQ] = useState("");
+  const [draftId, setDraftId] = useState<string>(cropId);
+
+  useEffect(() => {
+    if (open) {
+      setDraftId(cropId);
+      setTab("my");
+      setQ("");
+    }
+  }, [open, cropId]);
 
   const list = useMemo(() => {
     if (tab === "my") return CROPS.filter((c) => profile.myCrops.includes(c.id));
@@ -27,15 +36,16 @@ const CropSheet = ({ open, onOpenChange }: Props) => {
     return REPRESENTATIVE_ORDER.map((n) => byName.get(n)).filter(Boolean) as typeof CROPS;
   }, [tab, q, profile.myCrops]);
 
-  const select = (id: string) => {
-    const c = CROPS.find((x) => x.id === id)!;
-    setCrop(id, c.varieties[0]);
+  const confirm = () => {
+    if (!draftId) return;
+    const c = CROPS.find((x) => x.id === draftId)!;
+    setCrop(draftId, c.varieties[0]);
     onOpenChange(false);
   };
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="px-4 pb-6 h-[60vh] min-h-[480px] max-h-[75vh]">
+      <DrawerContent className="px-4 pb-[max(env(safe-area-inset-bottom),16px)] h-[60vh] min-h-[480px] max-h-[75vh]">
         <div className="pt-2 flex flex-col h-full min-h-0">
           <h3 className="text-base font-bold text-foreground text-center mb-3 shrink-0">작물 선택</h3>
           <div className="flex gap-2 mb-3 shrink-0">
@@ -62,11 +72,11 @@ const CropSheet = ({ open, onOpenChange }: Props) => {
           )}
           <div className="grid grid-cols-3 gap-2 flex-1 min-h-0 overflow-y-auto pb-2 content-start">
             {list.map((c) => {
-              const sel = c.id === cropId;
+              const sel = c.id === draftId;
               return (
                 <button
                   key={c.id}
-                  onClick={() => select(c.id)}
+                  onClick={() => setDraftId(c.id)}
                   className={`relative flex flex-col items-center justify-center gap-1 py-3 rounded-xl border ${sel ? "border-primary bg-primary/5" : "border-border bg-card"}`}
                 >
                   <span className="text-2xl">{c.emoji}</span>
@@ -78,6 +88,17 @@ const CropSheet = ({ open, onOpenChange }: Props) => {
             {list.length === 0 && (
               <p className="col-span-3 text-center text-xs text-muted-foreground py-6">검색 결과가 없습니다</p>
             )}
+          </div>
+
+          {/* 하단 고정 CTA */}
+          <div className="shrink-0 pt-4">
+            <button
+              onClick={confirm}
+              disabled={!draftId}
+              className="w-full h-12 rounded-2xl bg-primary text-white text-sm font-bold disabled:opacity-40"
+            >
+              선택 완료
+            </button>
           </div>
         </div>
       </DrawerContent>
