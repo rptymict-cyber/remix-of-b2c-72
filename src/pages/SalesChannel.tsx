@@ -128,8 +128,8 @@ const SalesChannelPage = () => {
     setSelectedMapId(best.m.id);
   }, [best.m.id]);
 
-  // 지도 마커는 하단 시장 랭킹과 동일한 정렬 데이터의 상위 5개만 사용
-  const mapMarkets = sorted.slice(0, 5).map((s) => ({
+  // 지도 마커는 하단 시장 랭킹 상위 3개만 노출
+  const mapMarkets = sorted.slice(0, 3).map((s) => ({
       id: s.m.id,
       name: s.m.name,
       distanceKm: s.m.distanceKm,
@@ -139,6 +139,11 @@ const SalesChannelPage = () => {
       unitPrice: s.unitPrice,
       logistics: s.logistics,
     }));
+
+  // 지도에서 선택한 시장 (없으면 추천 1위)
+  const selected =
+    sorted.find((r) => r.m.id === selectedMapId) ?? best;
+  const isRecommended = selected.m.id === best.m.id;
 
   return (
     <div className="h-full bg-background">
