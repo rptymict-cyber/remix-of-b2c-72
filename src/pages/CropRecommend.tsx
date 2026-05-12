@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronDown, ChevronUp, Sprout, TrendingUp, AlertTriangle, BarChart2, ThermometerSun, FileText, MapPin, Ruler, Leaf } from "lucide-react";
+import { ChevronDown, ChevronUp, Sprout, TrendingUp, AlertTriangle, BarChart2, ThermometerSun, FileText, MapPin, Ruler, Leaf, Activity } from "lucide-react";
 import AppHeader from "@/components/AppHeader";
 import BottomNav from "@/components/BottomNav";
 import CropSheet from "@/components/sheets/CropSheet";
@@ -178,16 +178,20 @@ const CropRecommendPage = () => {
               </button>
 
               {expandedCrop === crop.name && (
-                <div className="mt-3 pt-3 border-t border-border space-y-2 animate-fade-in">
-                  <div className="grid grid-cols-2 gap-2 text-[11px]">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">변동성</span>
-                      <span className={`font-medium ${levelColor(crop.volatility)}`}>{crop.volatility}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">지역 적합도</span>
-                      <span className={`font-medium ${profitColor(crop.regionFit)}`}>{crop.regionFit}</span>
-                    </div>
+                <div className="mt-3 pt-3 border-t border-border space-y-3 animate-fade-in">
+                  <div className="grid grid-cols-2 gap-2">
+                    <SummaryStat
+                      icon={<Activity className="w-3.5 h-3.5" />}
+                      label="변동성"
+                      value={crop.volatility}
+                      tone={levelTone(crop.volatility)}
+                    />
+                    <SummaryStat
+                      icon={<MapPin className="w-3.5 h-3.5" />}
+                      label="지역 적합도"
+                      value={crop.regionFit}
+                      tone={fitTone(crop.regionFit)}
+                    />
                   </div>
                   <div className="space-y-1">
                     {crop.details.map((d) => (
@@ -243,3 +247,70 @@ const CropRecommendPage = () => {
 };
 
 export default CropRecommendPage;
+
+type Tone = "good" | "warn" | "bad";
+
+const TONE_STYLES: Record<Tone, { bg: string; iconBg: string; iconText: string; badgeBg: string; badgeText: string }> = {
+  good: {
+    bg: "bg-primary/5 border-primary/20",
+    iconBg: "bg-primary/15",
+    iconText: "text-primary",
+    badgeBg: "bg-primary/15",
+    badgeText: "text-primary",
+  },
+  warn: {
+    bg: "bg-amber-50 border-amber-100",
+    iconBg: "bg-amber-100",
+    iconText: "text-amber-600",
+    badgeBg: "bg-amber-100",
+    badgeText: "text-amber-700",
+  },
+  bad: {
+    bg: "bg-rose-50 border-rose-100",
+    iconBg: "bg-rose-100",
+    iconText: "text-rose-600",
+    badgeBg: "bg-rose-100",
+    badgeText: "text-rose-700",
+  },
+};
+
+const levelTone = (level: string): Tone => {
+  if (level === "낮음" || level === "작음") return "good";
+  if (level === "보통") return "warn";
+  return "bad"; // 높음/큼
+};
+
+const fitTone = (level: string): Tone => {
+  if (level === "높음") return "good";
+  if (level === "보통") return "warn";
+  return "bad";
+};
+
+const SummaryStat = ({
+  icon,
+  label,
+  value,
+  tone,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  tone: Tone;
+}) => {
+  const s = TONE_STYLES[tone];
+  return (
+    <div className={`rounded-xl border ${s.bg} px-3 py-2.5 flex items-center gap-2`}>
+      <span className={`w-7 h-7 rounded-lg ${s.iconBg} ${s.iconText} inline-flex items-center justify-center shrink-0`}>
+        {icon}
+      </span>
+      <div className="flex-1 min-w-0">
+        <p className="text-[10px] font-medium text-muted-foreground leading-none">{label}</p>
+        <span
+          className={`mt-1 inline-block px-2 py-0.5 rounded-full text-[11px] font-bold ${s.badgeBg} ${s.badgeText}`}
+        >
+          {value}
+        </span>
+      </div>
+    </div>
+  );
+};
