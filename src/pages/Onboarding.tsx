@@ -279,11 +279,10 @@ const Onboarding = () => {
             onClick={() => {
               setProvince("충청남도");
               setCity("공주시");
-              toast({ description: "현재 위치로 설정했어요" });
             }}
             className="mt-5 inline-flex items-center gap-1.5 h-9 pl-3 pr-3.5 rounded-full border border-border bg-white text-[12.5px] text-foreground font-medium active:scale-[0.98] transition"
           >
-            <MapPin className="w-3.5 h-3.5 text-[hsl(152_55%_42%)]" /> 현재 위치로 설정
+            <MapPin className="w-3.5 h-3.5 text-[hsl(152_55%_42%)]" /> 현위치
           </button>
 
           <div className="mt-7 space-y-5">
