@@ -57,9 +57,9 @@ const MyPage = () => {
         </section>
 
         <Section title="내 농장 정보">
-          <Row label="농장 위치" value={profile.region} onClick={() => nav("/onboarding")} />
-          <Row label="농장 규모" value={`${profile.farmSize} (${profile.farmAreaM2.toLocaleString()}㎡)`} onClick={() => nav("/onboarding")} />
-          <Row label="재배 작물" value={myCropsLabel} onClick={() => nav("/onboarding")} />
+          <Row label="농장 위치" value={profile.region} onClick={() => nav("/farm-edit")} />
+          <Row label="농장 규모" value={`${profile.farmSize} (${profile.farmAreaM2.toLocaleString()}㎡)`} onClick={() => nav("/farm-edit")} />
+          <Row label="재배 작물" value={myCropsLabel} onClick={() => nav("/farm-edit")} />
         </Section>
 
         <Section title="알림 설정">
