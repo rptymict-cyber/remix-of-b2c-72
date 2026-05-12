@@ -59,14 +59,16 @@ const FarmSizeSheet = ({
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="px-4 pb-6">
-        <div className="pt-2 pb-3 text-center">
+      <DrawerContent>
+        <div className="flex flex-col h-full min-h-0 px-4 pt-2 pb-[max(env(safe-area-inset-bottom),16px)]">
+          <div className="flex-1 min-h-0 overflow-y-auto">
+            <div className="pb-3 text-center">
           <h3 className="text-base font-bold text-foreground">농장 규모</h3>
           <p className="text-[12px] text-muted-foreground mt-1">예상 수확량 계산의 기준이 됩니다</p>
-        </div>
+            </div>
 
-        <p className="text-[12px] font-bold text-foreground mb-2">직접 입력</p>
-        <div className="rounded-2xl border border-border bg-card px-4 py-3 flex items-center gap-3 mb-2">
+            <p className="text-[12px] font-bold text-foreground mb-2">직접 입력</p>
+            <div className="rounded-2xl border border-border bg-card px-4 py-3 flex items-center gap-3 mb-2">
           <input
             inputMode="numeric"
             value={Number(text || 0).toLocaleString()}
@@ -84,18 +86,18 @@ const FarmSizeSheet = ({
               </button>
             ))}
           </div>
-        </div>
+            </div>
 
-        <div className="flex items-center gap-1.5 text-[12px] text-muted-foreground mb-4">
+            <div className="flex items-center gap-1.5 text-[12px] text-muted-foreground mb-4">
           <Sprout className="w-3.5 h-3.5 text-primary" />
           <span>
             {cropName} 기준 예상 수확량 약{" "}
             <span className="text-primary font-bold">{yieldKg.toLocaleString()}kg</span>
           </span>
-        </div>
+            </div>
 
-        <p className="text-[12px] font-bold text-foreground mb-2">빠른 선택</p>
-        <div className="grid grid-cols-4 gap-2 mb-4">
+            <p className="text-[12px] font-bold text-foreground mb-2">빠른 선택</p>
+            <div className="grid grid-cols-4 gap-2 mb-4">
           {PRESETS.map((p) => {
             const sel = draftM2 === p.value;
             return (
@@ -119,23 +121,25 @@ const FarmSizeSheet = ({
               </button>
             );
           })}
-        </div>
+            </div>
 
-        <div className="rounded-xl bg-amber-50 border border-amber-100 px-3 py-2 flex items-start gap-1.5 mb-3">
+            <div className="rounded-xl bg-amber-50 border border-amber-100 px-3 py-2 flex items-start gap-1.5 mb-3">
           <AlertTriangle className="w-3.5 h-3.5 text-amber-500 mt-0.5 shrink-0" />
           <p className="text-[11px] text-amber-700">규모를 변경하면 예상 수익 계산이 다시 계산됩니다</p>
-        </div>
+            </div>
+          </div>
 
-        <button
+          <button
           onClick={() => {
             onConfirm(draftM2);
             onOpenChange(false);
           }}
           disabled={disabled}
-          className="w-full py-3.5 rounded-2xl bg-primary text-white text-sm font-bold disabled:opacity-40"
-        >
+            className="shrink-0 mt-3 w-full h-12 rounded-2xl bg-primary text-white text-sm font-bold disabled:opacity-40"
+          >
           입력 완료
-        </button>
+          </button>
+        </div>
       </DrawerContent>
     </Drawer>
   );

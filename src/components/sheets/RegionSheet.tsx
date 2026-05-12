@@ -66,15 +66,16 @@ const RegionSheet = ({ open, onOpenChange, currentRegion, selectedRegion, recent
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="px-4 pb-6">
-        <div className="pt-2 pb-3">
+      <DrawerContent>
+        <div className="flex flex-col h-full min-h-0 px-4 pt-2 pb-[max(env(safe-area-inset-bottom),16px)]">
+          <div className="shrink-0 pb-3">
           <h3 className="text-base font-bold text-foreground">재배 지역 선택</h3>
           <p className="text-[12px] text-muted-foreground mt-1">
             AI 작물 추천의 기준이 되는 재배 지역입니다.
           </p>
-        </div>
+          </div>
 
-        <div className="rounded-2xl border-2 border-primary bg-primary/5 px-4 py-3 flex items-center gap-3 mb-3">
+          <div className="shrink-0 rounded-2xl border-2 border-primary bg-primary/5 px-4 py-3 flex items-center gap-3 mb-3">
           <div className="w-9 h-9 rounded-full bg-primary/15 flex items-center justify-center">
             <Home className="w-4 h-4 text-primary" />
           </div>
@@ -87,7 +88,7 @@ const RegionSheet = ({ open, onOpenChange, currentRegion, selectedRegion, recent
           </span>
         </div>
 
-        <div className="relative mb-3">
+          <div className="shrink-0 relative mb-3">
           <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <input
             value={q}
@@ -97,7 +98,7 @@ const RegionSheet = ({ open, onOpenChange, currentRegion, selectedRegion, recent
           />
         </div>
 
-        <div className="max-h-[40vh] overflow-y-auto space-y-1.5">
+          <div className="flex-1 min-h-0 overflow-y-auto space-y-1.5">
           {q.trim() ? (
             results.length === 0 ? (
               <div className="text-center py-8">
@@ -127,21 +128,22 @@ const RegionSheet = ({ open, onOpenChange, currentRegion, selectedRegion, recent
           ) : null}
         </div>
 
-        <div className="flex items-center justify-center gap-1 mt-3 text-[11px] text-muted-foreground">
+          <div className="shrink-0 flex items-center justify-center gap-1 mt-2 text-[11px] text-muted-foreground">
           <AlertTriangle className="w-3 h-3" />
           <span>지역을 변경하면 AI 추천 작물이 다시 계산됩니다</span>
         </div>
 
-        <button
+          <button
           onClick={() => {
             onConfirm(draft);
             onOpenChange(false);
           }}
           disabled={disabled}
-          className="w-full mt-3 py-3.5 rounded-2xl bg-primary text-white text-sm font-bold disabled:opacity-40"
-        >
+            className="shrink-0 w-full mt-2 h-12 rounded-2xl bg-primary text-white text-sm font-bold disabled:opacity-40"
+          >
           이 지역으로 추천받기
-        </button>
+          </button>
+        </div>
       </DrawerContent>
     </Drawer>
   );

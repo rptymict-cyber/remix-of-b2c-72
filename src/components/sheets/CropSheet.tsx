@@ -45,10 +45,11 @@ const CropSheet = ({ open, onOpenChange }: Props) => {
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="px-4 pb-[max(env(safe-area-inset-bottom),16px)] h-[60vh] min-h-[480px] max-h-[75vh]">
-        <div className="pt-2 flex flex-col h-full min-h-0">
-          <h3 className="text-base font-bold text-foreground text-center mb-3 shrink-0">작물 선택</h3>
-          <div className="flex gap-2 mb-3 shrink-0">
+      <DrawerContent>
+        <div className="flex flex-col h-full min-h-0 px-4 pt-2 pb-[max(env(safe-area-inset-bottom),16px)]">
+          <div className="shrink-0">
+            <h3 className="text-base font-bold text-foreground text-center mb-3">작물 선택</h3>
+            <div className="flex gap-2 mb-3">
             {(["my", "all"] as const).map((t) => (
               <button
                 key={t}
@@ -58,9 +59,9 @@ const CropSheet = ({ open, onOpenChange }: Props) => {
                 {t === "my" ? "내 작물" : "전체"}
               </button>
             ))}
-          </div>
-          {tab === "all" && (
-            <div className="relative mb-3 shrink-0">
+            </div>
+            {tab === "all" && (
+              <div className="relative mb-3">
               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
               <input
                 value={q}
@@ -68,8 +69,9 @@ const CropSheet = ({ open, onOpenChange }: Props) => {
                 placeholder="작물 이름 검색"
                 className="w-full pl-9 pr-3 py-2 text-sm rounded-lg border border-border bg-background"
               />
-            </div>
-          )}
+              </div>
+            )}
+          </div>
           <div className="grid grid-cols-3 gap-2 flex-1 min-h-0 overflow-y-auto pb-2 content-start">
             {list.map((c) => {
               const sel = c.id === draftId;

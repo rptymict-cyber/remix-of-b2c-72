@@ -12,10 +12,10 @@ const VarietySheet = ({ open, onOpenChange }: Props) => {
   const c = findCrop(cropId);
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="px-4 pb-6">
-        <div className="pt-2">
-          <h3 className="text-base font-bold text-foreground text-center mb-3">품종 선택 · {c.name}</h3>
-          <div className="space-y-1.5">
+      <DrawerContent>
+        <div className="flex flex-col h-full min-h-0 px-4 pt-2 pb-[max(env(safe-area-inset-bottom),16px)]">
+          <h3 className="text-base font-bold text-foreground text-center mb-3 shrink-0">품종 선택 · {c.name}</h3>
+          <div className="space-y-1.5 flex-1 min-h-0 overflow-y-auto">
             {["전체 품종", ...c.varieties].map((v) => {
               const sel = v === variety;
               return (

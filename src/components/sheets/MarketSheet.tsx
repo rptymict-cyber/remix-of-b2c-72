@@ -15,10 +15,11 @@ const MarketSheet = ({ open, onOpenChange }: Props) => {
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="px-4 pb-6">
-        <div className="pt-2">
-          <h3 className="text-base font-bold text-foreground text-center mb-3">시장 선택</h3>
-          <div className="flex gap-1.5 overflow-x-auto scrollbar-hide mb-3">
+      <DrawerContent>
+        <div className="flex flex-col h-full min-h-0 px-4 pt-2 pb-[max(env(safe-area-inset-bottom),16px)]">
+          <div className="shrink-0">
+            <h3 className="text-base font-bold text-foreground text-center mb-3">시장 선택</h3>
+            <div className="flex gap-1.5 overflow-x-auto scrollbar-hide mb-3">
             {REGION_GROUPS.map((r) => (
               <button
                 key={r}
@@ -28,8 +29,9 @@ const MarketSheet = ({ open, onOpenChange }: Props) => {
                 {r}
               </button>
             ))}
+            </div>
           </div>
-          <div className="space-y-1.5 max-h-[55vh] overflow-y-auto">
+          <div className="space-y-1.5 flex-1 min-h-0 overflow-y-auto">
             {list.map((m) => {
               const sel = m.id === marketId;
               return (
