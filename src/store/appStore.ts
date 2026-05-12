@@ -4,6 +4,8 @@ import { persist } from "zustand/middleware";
 export type Plan = "Free" | "Basic" | "Pro" | "Premium";
 export type Unit = "kg" | "box" | "ton";
 export type ShipmentBasis = "current" | "forecast";
+export type CultivationMethod = "노지" | "시설";
+export type SeasonBasis = "이번" | "다음";
 
 export interface UserProfile {
   name: string;
@@ -13,6 +15,8 @@ export interface UserProfile {
   myCrops: string[]; // crop ids
   plan: Plan;
   onboarded: boolean;
+  cultivationMethod?: CultivationMethod;
+  seasonBasis?: SeasonBasis;
 }
 
 export interface NotificationSettings {
@@ -66,6 +70,8 @@ export const useApp = create<AppState>()(
         myCrops: ["pepper", "cabbage", "apple"],
         plan: "Free",
         onboarded: false,
+        cultivationMethod: "노지",
+        seasonBasis: "이번",
       },
       notif: {
         priceAlert: true,
