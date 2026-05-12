@@ -102,8 +102,6 @@ const FarmEdit = () => {
     nav("/mypage");
   };
 
-  const removeCrop = (id: string) => setMyCrops((prev) => prev.filter((x) => x !== id));
-
   const filteredCrops = CROPS.filter((c) => c.name.includes(cropQuery.trim()));
   const aiList = filteredCrops.filter((c) => AI_CROPS.has(c.id));
   const restList = filteredCrops.filter((c) => !AI_CROPS.has(c.id));
