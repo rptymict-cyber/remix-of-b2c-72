@@ -220,6 +220,7 @@ const SalesChannelPage = () => {
             markets={mapMarkets}
             recommendedId={best.m.id}
             selectedId={selectedMapId}
+            disabled={cropOpen || qtyOpen || locOpen || sortOpen || !!detailMarketId}
             onSelect={setSelectedMapId}
           />
           {best && (
