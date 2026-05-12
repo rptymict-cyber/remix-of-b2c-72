@@ -96,6 +96,7 @@ const ShipmentMap = ({ farm, markets, recommendedId, selectedId, onSelect }: Pro
       className="relative rounded-2xl overflow-hidden border border-border bg-card"
       style={{ height: 280 }}
     >
+      <style>{`.leaflet-control-attribution{display:none !important}`}</style>
       <MapContainer
         center={[farm.lat, farm.lng]}
         zoom={8}
