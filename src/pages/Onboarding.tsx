@@ -7,7 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import MobileStatusBar from "@/components/MobileStatusBar";
 import koreaMapImg from "@/assets/korea-map.png";
 import chartImg from "@/assets/onboarding-chart.png";
-import splashLogo from "@/assets/splash-logo.png";
+import splashFull from "@/assets/splash-full.png";
 
 type Step = "splash" | "intro" | "name" | "region" | "size" | "crops" | "done";
 
@@ -94,18 +94,15 @@ const Onboarding = () => {
   // ===================== SPLASH =====================
   const SplashOverlay = ({ leaving }: { leaving?: boolean }) => (
     <div
-      className={`absolute inset-0 z-50 flex flex-col items-center justify-center bg-gradient-to-b from-[hsl(152_55%_42%)] to-[hsl(152_60%_32%)] ${leaving ? "splash-out pointer-events-none" : ""}`}
+      className={`absolute inset-0 z-50 ${leaving ? "splash-out pointer-events-none" : ""}`}
     >
       <img
-        src={splashLogo}
-        alt="앱 로고"
-        className="splash-card w-[108px] h-[108px] mb-5 select-none"
+        src={splashFull}
+        alt="농산물 시세 예측 서비스"
+        className="splash-card absolute inset-0 w-full h-full object-cover select-none"
         style={{ willChange: "transform, opacity" }}
         draggable={false}
       />
-      <h1 className="splash-text text-white text-[22px] font-extrabold tracking-tight">
-        농산물 시세 예측 서비스
-      </h1>
     </div>
   );
   if (step === "splash") {
