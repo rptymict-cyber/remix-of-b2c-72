@@ -740,13 +740,22 @@ const IntroVisual = ({ kind }: { kind: string }) => {
   );
 };
 
-const MapPin2 = ({ className, label, price }: { className?: string; label: string; price: string }) => (
-  <div className={`absolute flex flex-col items-center ${className}`}>
-    <div className="bg-white rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.1)] border border-border/60 px-2.5 py-1.5 text-left mb-1">
-      <p className="text-[10px] text-muted-foreground leading-none">{label}</p>
-      <p className="text-[12px] font-bold text-foreground mt-0.5 leading-none">{price}</p>
-    </div>
-    <span className="w-3 h-3 rounded-full bg-[hsl(152_55%_42%)] border-2 border-white shadow" />
+const PriceCard = ({ className, label, price }: { className?: string; label: string; price: string }) => (
+  <div className={`absolute bg-white rounded-xl shadow-[0_6px_18px_rgba(0,0,0,0.12)] px-3 py-2 text-left ${className}`}>
+    <p className="text-[11px] text-muted-foreground leading-tight">{label}</p>
+    <p className="text-[13px] font-extrabold text-foreground mt-0.5 leading-tight">{price}</p>
+  </div>
+);
+
+const MapPinMarker = ({ className }: { className?: string }) => (
+  <div className={`absolute -translate-x-1/2 -translate-y-full ${className}`}>
+    <svg width="22" height="28" viewBox="0 0 22 28" fill="none">
+      <path
+        d="M11 0C5 0 0 4.5 0 10.5C0 18 11 28 11 28C11 28 22 18 22 10.5C22 4.5 17 0 11 0Z"
+        fill="hsl(152 55% 42%)"
+      />
+      <circle cx="11" cy="10.5" r="3.5" fill="white" />
+    </svg>
   </div>
 );
 
