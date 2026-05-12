@@ -91,16 +91,18 @@ const QtySheet = ({ open, onOpenChange }: Props) => {
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="px-5 pb-6">
-        <div className="pt-2 text-center">
+      <DrawerContent>
+        <div className="flex flex-col h-full min-h-0 px-5 pt-2 pb-[max(env(safe-area-inset-bottom),16px)]">
+          <div className="flex-1 min-h-0 overflow-y-auto">
+            <div className="text-center">
           <h3 className="text-base font-bold text-foreground">출하량 입력</h3>
           <p className="text-[12px] text-muted-foreground mt-1">
             출하할 물량을 입력하고 단위를 선택해 주세요
           </p>
-        </div>
+            </div>
 
         {/* 입력 + 단위 세그먼트 */}
-        <div className="mt-4 rounded-2xl border border-border bg-card px-4 py-3 flex items-center gap-3">
+            <div className="mt-4 rounded-2xl border border-border bg-card px-4 py-3 flex items-center gap-3">
           <input
             type="number"
             inputMode="numeric"
@@ -132,15 +134,15 @@ const QtySheet = ({ open, onOpenChange }: Props) => {
               );
             })}
           </div>
-        </div>
+            </div>
 
         {/* 기준 안내 */}
-        <p className="text-[11px] text-muted-foreground mt-2 px-1">
+            <p className="text-[11px] text-muted-foreground mt-2 px-1">
           {crop.emoji} {crop.name} 기준 1상자 = {boxKg}kg · 입력값 최대 {MAX_KG.toLocaleString()}kg
-        </p>
+            </p>
 
         {/* 빠른 입력 — 선택된 단위 기준 프리셋 */}
-        <div className="mt-3 grid grid-cols-4 gap-2">
+            <div className="mt-3 grid grid-cols-4 gap-2">
           {QUICK_PRESETS[u].map((preset) => {
             const presetKg = Math.round(cfg.toKg(preset, boxKg));
             const sel = valKg === presetKg;
@@ -159,10 +161,10 @@ const QtySheet = ({ open, onOpenChange }: Props) => {
               </button>
             );
           })}
-        </div>
+            </div>
 
         {/* 자동 입력 카드 */}
-        <button
+            <button
           onClick={() => {
             setU("kg");
             setVal(estimatedKg);
@@ -178,27 +180,31 @@ const QtySheet = ({ open, onOpenChange }: Props) => {
               {profile.farmAreaM2.toLocaleString()}㎡ 예상 수확량 약 {estimatedKg.toLocaleString()}kg
             </p>
           </div>
-        </button>
+            </button>
 
         {/* 에러 메시지 */}
-        {error && (
+            {error && (
           <p className="text-[11px] text-destructive mt-2 px-1">{error}</p>
-        )}
+            )}
+          </div>
 
-        {/* CTA */}
-        <button
+          {/* CTA */}
+          <div className="shrink-0 pt-3">
+            <button
           onClick={apply}
           disabled={!!error}
-          className="mt-4 w-full py-3.5 rounded-2xl bg-primary text-white text-[15px] font-bold disabled:opacity-40"
-        >
+              className="w-full h-12 rounded-2xl bg-primary text-white text-[15px] font-bold disabled:opacity-40"
+            >
           입력 완료
-        </button>
-        <button
+            </button>
+            <button
           onClick={reset}
-          className="mt-2 w-full py-2 text-[13px] font-medium text-muted-foreground"
-        >
+              className="mt-1 w-full py-1.5 text-[12px] font-medium text-muted-foreground"
+            >
           초기화
-        </button>
+            </button>
+          </div>
+        </div>
       </DrawerContent>
     </Drawer>
   );
