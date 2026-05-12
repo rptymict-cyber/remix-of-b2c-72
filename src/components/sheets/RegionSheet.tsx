@@ -112,7 +112,7 @@ const RegionSheet = ({ open, onOpenChange, currentRegion, selectedRegion, recent
               />
             </div>
 
-            <div className="space-y-1.5">
+            <div className="space-y-2.5">
               {q.trim() ? (
                 results.length === 0 ? (
                   <div className="text-center py-8">
@@ -122,34 +122,38 @@ const RegionSheet = ({ open, onOpenChange, currentRegion, selectedRegion, recent
                     <p className="text-xs text-muted-foreground mt-1">시·군·구 단위로 검색해주세요.</p>
                   </div>
                 ) : (
-                  results.map((r) => (
-                    <RegionRow key={r} label={r} selected={draft === r} onClick={() => setDraft(r)} />
-                  ))
+                  <div className="space-y-2.5">
+                    {results.map((r) => (
+                      <RegionRow key={r} label={r} selected={draft === r} onClick={() => setDraft(r)} />
+                    ))}
+                  </div>
                 )
               ) : recentList.length > 0 ? (
                 <div>
-                  <p className="text-[11px] font-bold text-muted-foreground px-1 mb-1.5">최근 사용 위치</p>
-                  {recentList.map((r) => (
-                    <RegionRow
-                      key={r}
-                      label={r}
-                      isCurrent={r === expandedCurrent}
-                      selected={draft === r}
-                      onClick={() => setDraft(r)}
-                    />
-                  ))}
+                  <p className="text-[11px] font-bold text-muted-foreground px-1 mb-2">최근 사용 위치</p>
+                  <div className="space-y-2.5">
+                    {recentList.map((r) => (
+                      <RegionRow
+                        key={r}
+                        label={r}
+                        isCurrent={r === expandedCurrent}
+                        selected={draft === r}
+                        onClick={() => setDraft(r)}
+                      />
+                    ))}
+                  </div>
                 </div>
               ) : null}
             </div>
 
-            <div className="flex items-center justify-center gap-1 pt-1 text-[11px] text-muted-foreground">
+            <div className="flex items-center justify-center gap-1 pt-2 text-[11px] text-muted-foreground">
               <AlertTriangle className="w-3 h-3" />
               <span>지역을 변경하면 AI 추천 작물이 다시 계산됩니다</span>
             </div>
           </div>
 
           {/* === 고정 하단 버튼 === */}
-          <div className="shrink-0 px-4 pt-3">
+          <div className="shrink-0 px-4 pt-4">
             <button
               onClick={() => {
                 onConfirm(draft);
@@ -180,18 +184,18 @@ const RegionRow = ({
 }) => (
   <button
     onClick={onClick}
-    className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border min-h-[48px] ${
+    className={`w-full flex items-center justify-between gap-3 px-4 py-3.5 rounded-2xl border min-h-[52px] ${
       selected ? "border-primary bg-primary/5" : "border-border bg-card"
     }`}
   >
-    <div className="flex items-center gap-2">
-      <span className="text-sm font-medium text-foreground">{label}</span>
+    <div className="flex items-center gap-2 min-w-0 flex-1">
+      <span className="text-sm font-medium text-foreground truncate">{label}</span>
       {isCurrent && (
-        <span className="text-[10px] font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded">현재</span>
+        <span className="shrink-0 text-[10px] font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded">현재</span>
       )}
     </div>
     <span
-      className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+      className={`shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center ${
         selected ? "border-primary bg-primary" : "border-border"
       }`}
     >
