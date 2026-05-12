@@ -55,7 +55,7 @@ const ShipmentMap = ({ farm, markets, recommendedId, selectedId, onSelect }: Pro
     >
       {/* 한반도 실루엣 + 연결선 + 마커 모두 동일 SVG 안에서 그려 레이어 충돌 방지 */}
       <svg
-        viewBox="0 0 100 120"
+        viewBox="0 0 100 100"
         preserveAspectRatio="xMidYMid meet"
         className="absolute inset-0 w-full h-full"
       >
@@ -69,10 +69,10 @@ const ShipmentMap = ({ farm, markets, recommendedId, selectedId, onSelect }: Pro
             <stop offset="100%" stopColor="hsl(142 40% 78%)" />
           </linearGradient>
         </defs>
-        <rect width="100" height="120" fill="url(#grid)" />
+        <rect width="100" height="100" fill="url(#grid)" />
 
         {/* 남한 실루엣 (ViewBox는 0~100 가로, 0~120 세로 — bbox 비율과 맞춤) */}
-        <g transform="translate(0,0) scale(1, 1.05)">
+        <g transform="translate(0,-2) scale(1, 0.88)">
           <path
             d={KOREA_PATH}
             fill="url(#land)"
@@ -89,9 +89,9 @@ const ShipmentMap = ({ farm, markets, recommendedId, selectedId, onSelect }: Pro
             <line
               key={`l-${p.id}`}
               x1={farmPos.left}
-              y1={farmPos.top * 1.2}
+              y1={farmPos.top}
               x2={p.left}
-              y2={p.top * 1.2}
+              y2={p.top}
               stroke={isRec ? "hsl(142 71% 35%)" : "hsl(220 10% 60%)"}
               strokeWidth={isRec ? "0.7" : "0.4"}
               strokeDasharray={isRec ? undefined : "1.2 1.4"}
