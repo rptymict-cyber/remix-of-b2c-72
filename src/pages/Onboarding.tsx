@@ -95,12 +95,13 @@ const Onboarding = () => {
     <div
       className={`absolute inset-0 z-50 flex flex-col items-center justify-center bg-gradient-to-b from-[hsl(152_55%_42%)] to-[hsl(152_60%_32%)] ${leaving ? "splash-out pointer-events-none" : ""}`}
     >
-      <div
-        className="splash-card w-[108px] h-[108px] rounded-[30px] bg-white shadow-xl flex items-center justify-center mb-5"
+      <img
+        src={splashLogo}
+        alt="앱 로고"
+        className="splash-card w-[108px] h-[108px] mb-5 select-none"
         style={{ willChange: "transform, opacity" }}
-      >
-        <Recycle className="w-14 h-14 text-[hsl(152_55%_42%)]" strokeWidth={2.4} />
-      </div>
+        draggable={false}
+      />
       <h1 className="splash-text text-white text-[22px] font-extrabold tracking-tight">
         농산물 시세 예측 서비스
       </h1>
