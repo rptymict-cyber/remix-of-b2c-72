@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronDown, ChevronUp, Sprout, TrendingUp, AlertTriangle, BarChart2, ThermometerSun, FileText, MapPin, Ruler, Leaf } from "lucide-react";
+import { ChevronDown, ChevronUp, Sprout, TrendingUp, AlertTriangle, BarChart2, ThermometerSun, FileText, MapPin, Ruler, Leaf, Activity } from "lucide-react";
 import AppHeader from "@/components/AppHeader";
 import BottomNav from "@/components/BottomNav";
 import CropSheet from "@/components/sheets/CropSheet";
@@ -178,16 +178,20 @@ const CropRecommendPage = () => {
               </button>
 
               {expandedCrop === crop.name && (
-                <div className="mt-3 pt-3 border-t border-border space-y-2 animate-fade-in">
-                  <div className="grid grid-cols-2 gap-2 text-[11px]">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">변동성</span>
-                      <span className={`font-medium ${levelColor(crop.volatility)}`}>{crop.volatility}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">지역 적합도</span>
-                      <span className={`font-medium ${profitColor(crop.regionFit)}`}>{crop.regionFit}</span>
-                    </div>
+                <div className="mt-3 pt-3 border-t border-border space-y-3 animate-fade-in">
+                  <div className="grid grid-cols-2 gap-2">
+                    <SummaryStat
+                      icon={<Activity className="w-3.5 h-3.5" />}
+                      label="변동성"
+                      value={crop.volatility}
+                      tone={levelTone(crop.volatility)}
+                    />
+                    <SummaryStat
+                      icon={<MapPin className="w-3.5 h-3.5" />}
+                      label="지역 적합도"
+                      value={crop.regionFit}
+                      tone={fitTone(crop.regionFit)}
+                    />
                   </div>
                   <div className="space-y-1">
                     {crop.details.map((d) => (
