@@ -183,7 +183,7 @@ const SalesChannelPage = () => {
                   )}
                   <span className="text-[17px] font-extrabold text-foreground tracking-tight">{selectedMap.name}</span>
                 </div>
-                <span className="text-[12px] text-muted-foreground flex items-center gap-1 font-medium">
+                <span className="text-[12px] text-primary flex items-center gap-1 font-semibold">
                   <Truck className="w-4 h-4" /> {selectedMap.distanceKm}km
                 </span>
               </div>
