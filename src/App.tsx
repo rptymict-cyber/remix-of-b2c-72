@@ -32,7 +32,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <div className="mx-auto max-w-[430px] min-h-[100dvh] bg-background shadow-sm relative overflow-hidden">
+        <div className="mx-auto max-w-[430px] min-h-[100dvh] bg-background shadow-sm relative overflow-x-clip">
         <Routes>
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/" element={<Gate><Index /></Gate>} />
