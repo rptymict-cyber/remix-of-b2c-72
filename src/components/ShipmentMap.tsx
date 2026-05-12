@@ -101,12 +101,11 @@ const ShipmentMap = ({ farm, markets, recommendedId, selectedId, onSelect }: Pro
         zoom={8}
         scrollWheelZoom={false}
         zoomControl={false}
+        attributionControl={false}
         style={{ height: "100%", width: "100%", background: "#eef3f7" }}
       >
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
-          url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-          subdomains={["a", "b", "c", "d"]}
+          url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
           maxZoom={19}
         />
         <FitBounds points={allPoints} />
