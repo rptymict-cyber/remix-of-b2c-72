@@ -228,15 +228,17 @@ const SalesChannelPage = () => {
             disabled={cropOpen || qtyOpen || locOpen || sortOpen || !!detailMarketId}
             onSelect={setSelectedMapId}
           />
-          {best && (
+          {selected && (
             <div className="bg-white border border-border rounded-3xl p-3.5 shadow-[0_4px_16px_rgba(17,24,39,0.06)]">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <span className="text-[11px] font-bold text-primary bg-primary/10 border border-primary/30 px-2 py-0.5 rounded-md">추천</span>
-                  <span className="text-base font-bold text-foreground">{best.m.name}</span>
+                  {isRecommended && (
+                    <span className="text-[11px] font-bold text-primary bg-primary/10 border border-primary/30 px-2 py-0.5 rounded-md">추천</span>
+                  )}
+                  <span className="text-base font-bold text-foreground">{selected.m.name}</span>
                 </div>
                 <span className="text-xs text-primary flex items-center gap-1 font-semibold">
-                  <Truck className="w-3.5 h-3.5" /> {best.m.distanceKm}km
+                  <Truck className="w-3.5 h-3.5" /> {selected.m.distanceKm}km
                 </span>
               </div>
               <div className="grid grid-cols-3 gap-1.5">
@@ -244,23 +246,23 @@ const SalesChannelPage = () => {
                   <div className="flex items-center justify-center gap-0.5 text-muted-foreground text-[10px] mb-1">
                     <Tag className="w-3 h-3 text-primary" /> 예상 단가
                   </div>
-                  <p className="font-bold text-foreground text-[13px]">{best.unitPrice.toLocaleString()}원</p>
+                  <p className="font-bold text-foreground text-[13px]">{selected.unitPrice.toLocaleString()}원</p>
                 </div>
                 <div className="bg-muted/60 border border-border/60 rounded-2xl px-1.5 py-2 text-center">
                   <div className="flex items-center justify-center gap-0.5 text-muted-foreground text-[10px] mb-1">
                     <Truck className="w-3 h-3 text-primary" /> 물류비
                   </div>
-                  <p className="font-bold text-foreground text-[13px]">{best.logistics.toLocaleString()}원</p>
+                  <p className="font-bold text-foreground text-[13px]">{selected.logistics.toLocaleString()}원</p>
                 </div>
                 <div className="bg-primary/10 border border-primary/20 rounded-2xl px-1.5 py-2 text-center">
                   <div className="flex items-center justify-center gap-0.5 text-muted-foreground text-[10px] mb-1">
                     <span className="inline-flex items-center justify-center w-3 h-3 rounded-full bg-primary text-white text-[7px] font-bold leading-none">₩</span> 예상 순이익
                   </div>
-                  <p className="font-bold text-primary text-[13px]">{best.netRevenue.toLocaleString()}원</p>
+                  <p className="font-bold text-primary text-[13px]">{selected.netRevenue.toLocaleString()}원</p>
                 </div>
               </div>
               <button
-                onClick={() => setDetailMarketId(best.m.id)}
+                onClick={() => setDetailMarketId(selected.m.id)}
                 className="mt-3 relative w-full h-12 rounded-2xl bg-primary text-white text-sm font-bold flex items-center justify-center shadow-[0_2px_8px_rgba(34,139,76,0.25)]"
               >
                 <span>이 시장 자세히 보기</span>
