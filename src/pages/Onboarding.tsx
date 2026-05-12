@@ -51,6 +51,7 @@ const Onboarding = () => {
   const { toast } = useToast();
   const { profile, setProfile, completeOnboarding } = useApp();
   const [step, setStep] = useState<Step>("splash");
+  const [splashOut, setSplashOut] = useState(false);
   const [intro, setIntro] = useState(0);
   const [name, setName] = useState(profile.name === "농부" ? "" : profile.name);
   const [doProvince, setProvince] = useState("");
@@ -61,13 +62,21 @@ const Onboarding = () => {
   const [cropQuery, setCropQuery] = useState("");
   const introRef = useRef<HTMLDivElement>(null);
 
-  // splash auto advance
+  // splash auto advance with crossfade overlay (1500ms hold → 400ms fade-out)
   useEffect(() => {
     if (step === "splash") {
-      const t = setTimeout(() => setStep("intro"), 1500);
-      return () => clearTimeout(t);
+      const t1 = setTimeout(() => {
+        setSplashOut(true);
+        setStep("intro");
+      }, 1500);
+      return () => clearTimeout(t1);
     }
   }, [step]);
+  useEffect(() => {
+    if (!splashOut) return;
+    const t = setTimeout(() => setSplashOut(false), 400);
+    return () => clearTimeout(t);
+  }, [splashOut]);
 
   // size in m2
   const sizeM2 = useMemo(() => {
@@ -82,15 +91,23 @@ const Onboarding = () => {
   const progress = stepIndex >= 0 ? (stepIndex + 1) / 4 : 0;
 
   // ===================== SPLASH =====================
-  if (step === "splash") {
-    return (
-      <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-b from-[hsl(152_55%_42%)] to-[hsl(152_60%_32%)] animate-in fade-in duration-300">
-        <div className="w-24 h-24 rounded-3xl bg-white shadow-xl flex items-center justify-center mb-5">
-          <Recycle className="w-12 h-12 text-[hsl(152_55%_42%)]" strokeWidth={2.4} />
-        </div>
-        <h1 className="text-white text-[22px] font-extrabold tracking-tight">농산물 시세 예측 서비스</h1>
+  const SplashOverlay = ({ leaving }: { leaving?: boolean }) => (
+    <div
+      className={`absolute inset-0 z-50 flex flex-col items-center justify-center bg-gradient-to-b from-[hsl(152_55%_42%)] to-[hsl(152_60%_32%)] ${leaving ? "splash-out pointer-events-none" : ""}`}
+    >
+      <div
+        className="splash-card w-[108px] h-[108px] rounded-[30px] bg-white shadow-xl flex items-center justify-center mb-5"
+        style={{ willChange: "transform, opacity" }}
+      >
+        <Recycle className="w-14 h-14 text-[hsl(152_55%_42%)]" strokeWidth={2.4} />
       </div>
-    );
+      <h1 className="splash-text text-white text-[22px] font-extrabold tracking-tight">
+        농산물 시세 예측 서비스
+      </h1>
+    </div>
+  );
+  if (step === "splash") {
+    return <SplashOverlay />;
   }
 
   // ===================== INTRO =====================
