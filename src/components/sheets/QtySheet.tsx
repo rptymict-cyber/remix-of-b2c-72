@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { ChevronRight, Sprout } from "lucide-react";
+import { Sprout } from "lucide-react";
 import { Drawer, DrawerContent } from "@/components/ui/drawer";
 import { useApp, type Unit } from "@/store/appStore";
 import { findCrop } from "@/data/catalog";
@@ -163,7 +163,6 @@ const QtySheet = ({ open, onOpenChange }: Props) => {
               {profile.farmAreaM2.toLocaleString()}㎡ 예상 수확량 약 {estimatedKg.toLocaleString()}kg
             </p>
           </div>
-          <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
         </button>
 
         {/* 에러 메시지 */}
