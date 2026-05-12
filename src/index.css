@@ -203,6 +203,17 @@ html, body, #root {
     display: none;
   }
 
+  /* Hide scrollbars inside all bottom sheets / drawers / dialogs */
+  [data-vaul-drawer] *,
+  [role="dialog"] * {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  [data-vaul-drawer] *::-webkit-scrollbar,
+  [role="dialog"] *::-webkit-scrollbar {
+    display: none;
+  }
+
   /* Safe area */
   .safe-bottom {
     padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
