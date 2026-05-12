@@ -36,10 +36,11 @@ const AddCrop = () => {
   const crop = selectedCropId ? findCropById(selectedCropId) : null;
   const market = findMarket(marketSel);
 
-  // 검색 + 카테고리 필터
+  // 검색어가 있으면 카테고리 필터 무시하고 전체 작물 기준 검색
   const listed = useMemo(() => {
-    const base = q.trim() ? searchCrops(q) : ALL_CROPS;
-    return category === "전체" ? base : base.filter((c) => c.category === category);
+    if (q.trim()) return searchCrops(q);
+    if (category === "전체") return ALL_CROPS;
+    return ALL_CROPS.filter((c) => c.category === category);
   }, [q, category]);
 
   const showRepresentative = !q.trim() && category === "전체";
@@ -131,8 +132,8 @@ const AddCrop = () => {
             />
           </div>
 
-          {/* 카테고리 칩 */}
-          <div className="-mx-4 overflow-x-auto scrollbar-hide">
+          {/* 카테고리 칩 — 마우스 드래그 + 터치 스크롤 */}
+          <DragScroller className="-mx-4 overflow-x-auto scrollbar-hide">
             <div className="flex gap-2 w-max px-4 pb-1">
               {(["전체", ...CATEGORIES] as const).map((cat) => {
                 const sel = category === cat;
@@ -151,7 +152,7 @@ const AddCrop = () => {
                 );
               })}
             </div>
-          </div>
+          </DragScroller>
 
           {crop && (
             <div className="bg-primary/5 border border-primary/20 rounded-2xl px-4 py-3.5 flex items-center justify-between">
