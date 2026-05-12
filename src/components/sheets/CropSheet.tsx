@@ -1,8 +1,14 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Drawer, DrawerContent } from "@/components/ui/drawer";
 import { CROPS } from "@/data/catalog";
 import { useApp } from "@/store/appStore";
 import { Check, Search } from "lucide-react";
+
+// 작물 추가 화면 대표 작물 순서 (전체 탭 노출 기준)
+const REPRESENTATIVE_ORDER = [
+  "벼", "배추", "무", "마늘", "양파", "고추", "사과", "배", "감자",
+  "고구마", "콩", "대파", "감귤", "복숭아", "수박", "딸기", "토마토", "상추",
+];
 
 interface Props {
   open: boolean;
@@ -13,7 +19,13 @@ const CropSheet = ({ open, onOpenChange }: Props) => {
   const [tab, setTab] = useState<"my" | "all">("my");
   const [q, setQ] = useState("");
 
-  const list = tab === "my" ? CROPS.filter((c) => profile.myCrops.includes(c.id)) : CROPS.filter((c) => c.name.includes(q));
+  const list = useMemo(() => {
+    if (tab === "my") return CROPS.filter((c) => profile.myCrops.includes(c.id));
+    if (q.trim()) return CROPS.filter((c) => c.name.includes(q.trim()));
+    // 대표 작물 순서대로 정렬해서 노출
+    const byName = new Map(CROPS.map((c) => [c.name, c]));
+    return REPRESENTATIVE_ORDER.map((n) => byName.get(n)).filter(Boolean) as typeof CROPS;
+  }, [tab, q, profile.myCrops]);
 
   const select = (id: string) => {
     const c = CROPS.find((x) => x.id === id)!;
@@ -23,10 +35,10 @@ const CropSheet = ({ open, onOpenChange }: Props) => {
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="px-4 pb-6">
-        <div className="pt-2">
-          <h3 className="text-base font-bold text-foreground text-center mb-3">작물 선택</h3>
-          <div className="flex gap-2 mb-3">
+      <DrawerContent className="px-4 pb-6 h-[60vh] min-h-[480px] max-h-[75vh]">
+        <div className="pt-2 flex flex-col h-full min-h-0">
+          <h3 className="text-base font-bold text-foreground text-center mb-3 shrink-0">작물 선택</h3>
+          <div className="flex gap-2 mb-3 shrink-0">
             {(["my", "all"] as const).map((t) => (
               <button
                 key={t}
@@ -38,7 +50,7 @@ const CropSheet = ({ open, onOpenChange }: Props) => {
             ))}
           </div>
           {tab === "all" && (
-            <div className="relative mb-3">
+            <div className="relative mb-3 shrink-0">
               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
               <input
                 value={q}
@@ -48,7 +60,7 @@ const CropSheet = ({ open, onOpenChange }: Props) => {
               />
             </div>
           )}
-          <div className="grid grid-cols-3 gap-2 max-h-[50vh] overflow-y-auto">
+          <div className="grid grid-cols-3 gap-2 flex-1 min-h-0 overflow-y-auto pb-2 content-start">
             {list.map((c) => {
               const sel = c.id === cropId;
               return (
