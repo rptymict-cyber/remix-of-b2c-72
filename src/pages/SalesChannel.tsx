@@ -181,7 +181,7 @@ const SalesChannelPage = () => {
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   {selectedMap.id === best.m.id && (
-                    <span className="text-[11px] font-bold text-white bg-primary px-2 py-0.5 rounded-md">추천</span>
+                    <span className="text-[11px] font-bold text-primary bg-primary/10 border border-primary/30 px-2 py-0.5 rounded-md">추천</span>
                   )}
                   <span className="text-base font-bold text-foreground">{selectedMap.name}</span>
                 </div>
