@@ -31,12 +31,14 @@ const DrawerContent = React.forwardRef<
     <DrawerPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed inset-x-0 bottom-0 z-50 mx-auto mt-24 flex h-auto w-full max-w-[430px] flex-col rounded-t-[10px] border bg-background",
+        "fixed inset-x-0 bottom-0 z-50 mx-auto flex w-full max-w-[430px] flex-col rounded-t-[20px] border bg-background overflow-hidden",
         className,
+        // 앱 전체 바텀시트 고정 높이 380px (절대 변경 금지)
+        "h-[380px] min-h-[380px] max-h-[380px]",
       )}
       {...props}
     >
-      <div className="mx-auto mt-4 h-2 w-[100px] rounded-full bg-muted" />
+      <div className="mx-auto mt-2 h-1 w-9 rounded-full bg-muted shrink-0" />
       {children}
     </DrawerPrimitive.Content>
   </DrawerPortal>
