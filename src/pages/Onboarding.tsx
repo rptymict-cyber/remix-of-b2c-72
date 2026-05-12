@@ -106,11 +106,20 @@ const Onboarding = () => {
     };
     return (
       <div className="fixed inset-0 bg-white flex flex-col">
-        <div className="h-12 flex items-center justify-end px-5">
-          {!last && (
-            <button onClick={() => setStep("name")} className="text-[13px] text-muted-foreground">
+        <div className="h-12 flex items-center justify-between px-3">
+          <button
+            onClick={() => intro > 0 && setIntro(intro - 1)}
+            className="w-10 h-10 flex items-center justify-center"
+            aria-label="뒤로"
+          >
+            {intro > 0 ? <ChevronLeft className="w-6 h-6 text-foreground" /> : <span />}
+          </button>
+          {!last ? (
+            <button onClick={() => setStep("name")} className="px-2 text-[13px] text-muted-foreground">
               건너뛰기
             </button>
+          ) : (
+            <span className="w-10" />
           )}
         </div>
         <div
