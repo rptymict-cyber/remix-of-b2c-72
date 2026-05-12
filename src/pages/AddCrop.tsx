@@ -44,7 +44,6 @@ const AddCrop = () => {
   }, [q, category]);
 
   const showRepresentative = !q.trim() && category === "전체";
-  const fullList = useMemo(() => filterByCategory(category), [category]);
 
   const handlePickCrop = (c: CropItem) => {
     setSelectedCropId(c.id);
@@ -114,8 +113,8 @@ const AddCrop = () => {
           </div>
 
           {/* 카테고리 칩 */}
-          <div className="-mx-4 px-4 overflow-x-auto scrollbar-hide">
-            <div className="flex gap-2 w-max pb-1">
+          <div className="-mx-4 overflow-x-auto scrollbar-hide">
+            <div className="flex gap-2 w-max px-4 pb-1">
               {(["전체", ...CATEGORIES] as const).map((cat) => {
                 const sel = category === cat;
                 return (
@@ -156,29 +155,26 @@ const AddCrop = () => {
             </div>
           )}
 
-          {/* 검색/카테고리 모드 */}
-          {q.trim() || category !== "전체" ? (
-            listed.length === 0 ? (
-              <div className="text-center py-10">
-                <p className="text-sm text-foreground font-medium">검색 결과가 없습니다.</p>
-                <p className="text-xs text-muted-foreground mt-1">다른 작물명으로 다시 검색해 주세요.</p>
-              </div>
-            ) : (
-              <CropGrid items={listed} selectedId={selectedCropId} onPick={handlePickCrop} />
-            )
+          {showRepresentative ? (
+            <div>
+              <p className="text-[13px] font-bold text-foreground mb-3">대표 작물</p>
+              <CropGrid items={REPRESENTATIVE_CROPS} selectedId={selectedCropId} onPick={handlePickCrop} />
+            </div>
+          ) : listed.length === 0 ? (
+            <div className="text-center py-10">
+              <p className="text-sm text-foreground font-medium">검색 결과가 없습니다.</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                다른 작물명 또는 분류로 다시 검색해 주세요.
+              </p>
+            </div>
           ) : (
-            <>
-              <div>
-                <p className="text-[13px] font-bold text-foreground mb-3">대표 작물</p>
-                <CropGrid items={REPRESENTATIVE_CROPS} selectedId={selectedCropId} onPick={handlePickCrop} />
-              </div>
-              <div className="pt-1">
-                <p className="text-[13px] font-bold text-foreground mb-3">전체 작물</p>
-                <CropGrid items={fullList} selectedId={selectedCropId} onPick={handlePickCrop} />
-              </div>
-            </>
+            <div>
+              <p className="text-[13px] font-bold text-foreground mb-3">
+                {q.trim() ? `검색 결과 (${listed.length})` : `${category} (${listed.length})`}
+              </p>
+              <CropGrid items={listed} selectedId={selectedCropId} onPick={handlePickCrop} />
+            </div>
           )}
-          {showRepresentative && false}
         </main>
       ) : (
         <main className="px-4 pt-5 space-y-5">
