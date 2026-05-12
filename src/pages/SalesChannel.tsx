@@ -332,6 +332,19 @@ const SalesChannelPage = () => {
           unitWeight,
         } : null}
       />
+      <SortSheet
+        open={sortOpen}
+        onOpenChange={setSortOpen}
+        title="정렬 기준"
+        selected={sortBy}
+        onSelect={setSortBy}
+        options={[
+          { key: "netRevenue", label: "순이익 높은순" },
+          { key: "unitPrice", label: "단가 높은순" },
+          { key: "logistics", label: "물류비 낮은순" },
+          { key: "distance", label: "가까운순" },
+        ]}
+      />
     </div>
   );
 };
