@@ -107,6 +107,7 @@ const Onboarding = () => {
     };
     return (
       <div className="absolute inset-0 bg-white flex flex-col">
+        <MobileStatusBar />
         <div className="h-12 flex items-center justify-between px-3">
           <button
             onClick={() => intro > 0 && setIntro(intro - 1)}
@@ -198,6 +199,7 @@ const Onboarding = () => {
   if (step === "name") {
     return (
       <div className="absolute inset-0 bg-white flex flex-col">
+        <MobileStatusBar />
         <Header onBack={() => setStep("intro")} />
         <div className="flex-1 px-5 pt-2 overflow-y-auto">
           <h2 className="text-[22px] font-extrabold leading-snug text-foreground">
@@ -248,6 +250,7 @@ const Onboarding = () => {
     const cities = doProvince ? REGIONS_KR[doProvince] || [] : [];
     return (
       <div className="absolute inset-0 bg-white flex flex-col">
+        <MobileStatusBar />
         <Header onBack={() => setStep("name")} />
         <div className="flex-1 px-5 pt-2 overflow-y-auto">
           <div className="flex items-start justify-between gap-3">
@@ -319,6 +322,7 @@ const Onboarding = () => {
   if (step === "size") {
     return (
       <div className="absolute inset-0 bg-white flex flex-col">
+        <MobileStatusBar />
         <Header onBack={() => setStep("region")} />
         <div className="flex-1 px-5 pt-2 overflow-y-auto">
           <h2 className="text-[20px] font-extrabold leading-snug text-foreground">
@@ -420,6 +424,7 @@ const Onboarding = () => {
 
     return (
       <div className="absolute inset-0 bg-white flex flex-col">
+        <MobileStatusBar />
         <Header onBack={() => setStep("size")} />
         <div className="px-5 pt-2">
           <h2 className="text-[20px] font-extrabold leading-snug text-foreground">
@@ -489,6 +494,7 @@ const Onboarding = () => {
   const cropObjs = selectedCrops.map((id) => CROPS.find((c) => c.id === id)!).filter(Boolean);
   return (
     <div className="absolute inset-0 bg-white flex flex-col px-5 pt-16 pb-8 animate-in fade-in duration-300">
+        <MobileStatusBar />
       <div className="flex-1 flex flex-col items-center text-center">
         <div className="w-20 h-20 rounded-full bg-[hsl(152_55%_42%)]/10 flex items-center justify-center animate-in zoom-in duration-300">
           <div className="w-14 h-14 rounded-full bg-[hsl(152_55%_42%)] flex items-center justify-center">
