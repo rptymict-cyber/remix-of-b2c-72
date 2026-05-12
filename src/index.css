@@ -239,10 +239,10 @@ html, body, #root {
     animation: intro-slide-in 360ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
   }
   @media (prefers-reduced-motion: reduce) {
-    .splash-card { animation: splash-card-pop 300ms ease both; transform: none; }
-    .splash-card { animation-name: splash-text-up; }
-    .splash-text { animation: splash-text-up 300ms ease both; transform: none; }
-    .splash-out { animation-duration: 200ms; }
-    .intro-enter { animation: splash-text-up 200ms ease both; transform: none; }
+    @keyframes rm-fade-in { 0% { opacity: 0; } 100% { opacity: 1; } }
+    .splash-card { animation: rm-fade-in 300ms ease both; }
+    .splash-text { animation: rm-fade-in 300ms ease both; }
+    .splash-out { animation: splash-fade-out 200ms ease forwards; }
+    .intro-enter { animation: rm-fade-in 200ms ease both; }
   }
 }
