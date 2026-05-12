@@ -375,7 +375,15 @@ const Onboarding = () => {
               {(["평", "㎡"] as const).map((u) => (
                 <button
                   key={u}
-                  onClick={() => setUnit(u)}
+                  onClick={() => {
+                    if (u === unit) return;
+                    const raw = Number(sizeInput.replace(/,/g, ""));
+                    if (raw > 0) {
+                      const converted = u === "㎡" ? raw * 3.306 : raw / 3.306;
+                      setSizeInput(String(Math.round(converted)));
+                    }
+                    setUnit(u);
+                  }}
                   className={`w-12 text-[13px] font-medium ${unit === u ? "bg-[hsl(152_55%_42%)] text-white" : "bg-background text-muted-foreground"}`}
                 >
                   {u}
