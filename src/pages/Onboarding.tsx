@@ -594,29 +594,45 @@ const CropGrid = ({
 const IntroVisual = ({ kind }: { kind: string }) => {
   if (kind === "chart") {
     return (
-      <div className="relative w-[240px] h-[240px] flex items-center justify-center">
+      <div className="relative w-[260px] h-[300px] flex items-center justify-center">
         {/* Phone mockup */}
-        <div className="relative w-[150px] h-[230px] rounded-[28px] bg-white border-[6px] border-foreground/90 shadow-xl overflow-hidden">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-14 h-3 bg-foreground/90 rounded-b-xl" />
-          <div className="absolute inset-0 pt-7 px-3">
-            <svg viewBox="0 0 120 120" className="w-full h-full">
+        <div className="relative w-[180px] h-[280px] rounded-[32px] bg-white border-[6px] border-foreground shadow-[0_20px_40px_rgba(0,0,0,0.18)] overflow-hidden">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-16 h-4 bg-foreground rounded-b-2xl z-10" />
+          <div className="absolute inset-0 pt-8 px-3 flex flex-col">
+            <div className="flex items-center justify-between px-1 mb-2">
+              <span className="text-[8px] text-muted-foreground">‹</span>
+              <span className="text-[8px] text-muted-foreground">시세</span>
+              <span className="w-2" />
+            </div>
+            <svg viewBox="0 0 140 140" className="w-full flex-1" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="chartFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="hsl(152 55% 42%)" stopOpacity="0.18" />
+                  <stop offset="100%" stopColor="hsl(152 55% 42%)" stopOpacity="0" />
+                </linearGradient>
+              </defs>
               <polyline
                 fill="none"
                 stroke="hsl(152 55% 42%)"
                 strokeWidth="2.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                points="5,90 20,75 35,82 50,55 65,60 80,38 95,45 115,15"
+                points="6,110 22,95 38,100 54,72 72,80 90,52 108,60 132,18"
               />
-              <circle cx="115" cy="15" r="3.5" fill="hsl(152 55% 42%)" />
+              <polygon
+                fill="url(#chartFill)"
+                points="6,110 22,95 38,100 54,72 72,80 90,52 108,60 132,18 132,140 6,140"
+              />
+              <circle cx="132" cy="18" r="4" fill="hsl(152 55% 42%)" />
+              <circle cx="132" cy="18" r="2" fill="white" />
             </svg>
           </div>
         </div>
         {/* Floating AI card */}
-        <div className="absolute -bottom-2 -left-4 bg-white rounded-2xl shadow-[0_8px_24px_rgba(0,0,0,0.12)] px-3.5 py-2.5 text-left border border-border/60">
-          <span className="inline-block text-[10px] px-1.5 py-0.5 rounded-md bg-[hsl(152_55%_42%)]/10 text-[hsl(152_55%_42%)] font-bold mb-1">AI 예측</span>
-          <p className="text-[11px] font-bold text-foreground leading-tight">5월 12일(화) 출하 추천</p>
-          <p className="text-[10px] text-muted-foreground mt-0.5">예상 수익 <span className="text-[hsl(152_55%_42%)] font-bold">+8.1%</span></p>
+        <div className="absolute bottom-2 -left-2 bg-white rounded-2xl shadow-[0_10px_28px_rgba(0,0,0,0.14)] px-4 py-3 text-left border border-border/60 min-w-[140px]">
+          <span className="inline-block text-[10px] px-1.5 py-0.5 rounded-md bg-[hsl(152_55%_42%)]/12 text-[hsl(152_55%_42%)] font-bold mb-1.5">AI 예측</span>
+          <p className="text-[12px] font-bold text-foreground leading-tight">5월 12일(화) 출하 추천</p>
+          <p className="text-[11px] text-muted-foreground mt-1">예상 수익 <span className="text-[hsl(152_55%_42%)] font-bold">+8.1%</span></p>
         </div>
       </div>
     );
