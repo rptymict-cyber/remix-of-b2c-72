@@ -62,6 +62,18 @@ const FARM_COORDS: Record<string, { lat: number; lng: number }> = {
 };
 const DEFAULT_FARM_COORD = FARM_COORDS["충남 공주시"];
 
+const estimateDistanceKm = (marketId: string, baseDistanceKm: number, farmCoord: { lat: number; lng: number }) => {
+  if (farmCoord.lat === DEFAULT_FARM_COORD.lat && farmCoord.lng === DEFAULT_FARM_COORD.lng) return baseDistanceKm;
+  const marketCoord = MARKET_COORDS[marketId];
+  if (!marketCoord) return baseDistanceKm;
+  const toRad = (value: number) => (value * Math.PI) / 180;
+  const dLat = toRad(marketCoord.lat - farmCoord.lat);
+  const dLng = toRad(marketCoord.lng - farmCoord.lng);
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(farmCoord.lat)) * Math.cos(toRad(marketCoord.lat)) * Math.sin(dLng / 2) ** 2;
+  const straightKm = 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return Math.max(1, Math.round((straightKm * 1.25) / 5) * 5);
+};
+
 type SortKey = "netRevenue" | "unitPrice" | "logistics" | "distance";
 
 const sortLabels: Record<SortKey, string> = {
@@ -88,14 +100,16 @@ const SalesChannelPage = () => {
   const crop = findCrop(cropId);
   const unitWeight = crop.defaultUnitKg;
   const boxes = Math.max(1, Math.round(shipQtyKg / unitWeight));
+  const farmCoord = FARM_COORDS[profile.region] ?? DEFAULT_FARM_COORD;
 
   const rows = MARKETS.map((m) => {
+    const distanceKm = estimateDistanceKm(m.id, m.distanceKm, farmCoord);
     let unitPrice = seedPrice(cropId, m.id);
     if (basis === "forecast") unitPrice = Math.round(unitPrice * 1.08);
     const totalRevenue = unitPrice * boxes;
-    const logistics = transportCost(m.distanceKm, shipQtyKg);
+    const logistics = transportCost(distanceKm, shipQtyKg);
     const netRevenue = totalRevenue - logistics;
-    return { m, unitPrice, totalRevenue, logistics, netRevenue };
+    return { m: { ...m, distanceKm }, unitPrice, totalRevenue, logistics, netRevenue };
   });
 
   const sorted = [...rows].sort((a, b) => {
@@ -113,8 +127,6 @@ const SalesChannelPage = () => {
   useEffect(() => {
     setSelectedMapId(best.m.id);
   }, [best.m.id]);
-
-  const farmCoord = FARM_COORDS[profile.region] ?? DEFAULT_FARM_COORD;
 
   // 지도 마커는 하단 시장 랭킹과 동일한 정렬 데이터의 상위 5개만 사용
   const mapMarkets = sorted.slice(0, 5).map((s) => ({
