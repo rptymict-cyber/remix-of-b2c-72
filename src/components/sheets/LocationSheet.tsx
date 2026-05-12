@@ -104,7 +104,7 @@ const LocationSheet = ({ open, onOpenChange, currentRegion, selectedRegion, rece
           />
         </div>
 
-          <div className="flex-1 min-h-0 overflow-y-auto space-y-1.5">
+          <div className="flex-1 min-h-0 overflow-y-auto space-y-2.5 -mx-1 px-1">
           {q.trim() ? (
             results.length === 0 ? (
               <div className="text-center py-8">
@@ -116,32 +116,36 @@ const LocationSheet = ({ open, onOpenChange, currentRegion, selectedRegion, rece
                 </p>
               </div>
             ) : (
-              results.map((r) => (
-                <RegionRow
-                  key={r}
-                  label={r}
-                  selected={draft === r}
-                  onClick={() => setDraft(r)}
-                />
-              ))
+              <div className="space-y-2.5">
+                {results.map((r) => (
+                  <RegionRow
+                    key={r}
+                    label={r}
+                    selected={draft === r}
+                    onClick={() => setDraft(r)}
+                  />
+                ))}
+              </div>
             )
           ) : recentList.length > 0 ? (
             <div>
-              <p className="text-[11px] font-bold text-muted-foreground px-1 mb-1.5">최근 사용한 위치</p>
-              {recentList.map((r) => (
-                <RegionRow
-                  key={r}
-                  label={r}
-                  isCurrent={r === expandedCurrent}
-                  selected={draft === r}
-                  onClick={() => setDraft(r)}
-                />
-              ))}
+              <p className="text-[11px] font-bold text-muted-foreground px-1 mb-2">최근 사용한 위치</p>
+              <div className="space-y-2.5">
+                {recentList.map((r) => (
+                  <RegionRow
+                    key={r}
+                    label={r}
+                    isCurrent={r === expandedCurrent}
+                    selected={draft === r}
+                    onClick={() => setDraft(r)}
+                  />
+                ))}
+              </div>
             </div>
           ) : null}
         </div>
 
-          <div className="shrink-0 flex items-center justify-center gap-1 mt-2 text-[11px] text-muted-foreground">
+          <div className="shrink-0 flex items-center justify-center gap-1 mt-3 text-[11px] text-muted-foreground">
           <AlertTriangle className="w-3 h-3" />
           <span>위치를 변경하면 물류비와 순이익이 다시 계산됩니다</span>
         </div>
@@ -152,7 +156,7 @@ const LocationSheet = ({ open, onOpenChange, currentRegion, selectedRegion, rece
             onOpenChange(false);
           }}
           disabled={disabled}
-            className="shrink-0 w-full mt-2 h-12 rounded-2xl bg-primary text-white text-sm font-bold disabled:opacity-40"
+            className="shrink-0 w-full mt-3 h-12 rounded-2xl bg-primary text-white text-sm font-bold disabled:opacity-40"
           >
           이 위치로 계산하기
           </button>
@@ -175,18 +179,18 @@ const RegionRow = ({
 }) => (
   <button
     onClick={onClick}
-    className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border min-h-[48px] ${
+    className={`w-full flex items-center justify-between gap-3 px-4 py-3.5 rounded-2xl border min-h-[52px] ${
       selected ? "border-primary bg-primary/5" : "border-border bg-card"
     }`}
   >
-    <div className="flex items-center gap-2">
-      <span className="text-sm font-medium text-foreground">{label}</span>
+    <div className="flex items-center gap-2 min-w-0 flex-1">
+      <span className="text-sm font-medium text-foreground truncate">{label}</span>
       {isCurrent && (
-        <span className="text-[10px] font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded">현재</span>
+        <span className="shrink-0 text-[10px] font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded">현재</span>
       )}
     </div>
     <span
-      className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+      className={`shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center ${
         selected ? "border-primary bg-primary" : "border-border"
       }`}
     >
