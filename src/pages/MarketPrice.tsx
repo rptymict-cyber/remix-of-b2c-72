@@ -390,6 +390,20 @@ const MarketPricePage = () => {
         selectedKg={unitKg}
         onConfirm={setUnitKg}
       />
+      <SortSheet<MarketSortKey>
+        open={sortOpen}
+        onOpenChange={setSortOpen}
+        title="정렬 기준"
+        selected={marketSort}
+        onSelect={setMarketSort}
+        options={[
+          { key: "priceDesc", label: "높은 가격순" },
+          { key: "priceAsc", label: "낮은 가격순" },
+          { key: "dayChange", label: "상승률순" },
+          { key: "volume", label: "거래량순" },
+          { key: "share", label: "점유율순" },
+        ] as SortOption<MarketSortKey>[]}
+      />
     </div>
   );
 };
