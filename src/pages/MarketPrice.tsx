@@ -12,6 +12,7 @@ import MarketSheet from "@/components/sheets/MarketSheet";
 import VarietySheet from "@/components/sheets/VarietySheet";
 import UnitSheet from "@/components/sheets/UnitSheet";
 import FilterPill from "@/components/common/FilterPill";
+import SortSheet, { SortOption } from "@/components/sheets/SortSheet";
 
 const chartData = [
   { date: "4/8", price: 48200, volume: 1120 },
@@ -72,6 +73,23 @@ const MarketPricePage = () => {
   const [marketOpen, setMarketOpen] = useState(false);
   const [varietyOpen, setVarietyOpen] = useState(false);
   const [unitOpen, setUnitOpen] = useState(false);
+  const [sortOpen, setSortOpen] = useState(false);
+  type MarketSortKey = "priceDesc" | "priceAsc" | "dayChange" | "volume" | "share";
+  const [marketSort, setMarketSort] = useState<MarketSortKey>("priceDesc");
+  const sortLabels: Record<MarketSortKey, string> = {
+    priceDesc: "높은 가격순",
+    priceAsc: "낮은 가격순",
+    dayChange: "상승률순",
+    volume: "거래량순",
+    share: "점유율순",
+  };
+  const sortedMarketData = [...marketData].sort((a, b) => {
+    if (marketSort === "priceDesc") return b.price - a.price;
+    if (marketSort === "priceAsc") return a.price - b.price;
+    if (marketSort === "dayChange") return b.dayChange - a.dayChange;
+    if (marketSort === "volume") return b.volume - a.volume;
+    return b.share - a.share;
+  });
   const crop = findCrop(cropId);
   const [unitKg, setUnitKg] = useState<number>(crop.defaultUnitKg);
   const market = findMarket(marketId);
@@ -205,8 +223,8 @@ const MarketPricePage = () => {
             {/* 시장별 시세 테이블 */}
             <div className="flex items-center justify-between mt-1">
               <span className="text-sm font-semibold text-foreground">시장별 시세</span>
-              <button className="text-[11px] text-primary flex items-center gap-0.5 font-medium">
-                높은가격순 <ChevronDown className="w-3 h-3" />
+              <button onClick={() => setSortOpen(true)} className="text-[11px] text-primary flex items-center gap-0.5 font-medium">
+                {sortLabels[marketSort]} <ChevronDown className="w-3 h-3" />
               </button>
             </div>
             <div className="bg-card rounded-xl border border-border overflow-hidden">
@@ -219,7 +237,7 @@ const MarketPricePage = () => {
                   <span className="text-right">거래량</span>
                   <span className="text-right">점유율</span>
                 </div>
-                {marketData.map((m) => (
+                {sortedMarketData.map((m) => (
                   <div key={m.name} className="grid grid-cols-[2fr_2.2fr_1.6fr_1.6fr_1.8fr_1.6fr] px-2.5 py-2 text-[11px] active:bg-secondary/50 cursor-pointer">
                     <span className="font-medium text-foreground truncate">{m.name}</span>
                     <span className="text-right font-semibold text-foreground whitespace-nowrap">{m.price.toLocaleString()}</span>
@@ -243,8 +261,8 @@ const MarketPricePage = () => {
           <div className="space-y-3 animate-fade-in">
             <div className="flex items-center justify-between mt-1">
               <span className="text-sm font-semibold text-foreground">시장별 시세 비교</span>
-              <button className="text-[11px] text-primary flex items-center gap-0.5 font-medium">
-                높은가격순 <ChevronDown className="w-3 h-3" />
+              <button onClick={() => setSortOpen(true)} className="text-[11px] text-primary flex items-center gap-0.5 font-medium">
+                {sortLabels[marketSort]} <ChevronDown className="w-3 h-3" />
               </button>
             </div>
             <div className="bg-card rounded-xl border border-border overflow-hidden">
@@ -257,7 +275,7 @@ const MarketPricePage = () => {
                   <span className="text-right">거래량</span>
                   <span className="text-right">점유율</span>
                 </div>
-                {marketData.map((m) => (
+                {sortedMarketData.map((m) => (
                   <div key={m.name} className="grid grid-cols-[2fr_2.2fr_1.6fr_1.6fr_1.8fr_1.6fr] px-2.5 py-2 text-[11px] active:bg-secondary/50 cursor-pointer">
                     <span className="font-medium text-foreground truncate">{m.name}</span>
                     <span className="text-right font-semibold text-foreground whitespace-nowrap">{m.price.toLocaleString()}</span>
@@ -371,6 +389,20 @@ const MarketPricePage = () => {
         variety={variety}
         selectedKg={unitKg}
         onConfirm={setUnitKg}
+      />
+      <SortSheet<MarketSortKey>
+        open={sortOpen}
+        onOpenChange={setSortOpen}
+        title="정렬 기준"
+        selected={marketSort}
+        onSelect={setMarketSort}
+        options={[
+          { key: "priceDesc", label: "높은 가격순" },
+          { key: "priceAsc", label: "낮은 가격순" },
+          { key: "dayChange", label: "상승률순" },
+          { key: "volume", label: "거래량순" },
+          { key: "share", label: "점유율순" },
+        ] as SortOption<MarketSortKey>[]}
       />
     </div>
   );

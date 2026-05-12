@@ -10,6 +10,7 @@ import MarketDetailSheet from "@/components/sheets/MarketDetailSheet";
 import LocationSheet, { shortCity } from "@/components/sheets/LocationSheet";
 import FilterPill from "@/components/common/FilterPill";
 import ShipmentMap from "@/components/ShipmentMap";
+import SortSheet, { SortOption } from "@/components/sheets/SortSheet";
 
 // 시장별 대략 좌표 (한국 지도상 위치)
 const MARKET_COORDS: Record<string, { lat: number; lng: number }> = {
@@ -27,10 +28,10 @@ const FARM_COORD = { lat: 36.4467, lng: 127.1188 }; // 충남 공주시
 type SortKey = "netRevenue" | "unitPrice" | "logistics" | "distance";
 
 const sortLabels: Record<SortKey, string> = {
-  netRevenue: "순이익순",
+  netRevenue: "순이익 높은순",
   unitPrice: "단가 높은순",
   logistics: "물류비 낮은순",
-  distance: "가까운 순",
+  distance: "가까운순",
 };
 
 const SalesChannelPage = () => {
@@ -41,6 +42,7 @@ const SalesChannelPage = () => {
   const [detailMarketId, setDetailMarketId] = useState<string | null>(null);
   const [selectedMapId, setSelectedMapId] = useState<string | null>(null);
   const [locOpen, setLocOpen] = useState(false);
+  const [sortOpen, setSortOpen] = useState(false);
   const [recents, setRecents] = useState<string[]>([
     "전라북도 김제시",
     "경상북도 안동시",
@@ -223,10 +225,7 @@ const SalesChannelPage = () => {
           <span className="text-sm font-semibold text-foreground">시장 랭킹</span>
           <button
             className="text-[11px] text-primary flex items-center gap-0.5 font-medium"
-            onClick={() => {
-              const keys: SortKey[] = ["netRevenue", "unitPrice", "logistics", "distance"];
-              setSortBy(keys[(keys.indexOf(sortBy) + 1) % keys.length]);
-            }}
+            onClick={() => setSortOpen(true)}
           >
             {sortLabels[sortBy]} <ChevronDown className="w-3 h-3" />
           </button>
@@ -332,6 +331,19 @@ const SalesChannelPage = () => {
           netRevenue: detail.netRevenue,
           unitWeight,
         } : null}
+      />
+      <SortSheet<SortKey>
+        open={sortOpen}
+        onOpenChange={setSortOpen}
+        title="정렬 기준"
+        selected={sortBy}
+        onSelect={setSortBy}
+        options={[
+          { key: "netRevenue", label: "순이익 높은순" },
+          { key: "unitPrice", label: "단가 높은순" },
+          { key: "logistics", label: "물류비 낮은순" },
+          { key: "distance", label: "가까운순" },
+        ] as SortOption<SortKey>[]}
       />
     </div>
   );
