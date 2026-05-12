@@ -118,6 +118,7 @@ const FarmEdit = () => {
   };
 
   return (
+    <div className="h-full bg-white">
       {/* Header */}
       <header className="fixed top-0 left-1/2 z-[100] w-full max-w-[430px] -translate-x-1/2 bg-white border-b border-border">
         <MobileStatusBar />
