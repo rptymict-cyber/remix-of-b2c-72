@@ -19,6 +19,7 @@ interface Props {
   markets: MapMarket[];
   recommendedId: string;
   selectedId: string | null;
+  disabled?: boolean;
   onSelect: (id: string) => void;
 }
 
@@ -104,14 +105,15 @@ const FitBounds = ({ points }: { points: [number, number][] }) => {
   return null;
 };
 
-const ShipmentMap = ({ farm, markets, recommendedId, selectedId, onSelect }: Props) => {
+const ShipmentMap = ({ farm, markets, recommendedId, selectedId, disabled = false, onSelect }: Props) => {
   const points: [number, number][] = [
     [farm.lat, farm.lng],
     ...markets.map((m) => [m.lat, m.lng] as [number, number]),
   ];
   return (
-    <div className="rounded-3xl overflow-hidden bg-white shadow-[0_4px_16px_rgba(17,24,39,0.06)] border border-border">
+    <div className="map-wrapper rounded-3xl bg-white shadow-[0_4px_16px_rgba(17,24,39,0.06)] border border-border" data-map-disabled={disabled}>
       <MapContainer
+        className="map-container"
         center={[farm.lat, farm.lng]}
         zoom={7}
         scrollWheelZoom={false}
