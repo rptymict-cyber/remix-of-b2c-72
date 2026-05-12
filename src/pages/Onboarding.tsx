@@ -175,24 +175,20 @@ const Onboarding = () => {
   // ===================== STEP HEADER =====================
   const Header = ({ onBack, title }: { onBack?: () => void; title?: string }) => (
     <div className="px-5 pt-3 pb-4">
-      <div className="h-12 flex items-center justify-between">
+      <div className="h-11 flex items-center gap-3">
         <button
           onClick={onBack}
-          className="w-10 h-10 -ml-2 flex items-center justify-center"
+          className="w-9 h-9 -ml-2 flex items-center justify-center shrink-0"
           aria-label="뒤로"
         >
-          {onBack ? <ChevronLeft className="w-6 h-6 text-foreground" /> : <span />}
+          {onBack ? <ChevronLeft className="w-6 h-6 text-foreground" /> : <span className="w-6 h-6" />}
         </button>
-        <p className="text-[15px] font-semibold text-foreground">{title || "프로필 설정"}</p>
-        <span className="w-10" />
-      </div>
-      <div className="mt-2 grid grid-cols-4 gap-1.5">
-        {[0, 1, 2, 3].map((i) => (
-          <span
-            key={i}
-            className={`h-1 rounded-full ${i < Math.ceil(progress * 4) ? "bg-[hsl(152_55%_42%)]" : "bg-border"}`}
+        <div className="flex-1 h-1.5 rounded-full bg-[hsl(220_13%_93%)] overflow-hidden">
+          <div
+            className="h-full rounded-full bg-[hsl(152_55%_42%)] transition-[width] duration-300 ease-out"
+            style={{ width: `${Math.max(0, progress * 100)}%` }}
           />
-        ))}
+        </div>
       </div>
     </div>
   );
