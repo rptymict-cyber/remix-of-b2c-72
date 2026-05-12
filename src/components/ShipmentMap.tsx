@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import koreaMap from "@/assets/korea-map.jpg";
 
 export interface MapMarket {
   id: string;
@@ -19,120 +20,68 @@ interface Props {
   onSelect: (id: string) => void;
 }
 
-// 위경도 → 카드 내 % 좌표 (한반도 남부 대략 bbox)
-const LAT_MAX = 38.7; // 위쪽
-const LAT_MIN = 33.0; // 아래쪽
-const LNG_MIN = 125.5;
-const LNG_MAX = 130.2;
-const project = (lat: number, lng: number) => ({
-  left: ((lng - LNG_MIN) / (LNG_MAX - LNG_MIN)) * 100,
-  top: ((LAT_MAX - lat) / (LAT_MAX - LAT_MIN)) * 100,
-});
+// === 정적 지도 이미지 위 절대 좌표 (% 단위) ===
+// 지도 이미지는 src/assets/korea-map.jpg, viewport 비율에 맞춰 하드코딩
+const MARKET_POS: Record<string, { left: number; top: number }> = {
+  garak:    { left: 44,   top: 21 },  // 서울 가락
+  gangseo:  { left: 40,   top: 21 },
+  suwon:    { left: 42,   top: 27 },
+  anyang:   { left: 41,   top: 24 },
+  cheongju: { left: 47,   top: 37 },
+  daegu:    { left: 63,   top: 53 },
+  busan:    { left: 76,   top: 67 },
+  gwangju:  { left: 39,   top: 64 },
+};
+const FARM_POS = { left: 39, top: 45 }; // 충청남도 공주
 
 const shortName = (n: string) => n.replace("시장", "").replace("서울 ", "").trim();
 
 const ShipmentMap = ({ farm, markets, recommendedId, selectedId, onSelect }: Props) => {
-  const farmPos = useMemo(() => project(farm.lat, farm.lng), [farm.lat, farm.lng]);
   const points = useMemo(
-    () => markets.map((m) => ({ ...m, ...project(m.lat, m.lng) })),
+    () =>
+      markets.map((m) => ({
+        ...m,
+        ...(MARKET_POS[m.id] ?? { left: 50, top: 50 }),
+      })),
     [markets],
   );
 
   return (
     <div
       className="relative rounded-2xl overflow-hidden border border-border"
-      style={{
-        height: 280,
-        background: "hsl(208 65% 88%)",
-        zIndex: 1,
-      }}
+      style={{ height: 280, zIndex: 1 }}
     >
-      {/* 한반도 실루엣 + 연결선 + 마커 모두 동일 SVG 안에서 그려 레이어 충돌 방지 */}
+      {/* 정적 지도 이미지 — 드래그/줌 없음, API 호출 없음 */}
+      <img
+        src={koreaMap}
+        alt="대한민국 출하 위치도"
+        loading="lazy"
+        draggable={false}
+        className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none"
+      />
+
+      {/* 농장 → 시장 연결선 (이미지 위 SVG 오버레이) */}
       <svg
         viewBox="0 0 100 100"
-        preserveAspectRatio="xMidYMid meet"
-        className="absolute inset-0 w-full h-full"
+        preserveAspectRatio="none"
+        className="absolute inset-0 w-full h-full pointer-events-none"
+        style={{ zIndex: 2 }}
       >
-        {/* === Google Maps 스타일 배경 === */}
-        {/* 바다 */}
-        <rect width="100" height="100" fill="hsl(208 60% 86%)" />
-
-        {/* 남한 본토 (크림색 land) */}
-        <path
-          d="M 30 1 C 24 5 22 11 26 15 C 22 20 27 25 22 30 C 26 36 21 42 25 48 C 19 54 23 60 26 66 C 30 72 36 78 44 80 C 52 82 60 80 66 76 C 72 72 78 64 76 56 C 80 48 78 40 80 32 C 78 24 80 14 74 8 C 66 3 58 0 50 1 Z"
-          fill="hsl(45 35% 94%)"
-          stroke="hsl(40 25% 80%)"
-          strokeWidth="0.4"
-          strokeLinejoin="round"
-        />
-        {/* 제주도 */}
-        <ellipse cx="22" cy="92" rx="4" ry="2" fill="hsl(45 35% 94%)" stroke="hsl(40 25% 80%)" strokeWidth="0.3" />
-
-        {/* 녹지 (산악 지대) */}
-        <path d="M 60 18 C 64 22 68 28 66 36 C 70 42 68 50 64 56 C 62 50 58 44 60 38 C 56 30 58 22 60 18 Z" fill="hsl(95 35% 86%)" opacity="0.7" />
-        <path d="M 32 60 C 36 64 38 70 36 74 C 32 72 30 66 32 60 Z" fill="hsl(95 35% 86%)" opacity="0.7" />
-
-        {/* 도로망 (얇은 흰선 + 노란 강조) */}
-        <g stroke="white" strokeWidth="0.8" fill="none" strokeLinecap="round">
-          <path d="M 32 18 L 38 30 L 40 42 L 50 50 L 66 50 L 76 62" />
-          <path d="M 40 42 L 30 56 L 28 64" />
-          <path d="M 38 30 L 50 28 L 60 22" />
-          <path d="M 50 50 L 56 60 L 60 70" />
-        </g>
-        <g stroke="hsl(45 90% 70%)" strokeWidth="0.45" fill="none" strokeLinecap="round">
-          <path d="M 32 18 L 38 30 L 40 42 L 50 50 L 66 50 L 76 62" />
-          <path d="M 38 30 L 50 28 L 60 22" />
-        </g>
-
-        {/* 지역명 (옅은 회색, 굵게) */}
-        <g fill="hsl(220 10% 45%)" fontFamily="'Noto Sans KR', sans-serif" fontWeight="700" textAnchor="middle">
-          <text x="35" y="36" fontSize="2.6" opacity="0.85">충청남도</text>
-          <text x="58" y="32" fontSize="2.6" opacity="0.85" fill="hsl(0 60% 55%)">충청북도</text>
-          <text x="68" y="48" fontSize="2.6" opacity="0.85">경상북도</text>
-          <text x="34" y="64" fontSize="2.4" opacity="0.85">전라남도</text>
-          <text x="62" y="20" fontSize="2.4" opacity="0.8">강원도</text>
-        </g>
-        {/* 도시명 (작은 글씨) */}
-        <g fill="hsl(220 12% 30%)" fontFamily="'Noto Sans KR', sans-serif" fontWeight="600" textAnchor="middle">
-          <text x="33" y="20" fontSize="1.8">서울</text>
-          <text x="44" y="26" fontSize="1.6">천안</text>
-          <text x="50" y="30" fontSize="1.6">진천</text>
-          <text x="54" y="36" fontSize="1.6">청주</text>
-          <text x="50" y="42" fontSize="1.6">세종</text>
-          <text x="52" y="46" fontSize="1.6">대전</text>
-          <text x="38" y="48" fontSize="1.6">논산</text>
-          <text x="32" y="44" fontSize="1.6">부여</text>
-          <text x="29" y="50" fontSize="1.6">보령</text>
-          <text x="38" y="34" fontSize="1.6">아산</text>
-          <text x="33" y="28" fontSize="1.6">당진</text>
-          <text x="69" y="52" fontSize="1.7">대구</text>
-          <text x="76" y="64" fontSize="1.7">부산</text>
-          <text x="32" y="62" fontSize="1.7">광주</text>
-        </g>
-
-        {/* 고속도로 방패 마크 */}
-        <g>
-          <rect x="46" y="32" width="4" height="3.4" rx="0.6" fill="hsl(45 95% 60%)" stroke="white" strokeWidth="0.4" />
-          <text x="48" y="34.6" fontSize="2.2" fontWeight="800" fill="hsl(220 30% 25%)" textAnchor="middle" fontFamily="'Noto Sans KR', sans-serif">25</text>
-          <rect x="27" y="56" width="5" height="3.4" rx="0.6" fill="hsl(45 95% 60%)" stroke="white" strokeWidth="0.4" />
-          <text x="29.5" y="58.6" fontSize="2.2" fontWeight="800" fill="hsl(220 30% 25%)" textAnchor="middle" fontFamily="'Noto Sans KR', sans-serif">151</text>
-        </g>
-
-        {/* 농장 → 시장 연결선 */}
         {points.map((p) => {
           const isRec = p.id === recommendedId;
           return (
             <line
               key={`l-${p.id}`}
-              x1={farmPos.left}
-              y1={farmPos.top}
+              x1={FARM_POS.left}
+              y1={FARM_POS.top}
               x2={p.left}
               y2={p.top}
-              stroke={isRec ? "hsl(142 71% 35%)" : "hsl(220 10% 60%)"}
-              strokeWidth={isRec ? "0.7" : "0.4"}
+              stroke={isRec ? "hsl(142 71% 35%)" : "hsl(220 10% 35%)"}
+              strokeWidth={isRec ? "0.5" : "0.3"}
               strokeDasharray={isRec ? undefined : "1.2 1.4"}
-              opacity={isRec ? 0.9 : 0.5}
+              opacity={isRec ? 0.85 : 0.45}
               strokeLinecap="round"
+              vectorEffect="non-scaling-stroke"
             />
           );
         })}
@@ -147,7 +96,7 @@ const ShipmentMap = ({ farm, markets, recommendedId, selectedId, onSelect }: Pro
             key={p.id}
             onClick={() => onSelect(p.id)}
             className="absolute -translate-x-1/2 -translate-y-full flex flex-col items-center"
-            style={{ left: `${p.left}%`, top: `${p.top}%`, zIndex: 2 }}
+            style={{ left: `${p.left}%`, top: `${p.top}%`, zIndex: 3 }}
           >
             <div
               className={`flex items-center justify-center rounded-full border-2 border-white shadow-md transition-transform ${
@@ -186,7 +135,7 @@ const ShipmentMap = ({ farm, markets, recommendedId, selectedId, onSelect }: Pro
       {/* 농장 마커 */}
       <div
         className="absolute -translate-x-1/2 -translate-y-full flex flex-col items-center pointer-events-none"
-        style={{ left: `${farmPos.left}%`, top: `${farmPos.top}%`, zIndex: 3 }}
+        style={{ left: `${FARM_POS.left}%`, top: `${FARM_POS.top}%`, zIndex: 4 }}
       >
         <div
           className="flex items-center justify-center w-10 h-10 rounded-full border-[3px] border-white shadow-lg"
@@ -203,11 +152,6 @@ const ShipmentMap = ({ farm, markets, recommendedId, selectedId, onSelect }: Pro
           내 농장
           <span className="ml-1 font-normal opacity-80">{farm.region}</span>
         </div>
-      </div>
-
-      {/* 범례 */}
-      <div className="absolute left-3 top-3 bg-white/90 backdrop-blur rounded-lg px-2 py-1 text-[10px] text-muted-foreground border border-border" style={{ zIndex: 2 }}>
-        대한민국 출하 위치도
       </div>
     </div>
   );
