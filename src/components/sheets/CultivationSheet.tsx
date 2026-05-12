@@ -24,17 +24,19 @@ const CultivationSheet = ({ open, onOpenChange, method, season, onConfirm }: Pro
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="px-4 pb-6">
-        <div className="pt-2 pb-4 text-center">
+      <DrawerContent>
+        <div className="flex flex-col h-full min-h-0 px-4 pt-2 pb-[max(env(safe-area-inset-bottom),16px)]">
+          <div className="flex-1 min-h-0 overflow-y-auto">
+            <div className="pb-4 text-center">
           <h3 className="text-base font-bold text-foreground">재배 조건 설정</h3>
           <p className="text-[12px] text-muted-foreground mt-1 leading-relaxed">
             재배 방식과 시즌 기준을 설정하면<br />
             더 정확한 작물을 추천해드립니다
           </p>
-        </div>
+            </div>
 
-        <p className="text-[12px] font-bold text-foreground mb-2">재배 방식</p>
-        <div className="grid grid-cols-2 gap-2 mb-3">
+            <p className="text-[12px] font-bold text-foreground mb-2">재배 방식</p>
+            <div className="grid grid-cols-2 gap-2 mb-3">
           <OptionCard
             selected={m === "노지"}
             onClick={() => setM("노지")}
@@ -47,13 +49,13 @@ const CultivationSheet = ({ open, onOpenChange, method, season, onConfirm }: Pro
             icon={<Home className="w-5 h-5 text-primary" />}
             label="시설재배"
           />
-        </div>
-        <p className="text-[11px] text-muted-foreground mb-5 px-1">
+            </div>
+            <p className="text-[11px] text-muted-foreground mb-5 px-1">
           ⓘ 시설재배(딸기·토마토 등)는 날씨 영향도가 달라 별도 기준으로 추천됩니다
-        </p>
+            </p>
 
-        <p className="text-[12px] font-bold text-foreground mb-2">추천 기준 시즌</p>
-        <div className="grid grid-cols-2 gap-2 mb-3">
+            <p className="text-[12px] font-bold text-foreground mb-2">추천 기준 시즌</p>
+            <div className="grid grid-cols-2 gap-2 mb-3">
           <OptionCard
             selected={s === "이번"}
             onClick={() => setS("이번")}
@@ -68,20 +70,22 @@ const CultivationSheet = ({ open, onOpenChange, method, season, onConfirm }: Pro
             label="다음 시즌"
             sub="(차기 재배 계획 중심)"
           />
-        </div>
-        <p className="text-[11px] text-muted-foreground mb-5 px-1">
+            </div>
+            <p className="text-[11px] text-muted-foreground mb-3 px-1">
           ⓘ 다음 시즌 선택 시 가격 전망과 재배 계획 기준으로 추천됩니다
-        </p>
+            </p>
+          </div>
 
-        <button
+          <button
           onClick={() => {
             onConfirm(m, s);
             onOpenChange(false);
           }}
-          className="w-full py-3.5 rounded-2xl bg-primary text-white text-sm font-bold"
-        >
+            className="shrink-0 mt-3 w-full h-12 rounded-2xl bg-primary text-white text-sm font-bold"
+          >
           추천 조건 적용하기
-        </button>
+          </button>
+        </div>
       </DrawerContent>
     </Drawer>
   );
