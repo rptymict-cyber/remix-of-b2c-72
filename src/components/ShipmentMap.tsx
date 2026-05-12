@@ -48,8 +48,7 @@ const ShipmentMap = ({ farm, markets, recommendedId, selectedId, onSelect }: Pro
       className="relative rounded-2xl overflow-hidden border border-border"
       style={{
         height: 280,
-        background:
-          "linear-gradient(180deg, hsl(200 60% 96%) 0%, hsl(200 50% 92%) 100%)",
+        background: "hsl(208 65% 88%)",
         zIndex: 1,
       }}
     >
@@ -59,27 +58,69 @@ const ShipmentMap = ({ farm, markets, recommendedId, selectedId, onSelect }: Pro
         preserveAspectRatio="xMidYMid meet"
         className="absolute inset-0 w-full h-full"
       >
-        {/* 바다 grid 패턴 (옅은 격자) */}
-        <defs>
-          <pattern id="grid" width="6" height="6" patternUnits="userSpaceOnUse">
-            <path d="M6 0 L0 0 0 6" fill="none" stroke="hsl(200 40% 88%)" strokeWidth="0.2" />
-          </pattern>
-          <linearGradient id="land" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="hsl(142 45% 88%)" />
-            <stop offset="100%" stopColor="hsl(142 40% 78%)" />
-          </linearGradient>
-        </defs>
-        <rect width="100" height="100" fill="url(#grid)" />
+        {/* === Google Maps 스타일 배경 === */}
+        {/* 바다 */}
+        <rect width="100" height="100" fill="hsl(208 60% 86%)" />
 
-        {/* 남한 실루엣 (ViewBox는 0~100 가로, 0~120 세로 — bbox 비율과 맞춤) */}
-        <g transform="translate(0,-2) scale(1, 0.88)">
-          <path
-            d={KOREA_PATH}
-            fill="url(#land)"
-            stroke="hsl(142 35% 60%)"
-            strokeWidth="0.6"
-            strokeLinejoin="round"
-          />
+        {/* 남한 본토 (크림색 land) */}
+        <path
+          d="M 30 1 C 24 5 22 11 26 15 C 22 20 27 25 22 30 C 26 36 21 42 25 48 C 19 54 23 60 26 66 C 30 72 36 78 44 80 C 52 82 60 80 66 76 C 72 72 78 64 76 56 C 80 48 78 40 80 32 C 78 24 80 14 74 8 C 66 3 58 0 50 1 Z"
+          fill="hsl(45 35% 94%)"
+          stroke="hsl(40 25% 80%)"
+          strokeWidth="0.4"
+          strokeLinejoin="round"
+        />
+        {/* 제주도 */}
+        <ellipse cx="22" cy="92" rx="4" ry="2" fill="hsl(45 35% 94%)" stroke="hsl(40 25% 80%)" strokeWidth="0.3" />
+
+        {/* 녹지 (산악 지대) */}
+        <path d="M 60 18 C 64 22 68 28 66 36 C 70 42 68 50 64 56 C 62 50 58 44 60 38 C 56 30 58 22 60 18 Z" fill="hsl(95 35% 86%)" opacity="0.7" />
+        <path d="M 32 60 C 36 64 38 70 36 74 C 32 72 30 66 32 60 Z" fill="hsl(95 35% 86%)" opacity="0.7" />
+
+        {/* 도로망 (얇은 흰선 + 노란 강조) */}
+        <g stroke="white" strokeWidth="0.8" fill="none" strokeLinecap="round">
+          <path d="M 32 18 L 38 30 L 40 42 L 50 50 L 66 50 L 76 62" />
+          <path d="M 40 42 L 30 56 L 28 64" />
+          <path d="M 38 30 L 50 28 L 60 22" />
+          <path d="M 50 50 L 56 60 L 60 70" />
+        </g>
+        <g stroke="hsl(45 90% 70%)" strokeWidth="0.45" fill="none" strokeLinecap="round">
+          <path d="M 32 18 L 38 30 L 40 42 L 50 50 L 66 50 L 76 62" />
+          <path d="M 38 30 L 50 28 L 60 22" />
+        </g>
+
+        {/* 지역명 (옅은 회색, 굵게) */}
+        <g fill="hsl(220 10% 45%)" fontFamily="'Noto Sans KR', sans-serif" fontWeight="700" textAnchor="middle">
+          <text x="35" y="36" fontSize="2.6" opacity="0.85">충청남도</text>
+          <text x="58" y="32" fontSize="2.6" opacity="0.85" fill="hsl(0 60% 55%)">충청북도</text>
+          <text x="68" y="48" fontSize="2.6" opacity="0.85">경상북도</text>
+          <text x="34" y="64" fontSize="2.4" opacity="0.85">전라남도</text>
+          <text x="62" y="20" fontSize="2.4" opacity="0.8">강원도</text>
+        </g>
+        {/* 도시명 (작은 글씨) */}
+        <g fill="hsl(220 12% 30%)" fontFamily="'Noto Sans KR', sans-serif" fontWeight="600" textAnchor="middle">
+          <text x="33" y="20" fontSize="1.8">서울</text>
+          <text x="44" y="26" fontSize="1.6">천안</text>
+          <text x="50" y="30" fontSize="1.6">진천</text>
+          <text x="54" y="36" fontSize="1.6">청주</text>
+          <text x="50" y="42" fontSize="1.6">세종</text>
+          <text x="52" y="46" fontSize="1.6">대전</text>
+          <text x="38" y="48" fontSize="1.6">논산</text>
+          <text x="32" y="44" fontSize="1.6">부여</text>
+          <text x="29" y="50" fontSize="1.6">보령</text>
+          <text x="38" y="34" fontSize="1.6">아산</text>
+          <text x="33" y="28" fontSize="1.6">당진</text>
+          <text x="69" y="52" fontSize="1.7">대구</text>
+          <text x="76" y="64" fontSize="1.7">부산</text>
+          <text x="32" y="62" fontSize="1.7">광주</text>
+        </g>
+
+        {/* 고속도로 방패 마크 */}
+        <g>
+          <rect x="46" y="32" width="4" height="3.4" rx="0.6" fill="hsl(45 95% 60%)" stroke="white" strokeWidth="0.4" />
+          <text x="48" y="34.6" fontSize="2.2" fontWeight="800" fill="hsl(220 30% 25%)" textAnchor="middle" fontFamily="'Noto Sans KR', sans-serif">25</text>
+          <rect x="27" y="56" width="5" height="3.4" rx="0.6" fill="hsl(45 95% 60%)" stroke="white" strokeWidth="0.4" />
+          <text x="29.5" y="58.6" fontSize="2.2" fontWeight="800" fill="hsl(220 30% 25%)" textAnchor="middle" fontFamily="'Noto Sans KR', sans-serif">151</text>
         </g>
 
         {/* 농장 → 시장 연결선 */}
