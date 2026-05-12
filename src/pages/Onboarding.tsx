@@ -94,6 +94,17 @@ const Onboarding = () => {
   if (step === "intro") {
     const it = intros[intro];
     const last = intro === intros.length - 1;
+    const onTouchStart = (e: React.TouchEvent) => {
+      (introRef as any).startX = e.touches[0].clientX;
+    };
+    const onTouchEnd = (e: React.TouchEvent) => {
+      const startX = (introRef as any).startX;
+      if (startX == null) return;
+      const dx = e.changedTouches[0].clientX - startX;
+      if (Math.abs(dx) < 40) return;
+      if (dx < 0 && intro < intros.length - 1) setIntro(intro + 1);
+      if (dx > 0 && intro > 0) setIntro(intro - 1);
+    };
     return (
       <div className="fixed inset-0 bg-white flex flex-col">
         <div className="h-12 flex items-center justify-end px-5">
@@ -105,6 +116,8 @@ const Onboarding = () => {
         </div>
         <div
           ref={introRef}
+          onTouchStart={onTouchStart}
+          onTouchEnd={onTouchEnd}
           className="flex-1 flex flex-col items-center justify-center px-8 text-center"
         >
           <IntroVisual kind={it.visual} />
