@@ -655,23 +655,23 @@ const IntroVisual = ({ kind }: { kind: string }) => {
   }
   if (kind === "rank") {
     return (
-      <div className="w-[260px] rounded-2xl bg-white shadow-[0_8px_28px_rgba(0,0,0,0.08)] border border-border/60 p-4">
-        <p className="text-[12px] font-bold text-foreground mb-3">추천 판매처 TOP 3</p>
-        <div className="space-y-2">
+      <div className="w-[280px] rounded-2xl bg-white shadow-[0_10px_30px_rgba(0,0,0,0.10)] border border-border/60 p-5">
+        <p className="text-[13px] font-bold text-foreground mb-4 text-center">추천 판매처 TOP 3</p>
+        <div className="space-y-3">
           {[
             { name: "대구북부시장", profit: "1,245,000원", badge: true },
             { name: "부산엄궁시장", profit: "1,128,000원" },
             { name: "광주서부시장", profit: "1,087,000원" },
           ].map((m, i) => (
-            <div key={m.name} className="flex items-center gap-2.5 py-1.5">
-              <span className={`w-6 h-6 rounded-md text-[11px] font-bold flex items-center justify-center ${i === 0 ? "bg-[hsl(152_55%_42%)] text-white" : "bg-muted text-muted-foreground"}`}>
+            <div key={m.name} className="flex items-center gap-3">
+              <span className={`w-7 h-7 rounded-full text-[12px] font-bold flex items-center justify-center shrink-0 ${i === 0 ? "bg-[hsl(152_55%_42%)] text-white" : "bg-muted text-muted-foreground"}`}>
                 {i + 1}
               </span>
               <div className="flex-1 text-left">
-                <p className="text-[12px] font-bold text-foreground leading-tight">{m.name}</p>
-                <p className="text-[10px] text-muted-foreground mt-0.5">예상 순이익 {m.profit}</p>
+                <p className="text-[13px] font-bold text-foreground leading-tight">{m.name}</p>
+                <p className="text-[11px] text-muted-foreground mt-0.5">예상 순이익 {m.profit}</p>
               </div>
-              {m.badge && <span className="w-6 h-6 rounded-full bg-[hsl(42_90%_60%)]/20 flex items-center justify-center text-[12px]">🏆</span>}
+              {m.badge && <span className="text-[16px] leading-none">🏆</span>}
             </div>
           ))}
         </div>
