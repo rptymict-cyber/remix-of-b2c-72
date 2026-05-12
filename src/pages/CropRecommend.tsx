@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { ChevronDown, ChevronUp, Sprout, TrendingUp, AlertTriangle, BarChart2, ThermometerSun, FileText } from "lucide-react";
+import { ChevronDown, ChevronUp, Sprout, TrendingUp, AlertTriangle, BarChart2, ThermometerSun, FileText, MapPin, Ruler, Leaf } from "lucide-react";
 import AppHeader from "@/components/AppHeader";
 import BottomNav from "@/components/BottomNav";
 import CropSheet from "@/components/sheets/CropSheet";
+import FilterPill from "@/components/common/FilterPill";
 import { useApp } from "@/store/appStore";
 import { findCrop } from "@/data/catalog";
 
@@ -86,22 +87,10 @@ const CropRecommendPage = () => {
       <main className="px-4 pt-5 safe-bottom space-y-4">
         {/* 조건 */}
         <div className="grid grid-cols-2 gap-2">
-          <button onClick={() => setCropOpen(true)} className="filter-chip justify-center text-xs px-2 py-1.5">
-            <span className="text-sm">{crop.emoji}</span>{crop.name}
-            <ChevronDown className="w-3 h-3 text-muted-foreground" />
-          </button>
-          <button className="filter-chip justify-center text-xs px-2 py-1.5">
-            {profile.region}
-            <ChevronDown className="w-3 h-3 text-muted-foreground" />
-          </button>
-          <button className="filter-chip justify-center text-xs px-2 py-1.5">
-            {profile.farmAreaM2.toLocaleString()}㎡
-            <ChevronDown className="w-3 h-3 text-muted-foreground" />
-          </button>
-          <button className="filter-chip justify-center text-xs px-2 py-1.5">
-            노지 · 시즌
-            <ChevronDown className="w-3 h-3 text-muted-foreground" />
-          </button>
+          <FilterPill onClick={() => setCropOpen(true)} icon={<span className="text-base leading-none">{crop.emoji}</span>} label={crop.name} />
+          <FilterPill icon={<MapPin className="w-4 h-4" />} label={profile.region} />
+          <FilterPill icon={<Ruler className="w-4 h-4" />} label={`${profile.farmAreaM2.toLocaleString()}㎡`} />
+          <FilterPill icon={<Leaf className="w-4 h-4" />} label="노지 · 시즌" />
         </div>
 
         {/* 추천 카드 */}

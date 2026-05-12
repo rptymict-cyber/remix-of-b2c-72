@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ChevronDown, MapPin, Truck, Star, CheckCircle2, Info } from "lucide-react";
+import { ChevronDown, MapPin, Truck, Star, CheckCircle2, Info, Package } from "lucide-react";
 import AppHeader from "@/components/AppHeader";
 import BottomNav from "@/components/BottomNav";
 import { useApp } from "@/store/appStore";
@@ -8,6 +8,7 @@ import CropSheet from "@/components/sheets/CropSheet";
 import QtySheet from "@/components/sheets/QtySheet";
 import MarketDetailSheet from "@/components/sheets/MarketDetailSheet";
 import LocationSheet, { shortCity } from "@/components/sheets/LocationSheet";
+import FilterPill from "@/components/common/FilterPill";
 import ShipmentMap from "@/components/ShipmentMap";
 
 // 시장별 대략 좌표 (한국 지도상 위치)
@@ -93,22 +94,9 @@ const SalesChannelPage = () => {
       <main className="px-4 pt-5 safe-bottom space-y-4">
         {/* 조건 */}
         <div className="grid grid-cols-3 gap-2">
-          <button onClick={() => setCropOpen(true)} className="filter-chip justify-center text-xs px-2 py-1.5">
-            <span className="text-sm">{crop.emoji}</span>{crop.name}
-            <ChevronDown className="w-3 h-3 text-muted-foreground" />
-          </button>
-          <button onClick={() => setQtyOpen(true)} className="filter-chip justify-center text-xs px-2 py-1.5">
-            {shipQtyKg.toLocaleString()}kg · {boxes}상자
-            <ChevronDown className="w-3 h-3 text-muted-foreground" />
-          </button>
-          <button
-            onClick={() => setLocOpen(true)}
-            className="filter-chip justify-center text-xs px-2 py-1.5"
-          >
-            <MapPin className="w-3 h-3 text-primary" />
-            {shortCity(profile.region)}
-            <ChevronDown className="w-3 h-3 text-muted-foreground" />
-          </button>
+          <FilterPill onClick={() => setCropOpen(true)} icon={<span className="text-base leading-none">{crop.emoji}</span>} label={crop.name} className="px-2.5" />
+          <FilterPill onClick={() => setQtyOpen(true)} icon={<Package className="w-4 h-4" />} label={`${shipQtyKg.toLocaleString()}kg · ${boxes}상자`} className="px-2.5" />
+          <FilterPill onClick={() => setLocOpen(true)} icon={<MapPin className="w-4 h-4" />} label={shortCity(profile.region)} className="px-2.5" />
         </div>
 
         {/* 시세 기준 전환 */}
