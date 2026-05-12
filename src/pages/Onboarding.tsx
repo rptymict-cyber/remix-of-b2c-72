@@ -92,7 +92,6 @@ const Onboarding = () => {
 
   // ===================== INTRO =====================
   if (step === "intro") {
-    const it = intros[intro];
     const last = intro === intros.length - 1;
     const onTouchStart = (e: React.TouchEvent) => {
       (introRef as any).startX = e.touches[0].clientX;
@@ -118,15 +117,27 @@ const Onboarding = () => {
           ref={introRef}
           onTouchStart={onTouchStart}
           onTouchEnd={onTouchEnd}
-          className="flex-1 flex flex-col items-center justify-center px-8 text-center"
+          className="flex-1 overflow-hidden"
         >
-          <IntroVisual kind={it.visual} />
-          <h2 className="mt-10 text-[22px] font-extrabold leading-snug text-foreground whitespace-pre-line">
-            {it.title}
-          </h2>
-          <p className="mt-4 text-[14px] leading-relaxed text-muted-foreground whitespace-pre-line">
-            {it.desc}
-          </p>
+          <div
+            className="flex h-full transition-transform duration-300 ease-out"
+            style={{ transform: `translateX(-${intro * 100}%)` }}
+          >
+            {intros.map((it, i) => (
+              <div
+                key={i}
+                className="shrink-0 w-full h-full flex flex-col items-center justify-center px-8 text-center"
+              >
+                <IntroVisual kind={it.visual} />
+                <h2 className="mt-10 text-[22px] font-extrabold leading-snug text-foreground whitespace-pre-line">
+                  {it.title}
+                </h2>
+                <p className="mt-4 text-[14px] leading-relaxed text-muted-foreground whitespace-pre-line">
+                  {it.desc}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
         <div className="flex justify-center gap-1.5 mb-6">
           {intros.map((_, i) => (
