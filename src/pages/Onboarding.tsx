@@ -785,6 +785,20 @@ const MapMarker = ({ cx, cy }: { cx: number; cy: number }) => (
   </g>
 );
 
+const PinDot = () => (
+  <div className="-translate-x-1/2 -translate-y-full">
+    <svg width="26" height="32" viewBox="0 0 22 28" fill="none">
+      <path
+        d="M11 0C5 0 0 4.5 0 10.5C0 18 11 28 11 28C11 28 22 18 22 10.5C22 4.5 17 0 11 0Z"
+        fill="white"
+        stroke="hsl(150 25% 80%)"
+        strokeWidth="0.6"
+      />
+      <circle cx="11" cy="10.5" r="3.2" fill="hsl(150 38% 72%)" />
+    </svg>
+  </div>
+);
+
 const MapPinMarker = ({ className }: { className?: string }) => (
   <div className={`absolute -translate-x-1/2 -translate-y-full ${className}`}>
     <svg width="26" height="32" viewBox="0 0 22 28" fill="none">
