@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ChevronRight, CloudSun, BrainCircuit, ArrowUpRight, BarChart3, Store, Sprout, Plus, Clock, Droplets, Wind, Thermometer } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import AppHeader from "@/components/AppHeader";
@@ -10,7 +10,11 @@ import MarketSheet from "@/components/sheets/MarketSheet";
 
 const HomePage = () => {
   const navigate = useNavigate();
-  const { cropId, variety, marketId, profile, setCrop } = useApp();
+  const { cropId, variety, marketId, profile, setCrop, ensureSelectedCrop } = useApp();
+
+  useEffect(() => {
+    ensureSelectedCrop();
+  }, [ensureSelectedCrop, profile.myCrops]);
   const [cropOpen, setCropOpen] = useState(false);
   const [marketOpen, setMarketOpen] = useState(false);
 
