@@ -106,6 +106,7 @@ const MarketBubble = ({
   selected,
   dir,
   onClick,
+  _overridePos,
 }: {
   m: MapMarket;
   rank: number;
@@ -113,8 +114,9 @@ const MarketBubble = ({
   selected: boolean;
   dir: BubbleDir;
   onClick: () => void;
+  _overridePos?: { xPct: number; yPct: number };
 }) => {
-  const { xPct, yPct } = project(m.lat, m.lng);
+  const { xPct, yPct } = _overridePos ?? project(m.lat, m.lng);
 
   // Wrapper layout per direction (anchor point = the marker pin tip on coord)
   const wrapperPosStyle: React.CSSProperties = { left: `${xPct}%`, top: `${yPct}%` };
@@ -213,30 +215,157 @@ const ShipmentMap = ({ farm, markets, recommendedId, selectedId, disabled = fals
   const rankMap: Record<string, number> = {};
   ranked.forEach((m, i) => (rankMap[m.id] = i + 1));
 
+  // Camera framing: zoom into bounding box of farm + markets so markers
+  // dominate the view (reference-style). We transform a "world" layer that
+  // contains both the background image and the markers, keeping geography
+  // consistent while making the markers the visual focus.
+  const allPts = [farmPos, ...markets.map((m) => project(m.lat, m.lng))];
+  const xs = allPts.map((p) => p.xPct);
+  const ys = allPts.map((p) => p.yPct);
+  const minX = Math.min(...xs);
+  const maxX = Math.max(...xs);
+  const minY = Math.min(...ys);
+  const maxY = Math.max(...ys);
+  const bboxW = Math.max(maxX - minX, 1);
+  const bboxH = Math.max(maxY - minY, 1);
+  const cx = (minX + maxX) / 2;
+  const cy = (minY + maxY) / 2;
+  // Target: markers occupy ~55% of viewport on the larger axis
+  const targetPct = 55;
+  const scale = Math.min(targetPct / bboxW, targetPct / bboxH, 3.2);
+  // Translate so (cx, cy) lands at viewport center (50%, 50%)
+  const tx = 50 - cx;
+  const ty = 50 - cy;
+
   return (
     <div
-      className="relative rounded-3xl overflow-hidden border border-border shadow-[0_4px_16px_rgba(17,24,39,0.06)] bg-white"
-      style={{ aspectRatio: "1 / 1", maxHeight: 480 }}
+      className="relative rounded-3xl overflow-hidden border border-border shadow-[0_4px_16px_rgba(17,24,39,0.06)] bg-[hsl(205,70%,90%)]"
+      style={{ aspectRatio: "1 / 1", maxHeight: 520 }}
       data-map-disabled={disabled}
     >
-      <PeninsulaBg />
+      {/* World layer: zoomed/translated so markers are the focal point */}
+      <div
+        className="absolute inset-0"
+        style={{
+          transform: `translate(${tx}%, ${ty}%) scale(${scale})`,
+          transformOrigin: "50% 50%",
+          transition: "transform 320ms ease",
+        }}
+      >
+        <PeninsulaBg />
+      </div>
 
-      {/* Markers layer */}
-      <div className="absolute inset-0">
-        <FarmMarker region={farm.region} xPct={farmPos.xPct} yPct={farmPos.yPct} />
-        {markets.map((m) => (
-          <MarketBubble
-            key={m.id}
-            m={m}
-            rank={rankMap[m.id]}
-            recommended={m.id === recommendedId}
-            selected={m.id === selectedId}
-            dir={directions[m.id] ?? "top"}
-            onClick={() => !disabled && onSelect(m.id)}
-          />
-        ))}
+      {/* Markers layer — same transform so coordinates align, but bubbles
+          are counter-scaled so they keep their visual size */}
+      <div
+        className="absolute inset-0"
+        style={{
+          transform: `translate(${tx}%, ${ty}%) scale(${scale})`,
+          transformOrigin: "50% 50%",
+          transition: "transform 320ms ease",
+        }}
+      >
+        <div
+          className="absolute inset-0"
+          style={{ transform: `scale(${1 / scale})`, transformOrigin: "50% 50%" }}
+        >
+          {/* Re-project from original % into the counter-scaled space */}
+          <div className="absolute inset-0" style={{ position: "absolute" }}>
+            <FarmMarkerScaled
+              region={farm.region}
+              xPct={farmPos.xPct}
+              yPct={farmPos.yPct}
+              cx={cx}
+              cy={cy}
+              scale={scale}
+            />
+            {markets.map((m) => {
+              const p = project(m.lat, m.lng);
+              return (
+                <MarketBubbleScaled
+                  key={m.id}
+                  m={m}
+                  xPct={p.xPct}
+                  yPct={p.yPct}
+                  cx={cx}
+                  cy={cy}
+                  scale={scale}
+                  rank={rankMap[m.id]}
+                  recommended={m.id === recommendedId}
+                  selected={m.id === selectedId}
+                  dir={directions[m.id] ?? "top"}
+                  onClick={() => !disabled && onSelect(m.id)}
+                />
+              );
+            })}
+          </div>
+        </div>
       </div>
     </div>
+  );
+};
+
+// Helpers that re-map an original % coordinate into the centered/scaled
+// viewport, so markers can render at their natural CSS size (not scaled).
+const remap = (pct: number, c: number, scale: number) =>
+  50 + (pct - c) * scale;
+
+const FarmMarkerScaled = ({
+  region,
+  xPct,
+  yPct,
+  cx,
+  cy,
+  scale,
+}: {
+  region: string;
+  xPct: number;
+  yPct: number;
+  cx: number;
+  cy: number;
+  scale: number;
+}) => (
+  <FarmMarker region={region} xPct={remap(xPct, cx, scale)} yPct={remap(yPct, cy, scale)} />
+);
+
+const MarketBubbleScaled = ({
+  m,
+  xPct,
+  yPct,
+  cx,
+  cy,
+  scale,
+  rank,
+  recommended,
+  selected,
+  dir,
+  onClick,
+}: {
+  m: MapMarket;
+  xPct: number;
+  yPct: number;
+  cx: number;
+  cy: number;
+  scale: number;
+  rank: number;
+  recommended: boolean;
+  selected: boolean;
+  dir: BubbleDir;
+  onClick: () => void;
+}) => {
+  const x = remap(xPct, cx, scale);
+  const y = remap(yPct, cy, scale);
+  // Render via the existing MarketBubble but with overridden position
+  return (
+    <MarketBubble
+      m={{ ...m, lat: 0, lng: 0 }}
+      rank={rank}
+      recommended={recommended}
+      selected={selected}
+      dir={dir}
+      onClick={onClick}
+      _overridePos={{ xPct: x, yPct: y }}
+    />
   );
 };
 
