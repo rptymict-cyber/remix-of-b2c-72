@@ -1,125 +1,49 @@
-## 목표
-- 작물 추가 화면(`/crop/add` 1단계)을 778개 작물 / 2,519개 품종 데이터로 확장
-- 대표 작물 18종, 검색·대분류 카테고리 칩, 품종 바텀시트 흐름 정비
-- 모든 바텀시트가 모바일 앱 프레임(430px) 안에서만 노출되도록 공통 컴포넌트 수정
-- 2단계(등록 유형 / 재배 지역 / 기준 시장) 및 기존 톤은 그대로 유지
+# 작물 선택 기본값 및 전역 동기화 수정 계획
 
----
+## 진단
 
-## 1. 데이터 레이어 신설
+전역 상태(`useApp` zustand + persist)에는 이미 `profile.myCrops`, `cropId`, `toggleMyCrop`, `removeMyCrop`이 존재하며 모든 페이지(홈/시세/예측/판매처/작물/마이페이지)가 동일한 store의 `cropId`/`profile.myCrops`를 구독하고 있어 구조적 분기는 없음. 다만 다음 3가지 누락으로 증상이 발생함.
 
-### 1-1. `src/data/cropCatalog.ts` 신규 작성
-- 사용자 제공 19개 대분류 × 작물 × 품종 데이터를 그대로 옮김
-- 타입:
-  ```ts
-  type CropCategory = "미곡류" | "맥류" | ... | "약용작물류";
-  interface CropItem {
-    id: string;          // 예: "fruit-apple"
-    name: string;        // 화면 표기 (중분류명, "기타"인 경우 "과실류 기타")
-    category: CropCategory;
-    varieties: string[]; // 정제된 소분류 배열
-    icon: string;        // emoji (1차)
-    isRepresentative?: boolean;
-  }
-  ```
-- 정제 규칙(데이터 빌드 시 적용):
-  - 소분류 값이 `-`, `사용불가`이면 제외
-  - 중분류명과 동일한 소분류는 제외하고 항상 맨 앞에 `"전체 품종"` 추가
-  - 중복 품종명 dedupe
-  - 중분류명이 `기타`이면 `name`을 `대분류명 + " 기타"`로 노출
-  - `미곡류(일반)`처럼 대분류 전체를 의미하는 placeholder 항목 제외
-- 검색용 인덱스 함수:
-  ```ts
-  searchCrops(q: string): CropItem[]
-  // 작물명 또는 품종명 매치 → 작물 단위로 결과 반환 (중복 제거)
-  ```
-- 대표 작물 18종 ID 상수 export:
-  - 벼, 배추, 무, 마늘, 양파, 고추(풋고추), 사과, 배, 감자, 고구마, 콩, 대파, 감귤, 복숭아, 수박, 딸기, 토마토, 상추
+1. **AddCrop `submit()`이 `myCrops`에 작물을 추가하지 않음** — 단순히 `setMarket` 후 `nav("/crop")`만 호출. 토스트 문구도 요구사항과 불일치.
+2. **삭제 시 토스트 문구 불일치** — `CropSettings.tsx`의 `removeMyCrop` 호출 후 토스트가 "{이름}이(가) 삭제되었습니다" 로 되어 있음. `FarmEdit.tsx` 저장 경로에서도 삭제 후 잔존 작물에 대한 `cropId` 정합성 보정 없음.
+3. **홈 진입 시 `cropId`가 `myCrops`에 없을 수 있음** — 초기값 `"pepper"`가 온보딩에서 선택한 작물에 포함되지 않으면 어떤 칩도 selected 상태가 되지 않음(현재 칩은 `c.id === cropId` 비교).
 
-### 1-2. 기존 `src/data/catalog.ts`
-- 시세/시장(MARKETS)·UI 곳곳에서 사용 중이라 그대로 유지
-- 작물 추가 화면만 `cropCatalog`를 참조 (다른 화면은 영향 없음)
+## 수정 내용
 
----
+### 1. `src/store/appStore.ts` — 단일 진실 공급원 보강
+- `toggleMyCrop`/`removeMyCrop`/`setProfile`에 **cropId 자동 보정 로직** 추가.
+  - 추가 시: 신규 작물을 `cropId`로 자동 선택(현재 `cropId`가 `myCrops`에 없거나 갓 추가된 작물이면).
+  - 삭제 시: 삭제 대상이 현재 `cropId`였다면 남은 `myCrops[0]`로 변경, 비면 빈 문자열.
+- 새 액션 `addMyCrop(id)` 추가(이미 존재하면 noop, 3개 제한 유지) — AddCrop 흐름에서 사용.
+- `ensureSelectedCrop()` 셀렉터/액션 추가: 현재 `cropId`가 `myCrops`에 없으면 첫 번째로 보정.
 
-## 2. 작물 추가 화면(`src/pages/AddCrop.tsx`) 개편 — 1단계만 수정
+### 2. `src/pages/AddCrop.tsx`
+- `submit()`에서 `addMyCrop(selectedCropId)` + `setCrop(selectedCropId, varieties[0])` + `setMarket(marketSel)` 순서로 호출.
+- 토스트 문구를 `${crop.name}이(가) 내 작물에 추가됐어요`로 변경.
+- 이미 보유한 작물 재선택 시 중복 추가 방지(기존 store 로직 유지).
 
-유지: 헤더, 진행바, 본문 타이틀/설명, 검색창 placeholder, 선택한 작물 카드, 하단 다음 버튼, 2단계 전체.
+### 3. `src/pages/CropSettings.tsx`
+- 삭제 토스트 문구를 `${crop.name}이(가) 내 작물에서 삭제됐어요`로 변경.
+- `removeMyCrop`은 store에서 cropId 자동 보정되므로 호출 측 변경 없음.
 
-변경/추가:
+### 4. `src/pages/FarmEdit.tsx`
+- 저장 시 `myCrops` 변경(추가/삭제) 후 store 업데이트로 cropId 자동 정합 — `setProfile` 분기 안에서 cropId 보정 로직 동작 확인. 필요 시 저장 직후 `ensureSelectedCrop()` 호출.
 
-### 2-1. 카테고리 Chip 행
-- 검색창 바로 아래 가로 스크롤 chip 행
-- 옵션: `전체` + 19개 대분류
-- 선택 chip은 primary 배경, 비선택은 카드 톤
-- 선택 시 해당 카테고리 작물만 필터
+### 5. `src/pages/Index.tsx` (홈)
+- 마운트 시 `useEffect`로 `ensureSelectedCrop()` 호출하여 `cropId`가 항상 `myCrops`에 속하도록 보장.
+- `myCrops.length === 0`이면 칩 영역에 "+ 작물 추가" 버튼만 노출(현재 안내 문구 제거하고 버튼 강조).
+- `myCrops.length === 1`이면 항상 selected 상태로 렌더(현재 로직과 동일하게 동작하지만 cropId 보정 후 보장됨).
 
-### 2-2. 검색 동작
-- 입력값으로 `searchCrops(q)` 호출
-- 작물명/품종명 모두 매치, 결과는 작물 카드 단위
-- 결과 없을 때 `검색 결과가 없습니다.` 노출
+### 6. 동기화 검증
+다음 페이지는 모두 `useApp`의 `cropId`/`profile.myCrops`를 직접 구독하므로 store 변경 즉시 리렌더링됨 — 추가 작업 불필요:
+- `MarketPrice.tsx`, `AIPrediction.tsx`, `SalesChannel.tsx`, `CropRecommend.tsx`, `MyPage.tsx`, `BottomNav` 등.
 
-### 2-3. 대표 작물 영역
-- 검색어가 비어 있고 카테고리가 `전체`일 때만 표시
-- 헤더 `대표 작물` + 18개 3열 그리드 (간격 `gap-y-5`)
-- 그 아래 `전체 작물` 헤더 + 카테고리 필터 적용된 전체 리스트(3열 그리드, 동일 셀 스타일)
+## 비변경 범위
+- UI/디자인, 레이아웃, 다른 페이지 비즈니스 로직, 시장/단가/물류비 계산, 판매처 지도 등 일체 변경 없음.
+- `persist` 동작 유지(앱 재진입 시 마지막 cropId 복원).
 
-### 2-4. 작물 셀
-- 기존 원형 아이콘 + 이름 구조 유지 (`w-[72px] h-[72px]`)
-- 선택 상태에서 primary 보더 + 그림자 유지
-- 아이콘은 `cropCatalog`의 `icon` 사용 (1차 emoji, 추후 일러스트 교체 여지)
-
-### 2-5. 품종 바텀시트
-- 타이틀: `${작물명} 품종 선택`
-- 1번째 옵션 항상 `전체 품종`, 기본 선택값도 `전체 품종`
-- `선택 완료` 버튼은 항상 활성, 클릭 시 닫고 카드에 반영
-- 선택한 작물 카드 표기: `${작물명} · ${품종}` (예: `배추 · 봄배추`)
-- 카드의 `변경` 클릭 시 동일 시트 재호출
-- 다른 작물 선택 시 `variety`를 `전체 품종`으로 리셋
-
----
-
-## 3. 바텀시트 공통 가로폭 수정 (앱 전역 영향)
-
-### 문제
-`vaul` 기반 `DrawerContent`가 `fixed inset-x-0`으로 뷰포트 전폭을 차지 → 데스크톱(>430px)에서 앱 프레임 밖으로 벌어짐.
-
-### 해결: `src/components/ui/drawer.tsx` 한 곳만 수정
-```tsx
-// DrawerContent
-className={cn(
-  "fixed inset-x-0 bottom-0 z-50 mx-auto w-full max-w-[430px] ...",
-  className,
-)}
-// DrawerOverlay 도 동일한 max-w-[430px] mx-auto 적용해 어둡기 영역도 프레임 안으로 한정
-```
-- 모든 바텀시트(`VarietySheet`, `CropSheet`, `MarketSheet`, `MarketDetailSheet`, `QtySheet`, `UpgradeModal` 중 Drawer 사용분, `AddCrop` 내부 Drawer)가 자동 적용
-- 내부 padding/리스트는 이미 % 기반이라 추가 수정 불필요
-- 변경 후 `App.tsx`의 앱 프레임(`max-w-[430px] mx-auto`) 기준과 정확히 정렬
-
----
-
-## 4. 영향 받지 않는 부분 (명시)
-- 2단계 화면(등록 유형 / 재배 지역 / 기준 시장) — 그대로 유지
-- 출하 정보·알림 설정·3개 등록 제한 — 추가하지 않음
-- 시세/예측/판매처/홈 등 다른 화면의 데이터 소스(`catalog.ts`)는 변경 없음
-
----
-
-## 5. 작업 순서
-1. `src/data/cropCatalog.ts` 작성 (데이터 + 정제 규칙 + `searchCrops`)
-2. `src/components/ui/drawer.tsx` width 수정
-3. `src/pages/AddCrop.tsx` 1단계 리팩터:
-   - `useApp` 외 신규 카탈로그 사용
-   - 카테고리 chip + 검색 + 대표/전체 그리드
-   - 품종 시트 로직 재정비 (전체 품종 기본값)
-4. 빌드 통과 확인
-
----
-
-## 기술 메모 (참고용)
-- 데이터 변환은 빌드타임 상수 배열로 직접 작성 (런타임 파싱 X)
-- `id` 규칙: `${categorySlug}-${nameSlug}` (영문 슬러그 매핑은 카테고리·작물별 수기, 충돌 방지)
-- 카테고리 chip은 가로 스크롤 (`overflow-x-auto`, `scrollbar-hide`)
-- 대표 작물 18종은 `cropCatalog`의 `isRepresentative: true` 플래그로 표시
-- 검색 매칭은 `String.includes` (한글 부분일치, 정렬: 작물명 매치 우선 → 품종 매치)
+## 검증 방법
+- 온보딩 완료 → 홈 진입 시 첫 작물 칩이 selected 상태로 표시되는지 확인.
+- AddCrop에서 작물 추가 → 홈/시세/예측/판매처/작물/마이페이지에서 즉시 반영 확인.
+- CropSettings에서 현재 선택된 작물 삭제 → 다음 작물로 자동 전환되고 모든 페이지에 반영 확인.
+- 토스트 문구가 요구사항과 정확히 일치하는지 확인.
