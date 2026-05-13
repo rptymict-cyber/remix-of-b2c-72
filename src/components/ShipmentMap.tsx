@@ -106,6 +106,7 @@ const MarketBubble = ({
   selected,
   dir,
   onClick,
+  _overridePos,
 }: {
   m: MapMarket;
   rank: number;
@@ -113,8 +114,9 @@ const MarketBubble = ({
   selected: boolean;
   dir: BubbleDir;
   onClick: () => void;
+  _overridePos?: { xPct: number; yPct: number };
 }) => {
-  const { xPct, yPct } = project(m.lat, m.lng);
+  const { xPct, yPct } = _overridePos ?? project(m.lat, m.lng);
 
   // Wrapper layout per direction (anchor point = the marker pin tip on coord)
   const wrapperPosStyle: React.CSSProperties = { left: `${xPct}%`, top: `${yPct}%` };
