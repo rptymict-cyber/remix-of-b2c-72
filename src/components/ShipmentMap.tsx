@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import koreaMap from "@/assets/korea-map.jpg";
 
 export interface MapMarket {
   id: string;
@@ -20,15 +21,25 @@ interface Props {
   onSelect: (id: string) => void;
 }
 
-// Bounding box covering South Korea for projection
-const BBOX = { minLat: 33.8, maxLat: 38.7, minLng: 125.6, maxLng: 130.0 };
-const VIEW_W = 320;
-const VIEW_H = 420;
+// Calibrated to korea-map.jpg (1024x1024 illustrated peninsula).
+// South Korea sits in this region of the image (in % of width/height):
+const CAL = {
+  // lat range
+  topLat: 38.6, topYPct: 36,    // DMZ line in image
+  botLat: 33.3, botYPct: 88,    // Jeju in image
+  // lng range
+  westLng: 125.5, westXPct: 26,
+  eastLng: 130.0, eastXPct: 72,
+};
 
 const project = (lat: number, lng: number) => {
-  const x = ((lng - BBOX.minLng) / (BBOX.maxLng - BBOX.minLng)) * VIEW_W;
-  const y = ((BBOX.maxLat - lat) / (BBOX.maxLat - BBOX.minLat)) * VIEW_H;
-  return { xPct: (x / VIEW_W) * 100, yPct: (y / VIEW_H) * 100 };
+  const yPct =
+    CAL.topYPct +
+    ((CAL.topLat - lat) / (CAL.topLat - CAL.botLat)) * (CAL.botYPct - CAL.topYPct);
+  const xPct =
+    CAL.westXPct +
+    ((lng - CAL.westLng) / (CAL.eastLng - CAL.westLng)) * (CAL.eastXPct - CAL.westXPct);
+  return { xPct, yPct };
 };
 
 type BubbleDir = "top" | "bottom" | "left" | "right";
@@ -53,91 +64,35 @@ const computeDirections = (
   return result;
 };
 
-// Stylized illustrated South Korea peninsula (simplified, decorative only)
-const PeninsulaSVG = () => (
-  <svg
-    viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
-    preserveAspectRatio="xMidYMid meet"
-    className="absolute inset-0 w-full h-full"
-  >
-    <defs>
-      <linearGradient id="seaG" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stopColor="#EAF4FB" />
-        <stop offset="100%" stopColor="#DCEAF5" />
-      </linearGradient>
-      <linearGradient id="landG" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stopColor="#E9F2DC" />
-        <stop offset="60%" stopColor="#DDEAC7" />
-        <stop offset="100%" stopColor="#CFE0B5" />
-      </linearGradient>
-      <radialGradient id="haloG" cx="50%" cy="50%" r="50%">
-        <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.18" />
-        <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0" />
-      </radialGradient>
-    </defs>
-
-    {/* Sea background */}
-    <rect width={VIEW_W} height={VIEW_H} fill="url(#seaG)" />
-
-    {/* Subtle sea texture dots */}
-    {Array.from({ length: 24 }).map((_, i) => {
-      const x = (i * 53) % VIEW_W;
-      const y = (i * 97) % VIEW_H;
-      return <circle key={i} cx={x} cy={y} r={1} fill="#C9DCEB" opacity={0.5} />;
-    })}
-
-    {/* Stylized peninsula land (decorative, not geographic) */}
-    <path
-      d="M150 18
-         C 180 14, 215 22, 228 50
-         C 240 78, 232 102, 238 128
-         C 246 160, 270 175, 278 205
-         C 284 232, 268 252, 258 274
-         C 250 296, 256 318, 240 340
-         C 222 364, 198 376, 178 388
-         C 158 400, 140 410, 124 402
-         C 108 394, 100 372, 96 350
-         C 90 322, 100 298, 92 274
-         C 82 246, 60 232, 56 200
-         C 52 168, 70 148, 80 124
-         C 88 100, 78 78, 96 56
-         C 112 36, 130 22, 150 18 Z"
-      fill="url(#landG)"
-      stroke="#B8CFA1"
-      strokeWidth="1.2"
-    />
-
-    {/* Soft mountain hints */}
-    <g fill="#C7DAB0" opacity="0.55">
-      <ellipse cx="170" cy="120" rx="22" ry="6" />
-      <ellipse cx="200" cy="160" rx="18" ry="5" />
-      <ellipse cx="150" cy="200" rx="26" ry="6" />
-      <ellipse cx="220" cy="240" rx="20" ry="5" />
-      <ellipse cx="170" cy="290" rx="24" ry="6" />
-      <ellipse cx="140" cy="340" rx="18" ry="5" />
-    </g>
-
-    {/* Jeju island hint */}
-    <ellipse cx="150" cy="412" rx="14" ry="6" fill="url(#landG)" stroke="#B8CFA1" strokeWidth="1" />
-  </svg>
+// Illustrated Korean peninsula background (image asset)
+const PeninsulaBg = () => (
+  <img
+    src={koreaMap}
+    alt="한반도 지도"
+    loading="lazy"
+    width={1024}
+    height={1024}
+    className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none"
+    draggable={false}
+  />
 );
 
 const FarmMarker = ({ region, xPct, yPct }: { region: string; xPct: number; yPct: number }) => (
   <div
-    className="absolute -translate-x-1/2 -translate-y-full pointer-events-none"
+    className="absolute -translate-x-1/2 -translate-y-1/2 pointer-events-none z-20"
     style={{ left: `${xPct}%`, top: `${yPct}%` }}
   >
     <div className="flex flex-col items-center">
       <div
-        className="w-9 h-9 rounded-full bg-primary border-[3px] border-white flex items-center justify-center text-white shadow-md"
-        style={{ boxShadow: "0 3px 8px rgba(0,0,0,0.2)" }}
+        className="w-10 h-10 rounded-full bg-primary border-[3px] border-white flex items-center justify-center text-white"
+        style={{ boxShadow: "0 4px 12px rgba(0,0,0,0.25)" }}
       >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
           <polyline points="9 22 9 12 15 12 15 22" />
         </svg>
       </div>
-      <div className="mt-1 bg-neutral-900 text-white text-[10px] font-bold px-2 py-[3px] rounded-md whitespace-nowrap shadow">
+      <div className="mt-1.5 bg-neutral-900 text-white text-[11px] font-bold px-2.5 py-1 rounded-md whitespace-nowrap shadow-lg">
         내 농장 <span className="font-medium opacity-80 ml-0.5">{region}</span>
       </div>
     </div>
