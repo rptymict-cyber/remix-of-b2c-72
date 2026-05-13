@@ -101,7 +101,16 @@ export const useApp = create<AppState>()(
       setUnit: (u) => set({ unit: u }),
       setShipQty: (kg) => set({ shipQtyKg: kg }),
       setBasis: (b) => set({ basis: b }),
-      setProfile: (p) => set((s) => ({ profile: { ...s.profile, ...p } })),
+      setProfile: (p) =>
+        set((s) => {
+          const profile = { ...s.profile, ...p };
+          let cropId = s.cropId;
+          if (p.myCrops) {
+            if (profile.myCrops.length === 0) cropId = "";
+            else if (!profile.myCrops.includes(cropId)) cropId = profile.myCrops[0];
+          }
+          return { profile, cropId };
+        }),
       setNotif: (n) => set((s) => ({ notif: { ...s.notif, ...n } })),
       toggleMyCrop: (id) =>
         set((s) => {
