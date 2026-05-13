@@ -58,8 +58,10 @@ interface AppState {
   setProfile: (p: Partial<UserProfile>) => void;
   setNotif: (n: Partial<NotificationSettings>) => void;
   toggleMyCrop: (id: string) => void;
+  addMyCrop: (id: string) => void;
   setCropSetting: (id: string, s: Partial<CropSetting>) => void;
   removeMyCrop: (id: string) => void;
+  ensureSelectedCrop: () => void;
   completeOnboarding: () => void;
 }
 
@@ -109,7 +111,17 @@ export const useApp = create<AppState>()(
             : s.profile.myCrops.length >= 3
               ? s.profile.myCrops
               : [...s.profile.myCrops, id];
-          return { profile: { ...s.profile, myCrops: next } };
+          let cropId = s.cropId;
+          if (has && id === cropId) cropId = next[0] ?? "";
+          else if (!has && !next.includes(cropId)) cropId = next[0] ?? cropId;
+          return { profile: { ...s.profile, myCrops: next }, cropId };
+        }),
+      addMyCrop: (id) =>
+        set((s) => {
+          if (s.profile.myCrops.includes(id)) return { cropId: id };
+          if (s.profile.myCrops.length >= 3) return {};
+          const next = [...s.profile.myCrops, id];
+          return { profile: { ...s.profile, myCrops: next }, cropId: id };
         }),
       setCropSetting: (id, partial) =>
         set((s) => {
@@ -131,13 +143,22 @@ export const useApp = create<AppState>()(
       removeMyCrop: (id) =>
         set((s) => {
           const { [id]: _drop, ...rest } = s.profile.cropSettings ?? {};
+          const nextCrops = s.profile.myCrops.filter((c) => c !== id);
+          const cropId = s.cropId === id ? (nextCrops[0] ?? "") : s.cropId;
           return {
             profile: {
               ...s.profile,
-              myCrops: s.profile.myCrops.filter((c) => c !== id),
+              myCrops: nextCrops,
               cropSettings: rest,
             },
+            cropId,
           };
+        }),
+      ensureSelectedCrop: () =>
+        set((s) => {
+          if (s.profile.myCrops.length === 0) return {};
+          if (s.profile.myCrops.includes(s.cropId)) return {};
+          return { cropId: s.profile.myCrops[0] };
         }),
       completeOnboarding: () =>
         set((s) => ({ profile: { ...s.profile, onboarded: true } })),
