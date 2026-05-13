@@ -216,10 +216,10 @@ const ShipmentMap = ({ farm, markets, recommendedId, selectedId, disabled = fals
   return (
     <div
       className="relative rounded-3xl overflow-hidden border border-border shadow-[0_4px_16px_rgba(17,24,39,0.06)] bg-white"
-      style={{ aspectRatio: `${VIEW_W} / ${VIEW_H}`, maxHeight: 460 }}
+      style={{ aspectRatio: "1 / 1", maxHeight: 480 }}
       data-map-disabled={disabled}
     >
-      <PeninsulaSVG />
+      <PeninsulaBg />
 
       {/* Markers layer */}
       <div className="absolute inset-0">
