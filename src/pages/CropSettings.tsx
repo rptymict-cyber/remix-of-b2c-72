@@ -90,7 +90,7 @@ const CropSettings = () => {
   const handleDelete = () => {
     removeMyCrop(id);
     setConfirmDelete(false);
-    toast.success(`${crop.name}이(가) 삭제되었습니다`);
+    toast.success(`${crop.name}이(가) 내 작물에서 삭제됐어요`);
     nav("/farm-edit");
   };
 
