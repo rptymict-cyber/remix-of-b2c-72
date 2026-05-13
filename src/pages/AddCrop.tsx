@@ -79,7 +79,7 @@ const DragScroller = ({
 
 const AddCrop = () => {
   const nav = useNavigate();
-  const { profile, marketId, setMarket } = useApp();
+  const { profile, marketId, setMarket, addMyCrop, setCrop } = useApp();
 
   const [step, setStep] = useState<1 | 2>(1);
   const [q, setQ] = useState("");
@@ -136,8 +136,11 @@ const AddCrop = () => {
 
   const submit = () => {
     if (!crop) return;
+    addMyCrop(crop.id);
+    const firstVar = varieties[0] === ALL_LABEL ? (crop.varieties?.[0] ?? ALL_LABEL) : varieties[0];
+    setCrop(crop.id, firstVar);
     setMarket(marketSel);
-    toast.success(`${crop.name}이(가) 내 작물에 추가되었습니다.`);
+    toast.success(`${crop.name}이(가) 내 작물에 추가됐어요`);
     nav("/crop");
   };
 
