@@ -43,6 +43,7 @@ interface AppState {
   variety: string;
   marketId: string;
   unit: Unit;
+  unitKg: number;
   shipQtyKg: number;
   basis: ShipmentBasis;
   // user
@@ -53,6 +54,7 @@ interface AppState {
   setVariety: (v: string) => void;
   setMarket: (id: string) => void;
   setUnit: (u: Unit) => void;
+  setUnitKg: (kg: number) => void;
   setShipQty: (kg: number) => void;
   setBasis: (b: ShipmentBasis) => void;
   setProfile: (p: Partial<UserProfile>) => void;
@@ -72,6 +74,7 @@ export const useApp = create<AppState>()(
       variety: "건고추(화건)",
       marketId: "garak",
       unit: "kg",
+      unitKg: 20,
       shipQtyKg: 500,
       basis: "current",
       profile: {
@@ -99,6 +102,7 @@ export const useApp = create<AppState>()(
       setVariety: (v) => set({ variety: v }),
       setMarket: (id) => set({ marketId: id }),
       setUnit: (u) => set({ unit: u }),
+      setUnitKg: (kg) => set({ unitKg: kg }),
       setShipQty: (kg) => set({ shipQtyKg: kg }),
       setBasis: (b) => set({ basis: b }),
       setProfile: (p) =>
