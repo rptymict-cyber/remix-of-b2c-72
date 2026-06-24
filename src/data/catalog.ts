@@ -64,6 +64,39 @@ export const seedPrice = (cropId: string, marketId: string, variety?: string) =>
   return Math.round(base / 100) * 100;
 };
 
+// 7일 가격 흐름 시드 (현재가 기준 ±5% 내 변동)
+export const seedPriceHistory = (cropId: string, marketId: string, variety: string, days = 7): number[] => {
+  const base = seedPrice(cropId, marketId, variety);
+  const seed = [...(cropId + marketId + variety)].reduce((a, c) => a + c.charCodeAt(0), 0);
+  const out: number[] = [];
+  for (let i = 0; i < days; i++) {
+    const t = (seed * (i + 1)) % 97;
+    const delta = ((t / 97) - 0.45) * 0.08; // -3.6% ~ +4.4%
+    const v = Math.round((base * (0.96 + (i / (days - 1)) * 0.06 + delta)) / 100) * 100;
+    out.push(v);
+  }
+  out[out.length - 1] = base; // 마지막 = 현재가
+  return out;
+};
+
+// 오늘 주목 작물 (홈 화면용)
+export interface FeaturedCrop {
+  cropId: string;
+  marketId: string;
+  variety: string;
+  unitKg: number;
+  price: number;
+  priceChangePct: number;
+  volumeChangePct: number;
+  badge: "거래량 급증" | "가격 상승" | "하락 주의";
+}
+
+export const FEATURED_CROPS: FeaturedCrop[] = [
+  { cropId: "cabbage", marketId: "garak", variety: "가을배추", unitKg: 10, price: 12800, priceChangePct: 4.8, volumeChangePct: 31.2, badge: "거래량 급증" },
+  { cropId: "onion", marketId: "daegu", variety: "황양파", unitKg: 15, price: 18400, priceChangePct: 6.1, volumeChangePct: 12.4, badge: "가격 상승" },
+  { cropId: "tomato", marketId: "busan", variety: "일반토마토", unitKg: 5, price: 9000, priceChangePct: -3.2, volumeChangePct: -8.7, badge: "하락 주의" },
+];
+
 export const transportCost = (distanceKm: number, qtyKg: number) => {
   // 5톤 트럭 추정: 기본 30,000 + 거리·중량 비례
   return Math.round((30000 + distanceKm * 320 + qtyKg * 30) / 1000) * 1000;
