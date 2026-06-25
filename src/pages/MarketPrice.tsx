@@ -223,7 +223,7 @@ const MarketPricePage = () => {
   const maxAuction = Math.max(...auctionFlow.map((x) => x.price));
   const minAuction = Math.min(...auctionFlow.map((x) => x.price));
 
-  const cmpMax = Math.max(...marketData.map((m) => (cmpMode === "price" ? m.price : m.share)));
+  
 
   const onRefresh = () => {
     setRefreshing(true);
