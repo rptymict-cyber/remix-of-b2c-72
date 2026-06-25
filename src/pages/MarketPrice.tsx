@@ -154,8 +154,32 @@ const MarketPricePage = () => {
   const [sortOpen, setSortOpen] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
-  // market-compare toggle
-  const [cmpMode, setCmpMode] = useState<"price" | "share">("price");
+  // market-compare metric
+  type MarketMetric = "price" | "share" | "dayChange" | "volume" | "inbound";
+  const [marketMetric, setMarketMetric] = useState<MarketMetric>("price");
+  const [marketMetricOpen, setMarketMetricOpen] = useState(false);
+  const marketMetricLabel: Record<MarketMetric, string> = {
+    price: "현재가 기준",
+    share: "거래량 점유율 기준",
+    dayChange: "전일 상승률 기준",
+    volume: "거래량 기준",
+    inbound: "반입량 기준",
+  };
+  const marketCardTitle: Record<MarketMetric, string> = {
+    price: "시장별 현재가 순위",
+    share: "시장별 거래량 점유율",
+    dayChange: "시장별 전일 상승률",
+    volume: "시장별 거래량 순위",
+    inbound: "시장별 반입량 순위",
+  };
+  const marketCardDesc: Record<MarketMetric, string> = {
+    price: "선택한 품목의 시장별 현재가를 비교합니다.",
+    share: "선택한 품목의 시장별 거래 비중을 비교합니다.",
+    dayChange: "전일 대비 가격 상승률이 높은 시장을 보여줍니다.",
+    volume: "선택한 품목의 거래량이 많은 시장을 보여줍니다.",
+    inbound: "선택한 품목의 반입량이 많은 시장을 보여줍니다.",
+  };
+
 
   // corporation tab metric
   type CorpMetric = "avgPrice" | "share" | "count" | "volume";
@@ -199,7 +223,7 @@ const MarketPricePage = () => {
   const maxAuction = Math.max(...auctionFlow.map((x) => x.price));
   const minAuction = Math.min(...auctionFlow.map((x) => x.price));
 
-  const cmpMax = Math.max(...marketData.map((m) => (cmpMode === "price" ? m.price : m.share)));
+  
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -336,52 +360,93 @@ const MarketPricePage = () => {
         )}
 
         {/* ===== 시장비교 ===== */}
-        {tab === "시장비교" && (
-          <div className="space-y-3 animate-fade-in">
-            <div className="bg-card rounded-2xl border border-border p-4">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-[13px] font-bold text-foreground">시장별 {cmpMode === "price" ? "현재가" : "거래량 점유율"} 비교</span>
-                <div className="flex bg-secondary rounded-full p-0.5 text-[11px]">
-                  <button onClick={() => setCmpMode("price")} className={`px-2.5 py-1 rounded-full font-semibold ${cmpMode === "price" ? "bg-white text-primary shadow-sm" : "text-muted-foreground"}`}>가격</button>
-                  <button onClick={() => setCmpMode("share")} className={`px-2.5 py-1 rounded-full font-semibold ${cmpMode === "share" ? "bg-white text-primary shadow-sm" : "text-muted-foreground"}`}>점유율</button>
+        {tab === "시장비교" && (() => {
+          const inboundOf = (m: typeof marketData[number]) => Math.round(m.volume * 42); // mock 반입량(상자)
+          const getVal = (m: typeof marketData[number]) => {
+            if (marketMetric === "price") return m.price;
+            if (marketMetric === "share") return m.share;
+            if (marketMetric === "dayChange") return m.dayChange;
+            if (marketMetric === "volume") return m.volume;
+            return inboundOf(m);
+          };
+          const formatValue = (m: typeof marketData[number]) => {
+            if (marketMetric === "price") return `${m.price.toLocaleString()}원`;
+            if (marketMetric === "share") return `${m.share}%`;
+            if (marketMetric === "dayChange") return `${m.dayChange > 0 ? "+" : ""}${m.dayChange}%`;
+            if (marketMetric === "volume") return `${m.volume.toLocaleString()}t`;
+            return `${inboundOf(m).toLocaleString()}상자`;
+          };
+          const formatSub = (m: typeof marketData[number]) => {
+            const day = `전일 ${m.dayChange > 0 ? "+" : ""}${m.dayChange}%`;
+            if (marketMetric === "price") return `${day} · 점유율 ${m.share}%`;
+            if (marketMetric === "share") return `현재가 ${m.price.toLocaleString()}원 · 거래량 ${m.volume.toLocaleString()}t`;
+            if (marketMetric === "dayChange") return `현재가 ${m.price.toLocaleString()}원 · 거래량 ${m.volume.toLocaleString()}t`;
+            if (marketMetric === "volume") return `현재가 ${m.price.toLocaleString()}원 · 점유율 ${m.share}%`;
+            return `현재가 ${m.price.toLocaleString()}원 · ${day}`;
+          };
+          const sortedMarkets = [...marketData].sort((a, b) => getVal(b) - getVal(a));
+          const maxVal = Math.max(...sortedMarkets.map((m) => Math.abs(getVal(m)))) || 1;
+          const barColor = (m: typeof marketData[number]) =>
+            marketMetric === "dayChange"
+              ? m.dayChange > 0 ? "bg-[hsl(0_70%_55%)]" : m.dayChange < 0 ? "bg-[hsl(215_70%_55%)]" : "bg-muted-foreground"
+              : "bg-primary";
+          const valueColor = (m: typeof marketData[number]) =>
+            marketMetric === "dayChange"
+              ? m.dayChange > 0 ? "price-up" : m.dayChange < 0 ? "price-down" : "price-neutral"
+              : "text-foreground";
+
+          return (
+            <div className="space-y-3 animate-fade-in">
+              <div className="bg-card rounded-2xl border border-border p-4">
+                <div className="flex items-center justify-between gap-2 mb-1">
+                  <span className="text-[13px] font-bold text-foreground">{marketCardTitle[marketMetric]}</span>
+                  <button
+                    onClick={() => setMarketMetricOpen(true)}
+                    className="h-9 px-3 inline-flex items-center gap-1 rounded-full border border-border bg-card text-[12px] font-bold text-primary active:scale-[0.98] shrink-0"
+                  >
+                    {marketMetricLabel[marketMetric]}
+                    <ChevronDown className="w-3.5 h-3.5" />
+                  </button>
                 </div>
-              </div>
-              <div className="space-y-2.5">
-                {[...marketData].sort((a, b) => (cmpMode === "price" ? b.price - a.price : b.share - a.share)).map((m) => {
-                  const val = cmpMode === "price" ? m.price : m.share;
-                  const pct = (val / cmpMax) * 100;
-                  return (
+                <p className="text-[10px] text-muted-foreground mb-3">{marketCardDesc[marketMetric]}</p>
+                <div className="space-y-3">
+                  {sortedMarkets.map((m, i) => (
                     <button key={m.name} onClick={() => setMarketDetail(m)} className="w-full text-left">
-                      <div className="flex items-center justify-between text-[12px] mb-1">
-                        <span className="font-semibold text-foreground">{m.name}</span>
-                        <span className="font-bold text-foreground">{cmpMode === "price" ? `${m.price.toLocaleString()}원` : `${m.share}%`}</span>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-[12px] font-extrabold text-primary w-4 text-center shrink-0">{i + 1}</span>
+                        <span className="flex-1 text-[12px] font-semibold text-foreground truncate">{m.name}</span>
+                        <span className={`text-[12px] font-extrabold shrink-0 ${valueColor(m)}`}>{formatValue(m)}</span>
                       </div>
-                      <div className="h-2 bg-secondary rounded-full overflow-hidden">
-                        <div className="h-full bg-primary rounded-full" style={{ width: `${pct}%` }} />
+                      <div className="pl-6">
+                        <div className="h-2 bg-secondary rounded-full overflow-hidden mb-1">
+                          <div className={`h-full rounded-full ${barColor(m)}`} style={{ width: `${(Math.abs(getVal(m)) / maxVal) * 100}%` }} />
+                        </div>
+                        <p className="text-[10px] text-muted-foreground">{formatSub(m)}</p>
                       </div>
                     </button>
-                  );
-                })}
+                  ))}
+                </div>
               </div>
-            </div>
 
-            <div className="bg-card rounded-xl border border-border overflow-hidden">
-              <div className="grid grid-cols-[2fr_1.6fr_1.2fr_1.4fr] px-3 py-2 text-[10px] text-muted-foreground border-b border-border">
-                <span>시장</span><span className="text-right">현재가</span><span className="text-right">전일</span><span className="text-right">거래량</span>
-              </div>
-              <div className="divide-y divide-border">
-                {marketData.map((m) => (
-                  <button key={m.name} onClick={() => setMarketDetail(m)} className="w-full grid grid-cols-[2fr_1.6fr_1.2fr_1.4fr] px-3 py-2.5 text-[12px] text-left active:bg-secondary/50">
-                    <span className="font-semibold text-foreground truncate">{m.name}</span>
-                    <span className="text-right font-bold text-foreground">{m.price.toLocaleString()}</span>
-                    <span className={`text-right font-medium ${m.dayChange > 0 ? "price-up" : m.dayChange < 0 ? "price-down" : "price-neutral"}`}>{m.dayChange > 0 ? "+" : ""}{m.dayChange}%</span>
-                    <span className="text-right text-muted-foreground">{m.volume}t</span>
-                  </button>
-                ))}
+              <div className="bg-card rounded-xl border border-border overflow-hidden">
+                <div className="grid grid-cols-[2fr_1.6fr_1.2fr_1.4fr] px-3 py-2 text-[10px] text-muted-foreground border-b border-border">
+                  <span>시장</span><span className="text-right">현재가</span><span className="text-right">전일</span><span className="text-right">거래량</span>
+                </div>
+                <div className="divide-y divide-border">
+                  {sortedMarkets.map((m) => (
+                    <button key={m.name} onClick={() => setMarketDetail(m)} className="w-full grid grid-cols-[2fr_1.6fr_1.2fr_1.4fr] px-3 py-2.5 text-[12px] text-left active:bg-secondary/50">
+                      <span className="font-semibold text-foreground truncate">{m.name}</span>
+                      <span className="text-right font-bold text-foreground">{m.price.toLocaleString()}</span>
+                      <span className={`text-right font-medium ${m.dayChange > 0 ? "price-up" : m.dayChange < 0 ? "price-down" : "price-neutral"}`}>{m.dayChange > 0 ? "+" : ""}{m.dayChange}%</span>
+                      <span className="text-right text-muted-foreground">{m.volume}t</span>
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
+
 
         {/* ===== 법인 ===== */}
         {tab === "법인" && (() => {
@@ -599,6 +664,23 @@ const MarketPricePage = () => {
           { key: "volume", label: "거래량 기준" },
         ]}
       />
+
+      <SortSheet<MarketMetric>
+        open={marketMetricOpen}
+        onOpenChange={setMarketMetricOpen}
+        title="비교 기준 선택"
+        selected={marketMetric}
+        onSelect={setMarketMetric}
+        options={[
+          { key: "price", label: "현재가 기준" },
+          { key: "share", label: "거래량 점유율 기준" },
+          { key: "dayChange", label: "전일 상승률 기준" },
+          { key: "volume", label: "거래량 기준" },
+          { key: "inbound", label: "반입량 기준" },
+        ]}
+      />
+
+
 
 
 
