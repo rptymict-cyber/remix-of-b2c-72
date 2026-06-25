@@ -352,10 +352,10 @@ const HomePage = () => {
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-1.5 mb-0.5">
+                      <span className="text-[13px] font-bold text-foreground truncate">{fc.name}</span>
                       <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${badgeColor}`}>
                         {f.badge}
                       </span>
-                      <span className="text-[13px] font-bold text-foreground truncate">{fc.name}</span>
                     </div>
                     <p className="text-[10.5px] text-muted-foreground truncate leading-tight">{fm.name}</p>
                     <p className="text-[14px] font-extrabold text-foreground mt-0.5 leading-none">
