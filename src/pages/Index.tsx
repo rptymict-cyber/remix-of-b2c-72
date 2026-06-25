@@ -134,34 +134,27 @@ const HomePage = () => {
             <h2 className="text-sm font-semibold text-foreground">빠른 시세 조회</h2>
             <p className="text-[11px] text-muted-foreground mt-0.5">자주 쓰는 시세 조회 기능을 바로 확인하세요.</p>
           </div>
-          <div className="bg-white rounded-[18px] border border-[#EFEFEF] shadow-[var(--shadow-sm)] px-3 py-3.5">
-            <div className="grid grid-cols-4">
-              {[
-                { icon: Radio, label: "실시간 경락가", iconBg: "bg-[#EAF7EA]", iconColor: "text-[#1A3A1F]", emphasize: true, route: "/market?tab=auction" },
-                { icon: Clock, label: "이전 가격", iconBg: "bg-[#FBEFDC]", iconColor: "text-[#7A4A12]", route: "/market?mode=previous" },
-                { icon: BarChart3, label: "시장 비교", iconBg: "bg-[#E5EFFB]", iconColor: "text-[#1F3A5A]", route: "/market?tab=compare" },
-                { icon: History, label: "최근 조회", iconBg: "bg-[#E8F3EF]", iconColor: "text-[#2F6E55]", route: "/search" },
-              ].map((m) => (
-                <button
-                  key={m.label}
-                  onClick={() => navigate(m.route)}
-                  className="flex flex-col items-center gap-1.5 py-1 active:scale-[0.97] transition-transform"
-                >
-                  <span
-                    className={`w-12 h-12 rounded-[14px] ${m.iconBg} flex items-center justify-center ${
-                      m.emphasize ? "ring-2 ring-primary/30" : ""
-                    }`}
-                  >
-                    <m.icon className={`w-5 h-5 ${m.iconColor}`} />
-                  </span>
-                  <span className="text-[12px] font-semibold text-foreground text-center leading-tight">
-                    {m.label}
-                  </span>
-                </button>
-              ))}
-            </div>
+          <div className="grid grid-cols-4 gap-2">
+            {[
+              { icon: TrendingUp, label: "가격 동향", route: "/market?tab=auction" },
+              { icon: Package, label: "품목별 시세", route: "/market?tab=variety" },
+              { icon: Gavel, label: "경매 일정", route: "/market?tab=auction" },
+              { icon: Bookmark, label: "관심 작물", route: "/search" },
+            ].map((m) => (
+              <button
+                key={m.label}
+                onClick={() => navigate(m.route)}
+                className="bg-white rounded-[16px] border border-[#EFEFEF] shadow-[var(--shadow-sm)] py-3.5 flex flex-col items-center gap-2 active:scale-[0.97] transition-transform"
+              >
+                <m.icon className="w-7 h-7 text-[#1A3A1F]" strokeWidth={1.8} />
+                <span className="text-[12.5px] font-semibold text-foreground text-center leading-tight whitespace-nowrap">
+                  {m.label}
+                </span>
+              </button>
+            ))}
           </div>
         </section>
+
 
         {/* 내 작물 칩 */}
         <section>
