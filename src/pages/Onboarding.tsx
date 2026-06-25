@@ -9,7 +9,15 @@ import koreaMapImg from "@/assets/korea-map.png";
 import chartImg from "@/assets/onboarding-chart.png";
 import splashFull from "@/assets/splash-full.png";
 
-type Step = "splash" | "intro" | "name" | "region" | "size" | "crops" | "done";
+type Step = "splash" | "intro" | "name" | "region" | "size" | "userType" | "crops" | "done";
+
+type UserTypeId = "farmer" | "wholesaler" | "retailer" | "enterprise";
+const USER_TYPE_OPTIONS: { id: UserTypeId; icon: string; title: string; desc: string; tags: string[] }[] = [
+  { id: "farmer", icon: "👨‍🌾", title: "농민 · 농업법인", desc: "내 작물을 직접 재배하고 판매해요", tags: ["출하 시점 추천", "내 작물 시세", "수익 시뮬레이션"] },
+  { id: "wholesaler", icon: "🏪", title: "도매상 · 중도매인", desc: "시장에서 농산물을 사고 팔아요", tags: ["반입량 · 낙찰가", "산지별 시세", "법인 비교"] },
+  { id: "retailer", icon: "🛒", title: "소매상 · 마트 바이어", desc: "농산물을 매입해서 소비자에게 판매해요", tags: ["도소매 가격차", "매입 적정가", "가격 경보"] },
+  { id: "enterprise", icon: "🏢", title: "식품기업 · 유통업체", desc: "대량 조달 전략과 수급 분석이 필요해요", tags: ["공급량 동향", "산지 분석", "중기 예측"] },
+];
 
 const intros = [
   {
@@ -60,6 +68,7 @@ const Onboarding = () => {
   const [unit, setUnit] = useState<"평" | "㎡">("㎡");
   const [sizeInput, setSizeInput] = useState("");
   const [selectedCrops, setSelectedCrops] = useState<string[]>([]);
+  const [userType, setUserType] = useState<UserTypeId | null>(null);
   const [cropQuery, setCropQuery] = useState("");
   const introRef = useRef<HTMLDivElement>(null);
 
@@ -88,8 +97,8 @@ const Onboarding = () => {
 
   const expectedYieldKg = Math.round(sizeM2 * 0.3); // 고추 기준 대략 환산
 
-  const stepIndex = (["name", "region", "size", "crops"] as const).indexOf(step as any);
-  const progress = stepIndex >= 0 ? (stepIndex + 1) / 4 : 0;
+  const stepIndex = (["name", "region", "size", "userType", "crops"] as const).indexOf(step as any);
+  const progress = stepIndex >= 0 ? (stepIndex + 1) / 5 : 0;
 
   // ===================== SPLASH =====================
   const SplashOverlay = ({ leaving }: { leaving?: boolean }) => (
@@ -423,9 +432,100 @@ const Onboarding = () => {
             const farmSize: "소규모" | "중규모" | "대규모" =
               sizeM2 < 1000 ? "소규모" : sizeM2 < 5000 ? "중규모" : "대규모";
             setProfile({ farmAreaM2: sizeM2, farmSize });
-            setStep("crops");
+            setStep("userType");
           }}
         />
+      </div>
+    );
+  }
+
+  // ===================== USER TYPE =====================
+  if (step === "userType") {
+    const goNext = (type: UserTypeId | null) => {
+      setProfile({ userType: type });
+      setStep("crops");
+    };
+    return (
+      <div className="absolute inset-0 bg-white flex flex-col">
+        <MobileStatusBar />
+        <Header onBack={() => setStep("size")} />
+        <div className="flex-1 px-5 pt-2 overflow-y-auto">
+          <h2 className="text-[20px] font-extrabold leading-snug text-foreground">
+            어떤 목적으로 시세를 보시나요?
+          </h2>
+          <p className="mt-2 text-[13px] text-muted-foreground leading-relaxed">
+            선택하신 유형에 맞게 화면을 구성해드려요. 나중에 언제든지 바꿀 수 있어요.
+          </p>
+
+          <div className="mt-6 space-y-3">
+            {USER_TYPE_OPTIONS.map((opt) => {
+              const sel = userType === opt.id;
+              return (
+                <button
+                  key={opt.id}
+                  onClick={() => setUserType(opt.id)}
+                  className="w-full text-left rounded-2xl p-4 transition active:scale-[0.995]"
+                  style={{
+                    border: sel ? "2px solid #1A3A1F" : "1.5px solid #E8E8E8",
+                    background: sel ? "#F0F7EE" : "#FFFFFF",
+                  }}
+                >
+                  <div className="flex items-start gap-3">
+                    <span className="text-[28px] leading-none shrink-0">{opt.icon}</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[15px] font-extrabold text-foreground leading-tight">{opt.title}</p>
+                      <p className="mt-1 text-[12.5px] text-muted-foreground leading-snug">{opt.desc}</p>
+                    </div>
+                    <span
+                      className="shrink-0 w-6 h-6 rounded-full flex items-center justify-center"
+                      style={{
+                        background: sel ? "#1A3A1F" : "transparent",
+                        border: sel ? "2px solid #1A3A1F" : "1.5px solid #CFCFCF",
+                      }}
+                    >
+                      {sel && (
+                        <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />
+                      )}
+                    </span>
+                  </div>
+                  <div className="mt-3 flex flex-wrap gap-1.5">
+                    {opt.tags.map((t) => (
+                      <span
+                        key={t}
+                        className="text-[11.5px] px-2 py-1 rounded-full"
+                        style={{
+                          background: sel ? "#C8E6C2" : "#F2F2F2",
+                          color: sel ? "#1A3A1F" : "#666666",
+                        }}
+                      >
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+        <div className="px-5 pt-3 pb-3 bg-white">
+          <button
+            onClick={() => userType && goNext(userType)}
+            disabled={!userType}
+            className="w-full h-[52px] rounded-2xl text-[15px] font-bold text-white transition active:scale-[0.99]"
+            style={{
+              background: userType ? "#1A3A1F" : "#D0D0D0",
+            }}
+          >
+            다음으로 →
+          </button>
+          <button
+            onClick={() => goNext(null)}
+            className="w-full h-11 mt-2 text-[13px]"
+            style={{ color: "#AAAAAA" }}
+          >
+            나중에 설정하기
+          </button>
+        </div>
       </div>
     );
   }
@@ -450,7 +550,7 @@ const Onboarding = () => {
     return (
       <div className="absolute inset-0 bg-white flex flex-col">
         <MobileStatusBar />
-        <Header onBack={() => setStep("size")} />
+        <Header onBack={() => setStep("userType")} />
         <div className="px-5 pt-2">
           <h2 className="text-[20px] font-extrabold leading-snug text-foreground">
             현재 재배 중인 작물을<br />모두 선택해주세요.
