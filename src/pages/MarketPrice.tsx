@@ -157,6 +157,24 @@ const MarketPricePage = () => {
   // market-compare toggle
   const [cmpMode, setCmpMode] = useState<"price" | "share">("price");
 
+  // corporation tab metric
+  type CorpMetric = "avgPrice" | "share" | "count" | "volume";
+  const [corpMetric, setCorpMetric] = useState<CorpMetric>("avgPrice");
+  const [corpMetricOpen, setCorpMetricOpen] = useState(false);
+  const corpMetricLabel: Record<CorpMetric, string> = {
+    avgPrice: "평균가 기준",
+    share: "점유율 기준",
+    count: "거래건수 기준",
+    volume: "거래량 기준",
+  };
+  const corpCardTitle: Record<CorpMetric, string> = {
+    avgPrice: "법인별 평균가 순위",
+    share: "법인별 거래 점유율",
+    count: "법인별 거래건수 순위",
+    volume: "법인별 거래량 순위",
+  };
+
+
   // sort
   type SortKey = "latest" | "priceDesc" | "priceAsc" | "volume";
   const [sortKey, setSortKey] = useState<SortKey>("latest");
