@@ -27,7 +27,10 @@ export interface UserProfile {
   seasonBasis?: SeasonBasis;
   cropSettings?: Record<string, CropSetting>;
   userType?: UserType;
+  favMarkets?: string[];
+  interestCrops?: string[];
 }
+
 
 export interface NotificationSettings {
   priceAlert: boolean;
@@ -65,9 +68,12 @@ interface AppState {
   addMyCrop: (id: string) => void;
   setCropSetting: (id: string, s: Partial<CropSetting>) => void;
   removeMyCrop: (id: string) => void;
+  toggleFavMarket: (id: string) => void;
+  toggleInterestCrop: (id: string) => void;
   ensureSelectedCrop: () => void;
   completeOnboarding: () => void;
 }
+
 
 export const useApp = create<AppState>()(
   persist(
@@ -89,7 +95,10 @@ export const useApp = create<AppState>()(
         onboarded: false,
         cultivationMethod: "노지",
         seasonBasis: "이번",
+        favMarkets: ["garak", "daegu"],
+        interestCrops: ["onion", "tomato"],
       },
+
       notif: {
         priceAlert: true,
         priceThreshold: 10,
@@ -169,6 +178,19 @@ export const useApp = create<AppState>()(
             cropId,
           };
         }),
+      toggleFavMarket: (id) =>
+        set((s) => {
+          const cur = s.profile.favMarkets ?? [];
+          const next = cur.includes(id) ? cur.filter((m) => m !== id) : [...cur, id];
+          return { profile: { ...s.profile, favMarkets: next } };
+        }),
+      toggleInterestCrop: (id) =>
+        set((s) => {
+          const cur = s.profile.interestCrops ?? [];
+          const next = cur.includes(id) ? cur.filter((c) => c !== id) : [...cur, id];
+          return { profile: { ...s.profile, interestCrops: next } };
+        }),
+
       ensureSelectedCrop: () =>
         set((s) => {
           if (s.profile.myCrops.length === 0) return {};
