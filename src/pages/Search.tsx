@@ -54,7 +54,9 @@ const SearchPage = () => {
   useEffect(() => {
     try {
       const r = JSON.parse(localStorage.getItem(RECENT_KEY) || "[]");
-      setRecent(Array.isArray(r) ? r : []);
+      const clean = Array.isArray(r) ? r.filter((x): x is string => typeof x === "string") : [];
+      setRecent(clean);
+      localStorage.setItem(RECENT_KEY, JSON.stringify(clean));
     } catch {
       setRecent([]);
     }
