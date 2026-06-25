@@ -26,6 +26,7 @@ export interface UserProfile {
   cultivationMethod?: CultivationMethod;
   seasonBasis?: SeasonBasis;
   cropSettings?: Record<string, CropSetting>;
+  userType?: UserType;
 }
 
 export interface NotificationSettings {
