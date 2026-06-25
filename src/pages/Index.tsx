@@ -128,32 +128,6 @@ const HomePage = () => {
         </button>
 
 
-        {/* 빠른 시세 조회 */}
-        <section>
-          <div className="mb-2">
-            <h2 className="text-sm font-semibold text-foreground">빠른 시세 조회</h2>
-            <p className="text-[11px] text-muted-foreground mt-0.5">자주 쓰는 시세 조회 기능을 바로 확인하세요.</p>
-          </div>
-          <div className="grid grid-cols-4 gap-2">
-            {[
-              { icon: TrendingUp, label: "가격 동향", route: "/market?tab=auction" },
-              { icon: Package, label: "품목별 시세", route: "/market?tab=variety" },
-              { icon: Gavel, label: "경매 일정", route: "/market?tab=auction" },
-              { icon: Bookmark, label: "관심 작물", route: "/search" },
-            ].map((m) => (
-              <button
-                key={m.label}
-                onClick={() => navigate(m.route)}
-                className="bg-white rounded-[16px] border border-[#EFEFEF] shadow-[var(--shadow-sm)] py-3.5 flex flex-col items-center gap-2 active:scale-[0.97] transition-transform"
-              >
-                <m.icon className="w-7 h-7 text-[#1A3A1F]" strokeWidth={1.8} />
-                <span className="text-[12.5px] font-semibold text-foreground text-center leading-tight whitespace-nowrap">
-                  {m.label}
-                </span>
-              </button>
-            ))}
-          </div>
-        </section>
 
 
         {/* 내 작물 칩 */}
