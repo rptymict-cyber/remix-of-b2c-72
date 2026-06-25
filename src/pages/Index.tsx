@@ -94,16 +94,6 @@ const HomePage = () => {
       <AppHeader title="농산물 시세" />
 
       <main className="h-full overflow-y-auto px-4 pt-[calc(var(--app-header-height)+0.75rem)] safe-bottom space-y-4">
-        {/* 통합 검색창 */}
-        <button
-          onClick={() => navigate("/search")}
-          className="w-full h-12 px-3.5 rounded-2xl bg-white border border-border flex items-center gap-2 text-left shadow-[var(--shadow-sm)]"
-          aria-label="검색"
-        >
-          <Search className="w-4 h-4 text-muted-foreground shrink-0" />
-          <span className="text-[13.5px] text-muted-foreground">품목, 품종, 시장 검색</span>
-        </button>
-
         {/* 업데이트 상태 바 */}
         <section
           className={`${ss.bg} rounded-[14px] h-11 px-[14px] flex items-center justify-between transition-colors`}
@@ -125,6 +115,17 @@ const HomePage = () => {
             <RefreshCw className={`w-4 h-4 ${updateStatus === "loading" ? "animate-spin" : ""}`} />
           </button>
         </section>
+
+        {/* 통합 검색창 */}
+        <button
+          onClick={() => navigate("/search")}
+          className="w-full h-12 px-3.5 rounded-2xl bg-white border border-border flex items-center gap-2 text-left shadow-[var(--shadow-sm)]"
+          aria-label="검색"
+        >
+          <Search className="w-4 h-4 text-muted-foreground shrink-0" />
+          <span className="text-[13.5px] text-muted-foreground">품목, 품종, 시장 검색</span>
+        </button>
+
 
         {/* 빠른 시세 조회 */}
         <section>
