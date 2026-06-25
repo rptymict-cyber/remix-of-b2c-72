@@ -586,6 +586,20 @@ const MarketPricePage = () => {
         ]}
       />
 
+      <SortSheet<CorpMetric>
+        open={corpMetricOpen}
+        onOpenChange={setCorpMetricOpen}
+        title="비교 기준 선택"
+        selected={corpMetric}
+        onSelect={setCorpMetric}
+        options={[
+          { key: "avgPrice", label: "평균가 기준" },
+          { key: "share", label: "점유율 기준" },
+          { key: "count", label: "거래건수 기준" },
+          { key: "volume", label: "거래량 기준" },
+        ]}
+
+
       {/* 경매 상세 */}
       <DetailSheet open={!!auctionDetail} onOpenChange={(o) => !o && setAuctionDetail(null)} title="경매 상세 정보">
         {auctionDetail && (
