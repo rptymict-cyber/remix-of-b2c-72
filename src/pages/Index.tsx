@@ -14,7 +14,9 @@ import {
   Radio,
   TrendingUp,
   TrendingDown,
-  Activity,
+  RefreshCw,
+  Sparkles,
+  AlertTriangle,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import AppHeader from "@/components/AppHeader";
@@ -23,12 +25,21 @@ import { useApp } from "@/store/appStore";
 import { findCrop, findMarket, seedPrice, seedPriceHistory, FEATURED_CROPS } from "@/data/catalog";
 import CropSheet from "@/components/sheets/CropSheet";
 import MarketSheet from "@/components/sheets/MarketSheet";
-import UnitSheet from "@/components/sheets/UnitSheet";
+import PriceModeSheet, { PriceMode, computePriceByMode } from "@/components/sheets/PriceModeSheet";
 import PriceSparkline from "@/components/PriceSparkline";
+
+type UpdateStatus = "normal" | "loading" | "delayed" | "error";
+
+const STATUS_STYLES: Record<UpdateStatus, { bg: string; text: string; icon: string }> = {
+  normal: { bg: "bg-[#EAF7EA]", text: "text-[#1A3A1F]", icon: "text-[#1A3A1F]" },
+  loading: { bg: "bg-[#EAF0F7]", text: "text-[#1F3A5A]", icon: "text-[#1F3A5A]" },
+  delayed: { bg: "bg-[#FBEFDC]", text: "text-[#7A4A12]", icon: "text-[#7A4A12]" },
+  error: { bg: "bg-[#FBE3E3]", text: "text-[#7A1F1F]", icon: "text-[#7A1F1F]" },
+};
 
 const HomePage = () => {
   const navigate = useNavigate();
-  const { cropId, variety, marketId, profile, unitKg, setCrop, setUnitKg, ensureSelectedCrop } = useApp();
+  const { cropId, variety, marketId, profile, setCrop, ensureSelectedCrop } = useApp();
 
   useEffect(() => {
     ensureSelectedCrop();
@@ -36,59 +47,79 @@ const HomePage = () => {
 
   const [cropOpen, setCropOpen] = useState(false);
   const [marketOpen, setMarketOpen] = useState(false);
-  const [unitOpen, setUnitOpen] = useState(false);
+  const [priceModeOpen, setPriceModeOpen] = useState(false);
+  const [priceMode, setPriceMode] = useState<PriceMode>("per20kg");
+  const [updateStatus, setUpdateStatus] = useState<UpdateStatus>("normal");
 
   const crop = findCrop(cropId);
   const market = findMarket(marketId);
-  const basePrice = seedPrice(cropId, marketId, variety); // 기준 단량(crop.defaultUnitKg) 가격
-  // 환산: basePrice는 crop.defaultUnitKg 기준 → 선택 unitKg로 비례 환산
-  const displayPrice = Math.round((basePrice * (unitKg / crop.defaultUnitKg)) / 100) * 100;
+  const basePrice = seedPrice(cropId, marketId, variety);
+  const { price: displayPrice, unitLabel, unitKg } = computePriceByMode(priceMode, basePrice, crop.defaultUnitKg);
   const kgPrice = Math.round(basePrice / crop.defaultUnitKg);
+
+  // 보조 정보
+  const subInfo =
+    priceMode === "perKg"
+      ? `실거래가 ${basePrice.toLocaleString()}원 / ${crop.defaultUnitKg}kg`
+      : priceMode === "actual" || priceMode === "cropDefault"
+        ? `환산가 ${kgPrice.toLocaleString()}원 / kg`
+        : `실거래가 ${basePrice.toLocaleString()}원 / ${crop.defaultUnitKg}kg`;
+
   const history = useMemo(() => seedPriceHistory(cropId, marketId, variety, 7), [cropId, marketId, variety]);
-  const trendPct = ((history[history.length - 1] - history[0]) / history[0]) * 100;
 
   const myCropList = profile.myCrops.map((id) => findCrop(id));
   const hasCrops = myCropList.length > 0;
+
+  const onRefresh = () => {
+    setUpdateStatus("loading");
+    window.setTimeout(() => setUpdateStatus("normal"), 1200);
+  };
+
+  const statusText: Record<UpdateStatus, string> = {
+    normal: `${profile.region} 기준 · 오늘 14:30 업데이트`,
+    loading: "시세 데이터를 업데이트 중입니다...",
+    delayed: "데이터 업데이트가 지연되고 있습니다",
+    error: "새로고침 실패. 다시 시도해 주세요",
+  };
+
+  const ss = STATUS_STYLES[updateStatus];
+
+  // AI 인사이트 mock 계산 (50상자 기준)
+  const aiUpliftPct = 6.3;
+  const aiExtraPerBox = Math.round((basePrice * aiUpliftPct) / 100);
+  const aiExtraTotal = Math.round((aiExtraPerBox * 50) / 1000) * 1000;
 
   return (
     <div className="h-full bg-background">
       <AppHeader title="농산물 시세" />
 
-      <main className="h-full overflow-y-auto px-4 pt-[calc(var(--app-header-height)+1rem)] safe-bottom space-y-4">
-        {/* 지역·날씨 슬림 카드 */}
-        <section className="bg-card rounded-2xl border border-border px-4 py-3 shadow-[var(--shadow-sm)]">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 min-w-0">
-              <MapPin className="w-4 h-4 text-primary shrink-0" />
-              <div className="min-w-0">
-                <p className="text-[13px] font-bold text-foreground truncate">{profile.region}</p>
-                <p className="text-[10px] text-muted-foreground mt-0.5">시세 기준 지역 · 14:32 업데이트</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-1.5 shrink-0 ml-3">
-              <span className="text-[15px] font-bold text-foreground">18°</span>
-              <span className="text-[11px] text-muted-foreground">맑음</span>
-            </div>
+      <main className="h-full overflow-y-auto px-4 pt-[calc(var(--app-header-height)+0.75rem)] safe-bottom space-y-4">
+        {/* 업데이트 상태 바 */}
+        <section
+          className={`${ss.bg} rounded-[14px] h-11 px-[14px] flex items-center justify-between transition-colors`}
+        >
+          <div className="flex items-center gap-2 min-w-0">
+            {updateStatus === "error" || updateStatus === "delayed" ? (
+              <AlertTriangle className={`w-4 h-4 shrink-0 ${ss.icon}`} />
+            ) : (
+              <MapPin className={`w-4 h-4 shrink-0 ${ss.icon}`} />
+            )}
+            <p className={`text-[12.5px] font-semibold truncate ${ss.text}`}>{statusText[updateStatus]}</p>
           </div>
-          <div className="mt-2 pt-2 border-t border-border/60 flex items-center gap-1.5">
-            <span className="w-1 h-1 rounded-full bg-primary" />
-            <p className="text-[10px] text-muted-foreground">향후 10일 기상 반영 중</p>
-          </div>
+          <button
+            onClick={onRefresh}
+            aria-label="새로고침"
+            disabled={updateStatus === "loading"}
+            className={`shrink-0 ml-2 ${ss.icon}`}
+          >
+            <RefreshCw className={`w-4 h-4 ${updateStatus === "loading" ? "animate-spin" : ""}`} />
+          </button>
         </section>
 
         {/* 내 작물 칩 */}
         <section>
           <div className="flex items-center justify-between mb-2.5">
             <h2 className="text-sm font-semibold text-foreground">내 작물</h2>
-            {hasCrops && (
-              <button
-                onClick={() => navigate("/crop/add")}
-                className="flex items-center gap-1 px-2.5 py-1 rounded-full border border-border text-muted-foreground text-[11px] font-medium hover:border-primary hover:text-primary transition-colors"
-              >
-                <Plus className="w-3 h-3" />
-                작물 추가
-              </button>
-            )}
           </div>
           {hasCrops ? (
             <div className="flex gap-2 overflow-x-auto scrollbar-hide items-center -mx-4 px-4">
@@ -100,7 +131,7 @@ const HomePage = () => {
                     onClick={() => (sel ? setCropOpen(true) : setCrop(c.id, c.varieties[0]))}
                     className={`flex-shrink-0 min-h-11 flex items-center gap-1.5 px-3.5 py-2 rounded-full text-sm font-semibold transition-all ${
                       sel
-                        ? "bg-[#2d5a3d] text-white shadow-[var(--shadow-sm)]"
+                        ? "bg-[#1A3A1F] text-white shadow-[var(--shadow-sm)]"
                         : "bg-card border border-border text-foreground"
                     }`}
                   >
@@ -109,6 +140,13 @@ const HomePage = () => {
                   </button>
                 );
               })}
+              <button
+                onClick={() => navigate("/crop/add")}
+                className="flex-shrink-0 min-h-11 flex items-center gap-1 px-3.5 py-2 rounded-full border border-dashed border-primary/50 text-primary text-sm font-semibold"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                작물 추가
+              </button>
             </div>
           ) : (
             <button
@@ -124,45 +162,57 @@ const HomePage = () => {
         {hasCrops && (
           <section className="bg-card rounded-2xl border border-border shadow-[var(--shadow-md)] overflow-hidden">
             <div className="px-5 pt-4 pb-3">
-              <button
-                onClick={() => setMarketOpen(true)}
-                className="flex items-center gap-1 text-[11px] font-medium text-muted-foreground tracking-wide"
-              >
-                {crop.emoji} {crop.name} · {variety} · {market.name}
-                <ChevronDown className="w-3 h-3" />
-              </button>
-              <div className="flex items-end justify-between mt-2.5">
-                <div className="min-w-0">
-                  <div className="flex items-baseline gap-1.5">
-                    <span className="text-[32px] font-extrabold text-foreground leading-none tracking-tight">
-                      {displayPrice.toLocaleString()}
-                    </span>
-                    <span className="text-[13px] font-medium text-muted-foreground">원/{unitKg}kg</span>
-                  </div>
-                  <p className="text-[11px] text-muted-foreground mt-1.5">
-                    환산가 {kgPrice.toLocaleString()}원 / kg
-                  </p>
-                </div>
+              <div className="flex items-start justify-between gap-2">
                 <button
-                  onClick={() => setUnitOpen(true)}
+                  onClick={() => setMarketOpen(true)}
+                  className="flex items-center gap-1 text-[12px] font-semibold text-muted-foreground text-left"
+                >
+                  <span className="truncate">
+                    {crop.emoji} {crop.name} · {variety} · {market.name}
+                  </span>
+                  <ChevronDown className="w-3 h-3 shrink-0" />
+                </button>
+                <button
+                  onClick={() => setPriceModeOpen(true)}
                   className="shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full bg-secondary text-foreground text-[12px] font-semibold"
                 >
-                  {unitKg}kg 기준
+                  가격 기준 {unitLabel}
                   <ChevronDown className="w-3 h-3" />
                 </button>
+              </div>
+
+              <div className="mt-3">
+                <div className="flex items-baseline gap-1.5">
+                  <span className="text-[32px] font-extrabold text-foreground leading-none tracking-tight">
+                    {displayPrice.toLocaleString()}
+                  </span>
+                  <span className="text-[14px] font-semibold text-muted-foreground">원 / {unitLabel}</span>
+                </div>
+                <p className="text-[12px] text-muted-foreground mt-1.5">{subInfo}</p>
               </div>
             </div>
 
             {/* 미니 그래프 */}
-            <div className="px-3 pb-1 relative">
-              <PriceSparkline data={history} width={360} height={70} className="w-full h-[70px]" />
-              <div className="absolute right-5 top-0 bg-[#2d5a3d] text-white text-[10px] font-bold px-2 py-0.5 rounded-md">
-                현재 {displayPrice.toLocaleString()}원
+            <div className="px-5">
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-[11px] font-semibold text-muted-foreground">최근 7일 시세 흐름</p>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[hsl(0_72%_50%/0.08)] price-up">
+                  최근 하락 후 반등
+                </span>
+              </div>
+              <div className="relative pt-4">
+                <PriceSparkline data={history} width={340} height={70} className="w-full h-[70px]" />
+                <div className="absolute right-0 -top-0.5 bg-[#1A3A1F] text-white text-[10px] font-bold px-2 py-0.5 rounded-md">
+                  현재 {displayPrice.toLocaleString()}원
+                </div>
+              </div>
+              <div className="flex justify-between mt-1 text-[9.5px] text-muted-foreground">
+                <span>5/6</span><span>5/7</span><span>5/8</span><span>5/9</span><span>5/10</span><span>5/11</span><span className="font-bold text-foreground">5/12 오늘</span>
               </div>
             </div>
 
-            {/* 변동 지표 */}
-            <div className="px-5 pt-2 pb-3">
+            {/* KPI */}
+            <div className="px-5 pt-3">
               <div className="grid grid-cols-4 gap-1.5">
                 <div className="bg-background rounded-lg px-2 py-2">
                   <p className="text-[10px] text-muted-foreground leading-tight">전일</p>
@@ -183,21 +233,42 @@ const HomePage = () => {
               </div>
             </div>
 
+            {/* AI 출하 인사이트 (Hero 내부 통합) */}
+            <div className="px-5 pt-3">
+              <button
+                onClick={() => navigate("/prediction")}
+                className="w-full bg-[#EAF7EA] rounded-[14px] px-3.5 py-3 flex items-center gap-3 text-left active:scale-[0.99] transition-transform"
+              >
+                <span className="w-9 h-9 rounded-full bg-white flex items-center justify-center shrink-0">
+                  <Sparkles className="w-4 h-4 text-[#1A3A1F]" />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="text-[11.5px] font-bold text-[#1A3A1F]">AI 출하 인사이트</p>
+                  <p className="text-[12.5px] text-foreground mt-0.5 leading-snug">
+                    5월 24일 출하 시 현재보다 <span className="price-up font-extrabold">+{aiUpliftPct}%</span>
+                  </p>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">
+                    50상자 기준 예상 추가 수익{" "}
+                    <span className="text-[#1A3A1F] font-extrabold">+{aiExtraTotal.toLocaleString()}원</span>
+                  </p>
+                </div>
+                <ChevronRight className="w-4 h-4 text-[#1A3A1F]/60 shrink-0" />
+              </button>
+            </div>
+
             {/* CTA */}
-            <div className="border-t border-border/60 grid grid-cols-2">
+            <div className="px-5 py-3 grid grid-cols-2 gap-2">
               <button
                 onClick={() => navigate("/market")}
-                className="min-h-12 flex items-center justify-center gap-1.5 text-[13px] font-semibold text-primary border-r border-border/60"
+                className="min-h-12 rounded-2xl border-2 border-primary bg-white text-primary text-[13px] font-bold"
               >
-                <Radio className="w-3.5 h-3.5" />
-                실시간 경락가 조회
+                이 작물 경락가 조회
               </button>
               <button
-                onClick={() => navigate("/market")}
-                className="min-h-12 flex items-center justify-center gap-1.5 text-[13px] font-semibold text-foreground"
+                onClick={() => navigate("/prediction")}
+                className="min-h-12 rounded-2xl bg-[#1A3A1F] text-white text-[13px] font-bold"
               >
-                시세 상세 보기
-                <ChevronRight className="w-3.5 h-3.5" />
+                AI 예측 보기
               </button>
             </div>
           </section>
@@ -211,24 +282,32 @@ const HomePage = () => {
               도매시장·품목·품종을 선택해 경락가를 바로 확인하세요.
             </p>
           </div>
-          <div className="grid grid-cols-2 gap-2.5">
+          <div className="grid grid-cols-2 gap-3">
             {[
-              { icon: Radio, label: "실시간 경락가 조회", route: "/market" },
-              { icon: Clock, label: "이전 가격 조회", route: "/market" },
-              { icon: Search, label: "품목 검색", route: "/market" },
-              { icon: History, label: "최근 조회", route: "/market" },
+              { icon: Radio, title: "실시간 경락가 조회", desc: "전국 도매시장 경락가", route: "/market", emphasize: true },
+              { icon: Clock, title: "이전 가격 조회", desc: "날짜별 과거 시세", route: "/market" },
+              { icon: Search, title: "품목 검색", desc: "품목·품종 바로 찾기", route: "/market" },
+              { icon: History, title: "최근 조회", desc: "자주 본 조건 다시 보기", route: "/market" },
             ].map((b) => (
               <button
-                key={b.label}
+                key={b.title}
                 onClick={() => navigate(b.route)}
-                className="min-h-14 bg-card rounded-2xl border border-border px-3.5 py-3 flex items-center gap-2.5 shadow-[var(--shadow-sm)] active:scale-[0.98] transition-transform"
+                className={`min-h-[64px] bg-card rounded-2xl p-4 text-left shadow-[var(--shadow-sm)] active:scale-[0.98] transition-transform ${
+                  b.emphasize ? "border-2 border-primary/40" : "border border-border"
+                }`}
               >
-                <span className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                  <b.icon className="w-4 h-4 text-primary" />
-                </span>
-                <span className="text-[13px] font-semibold text-foreground text-left leading-tight">
-                  {b.label}
-                </span>
+                <div className="flex items-start justify-between mb-2">
+                  <div
+                    className={`w-9 h-9 rounded-full flex items-center justify-center ${
+                      b.emphasize ? "bg-primary/20" : "bg-primary/10"
+                    }`}
+                  >
+                    <b.icon className="w-5 h-5 text-primary" />
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-muted-foreground/50" />
+                </div>
+                <p className="text-sm font-bold text-foreground">{b.title}</p>
+                <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">{b.desc}</p>
               </button>
             ))}
           </div>
@@ -236,7 +315,20 @@ const HomePage = () => {
 
         {/* 오늘 주목 작물 */}
         <section>
-          <h2 className="text-sm font-semibold text-foreground mb-2.5">오늘 주목 작물</h2>
+          <div className="flex items-center justify-between mb-2.5">
+            <div>
+              <h2 className="text-sm font-semibold text-foreground">오늘 주목 작물</h2>
+              <p className="text-[11px] text-muted-foreground mt-0.5">
+                거래량이나 가격 변동이 큰 품목이에요.
+              </p>
+            </div>
+            <button
+              onClick={() => navigate("/market")}
+              className="text-[11px] font-semibold text-primary flex items-center gap-0.5 shrink-0"
+            >
+              전체 보기 <ChevronRight className="w-3 h-3" />
+            </button>
+          </div>
           <div className="flex gap-2.5 overflow-x-auto scrollbar-hide -mx-4 px-4 pb-1">
             {FEATURED_CROPS.map((f) => {
               const fc = findCrop(f.cropId);
@@ -253,7 +345,7 @@ const HomePage = () => {
                 <button
                   key={f.cropId}
                   onClick={() => navigate("/market")}
-                  className="flex-shrink-0 w-[220px] bg-card rounded-2xl border border-border p-3.5 shadow-[var(--shadow-sm)] text-left active:scale-[0.98] transition-transform"
+                  className="flex-shrink-0 w-[210px] bg-card rounded-2xl border border-border p-3.5 shadow-[var(--shadow-sm)] text-left active:scale-[0.98] transition-transform"
                 >
                   <div className="flex items-center justify-between mb-2">
                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${badgeColor}`}>
@@ -292,34 +384,6 @@ const HomePage = () => {
           </div>
         </section>
 
-        {/* AI 출하 타이밍 추천 (우선순위 하향) */}
-        <section
-          onClick={() => navigate("/prediction")}
-          className="prediction-hero cursor-pointer active:scale-[0.99] transition-transform"
-        >
-          <div className="relative z-10">
-            <div className="flex items-start justify-between mb-2">
-              <div className="flex items-center gap-1.5">
-                <BrainCircuit className="w-4 h-4 text-white/80" />
-                <span className="text-xs font-medium text-white/80">AI 출하 타이밍 추천</span>
-              </div>
-              <ChevronRight className="w-4 h-4 text-white/50" />
-            </div>
-            <p className="text-lg font-bold">5월 12일 (화) 출하가 가장 유리합니다</p>
-            <p className="text-sm text-white/70 mt-1">
-              예상 추가 수익 <span className="text-white font-semibold">+8.1%</span>
-            </p>
-            <div className="mt-3 bg-white/15 rounded-md px-3 py-2">
-              <p className="text-xs text-white/80 leading-relaxed">
-                향후 10일간 상승 후 조정 예상 — 출하 시기 조정으로 추가 수익 확보 가능
-              </p>
-            </div>
-            <div className="flex items-center justify-end mt-3">
-              <span className="text-[11px] text-white font-semibold">예측 상세 보기 →</span>
-            </div>
-          </div>
-        </section>
-
         {/* 주요 서비스 */}
         <section className="pb-2">
           <h2 className="text-sm font-semibold text-foreground mb-2.5">주요 서비스</h2>
@@ -352,13 +416,14 @@ const HomePage = () => {
       <BottomNav />
       <CropSheet open={cropOpen} onOpenChange={setCropOpen} />
       <MarketSheet open={marketOpen} onOpenChange={setMarketOpen} />
-      <UnitSheet
-        open={unitOpen}
-        onOpenChange={setUnitOpen}
+      <PriceModeSheet
+        open={priceModeOpen}
+        onOpenChange={setPriceModeOpen}
         cropId={cropId}
-        variety={variety}
-        selectedKg={unitKg}
-        onConfirm={(kg) => setUnitKg(kg)}
+        basePrice={basePrice}
+        defaultUnitKg={crop.defaultUnitKg}
+        selectedMode={priceMode}
+        onApply={setPriceMode}
       />
     </div>
   );
