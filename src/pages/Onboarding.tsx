@@ -432,7 +432,7 @@ const Onboarding = () => {
             const farmSize: "소규모" | "중규모" | "대규모" =
               sizeM2 < 1000 ? "소규모" : sizeM2 < 5000 ? "중규모" : "대규모";
             setProfile({ farmAreaM2: sizeM2, farmSize });
-            setStep("crops");
+            setStep("userType");
           }}
         />
       </div>
