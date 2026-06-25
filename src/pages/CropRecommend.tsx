@@ -71,13 +71,15 @@ const cropData = [
 ];
 
 const CropRecommendPage = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [expandedCrop, setExpandedCrop] = useState<string | null>(null);
   const [cropOpen, setCropOpen] = useState(false);
   const [regionOpen, setRegionOpen] = useState(false);
   const [sizeOpen, setSizeOpen] = useState(false);
   const [cultivationOpen, setCultivationOpen] = useState(false);
   const [recalculating, setRecalculating] = useState(false);
-  const { cropId, profile, setProfile } = useApp();
+  const { cropId, marketId, variety, profile, setProfile, setCrop } = useApp();
   const crop = findCrop(cropId);
   const method = profile.cultivationMethod ?? "노지";
   const season = profile.seasonBasis ?? "이번";
@@ -87,6 +89,17 @@ const CropRecommendPage = () => {
     setRecalculating(true);
     window.setTimeout(() => setRecalculating(false), 700);
   };
+
+  const myCropMax = profile.myCrops.length >= 3;
+  const onAddCrop = () => {
+    if (myCropMax) {
+      toast({ description: "내 작물은 최대 3개까지 등록할 수 있어요" });
+      return;
+    }
+    navigate("/crop/add");
+  };
+
+
 
   useEffect(() => {
     // initial mount: nothing
