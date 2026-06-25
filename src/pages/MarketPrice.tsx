@@ -154,8 +154,32 @@ const MarketPricePage = () => {
   const [sortOpen, setSortOpen] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
-  // market-compare toggle
-  const [cmpMode, setCmpMode] = useState<"price" | "share">("price");
+  // market-compare metric
+  type MarketMetric = "price" | "share" | "dayChange" | "volume" | "inbound";
+  const [marketMetric, setMarketMetric] = useState<MarketMetric>("price");
+  const [marketMetricOpen, setMarketMetricOpen] = useState(false);
+  const marketMetricLabel: Record<MarketMetric, string> = {
+    price: "현재가 기준",
+    share: "거래량 점유율 기준",
+    dayChange: "전일 상승률 기준",
+    volume: "거래량 기준",
+    inbound: "반입량 기준",
+  };
+  const marketCardTitle: Record<MarketMetric, string> = {
+    price: "시장별 현재가 순위",
+    share: "시장별 거래량 점유율",
+    dayChange: "시장별 전일 상승률",
+    volume: "시장별 거래량 순위",
+    inbound: "시장별 반입량 순위",
+  };
+  const marketCardDesc: Record<MarketMetric, string> = {
+    price: "선택한 품목의 시장별 현재가를 비교합니다.",
+    share: "선택한 품목의 시장별 거래 비중을 비교합니다.",
+    dayChange: "전일 대비 가격 상승률이 높은 시장을 보여줍니다.",
+    volume: "선택한 품목의 거래량이 많은 시장을 보여줍니다.",
+    inbound: "선택한 품목의 반입량이 많은 시장을 보여줍니다.",
+  };
+
 
   // corporation tab metric
   type CorpMetric = "avgPrice" | "share" | "count" | "volume";
