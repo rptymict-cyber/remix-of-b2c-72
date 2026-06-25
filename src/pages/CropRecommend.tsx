@@ -122,8 +122,137 @@ const CropRecommendPage = () => {
       <AppHeader title="내 작물" />
 
       <main className="h-full overflow-y-auto px-4 pt-[calc(var(--app-header-height)+1.25rem)] safe-bottom space-y-4">
+        {/* Section A — 내 작물 */}
+        <section>
+          <div className="flex items-end justify-between mb-2.5">
+            <div>
+              <h2 className="text-base font-bold text-foreground">내 작물</h2>
+              <p className="text-[11px] text-muted-foreground mt-0.5">내가 등록한 작물의 시세와 예측</p>
+            </div>
+            <button
+              onClick={onAddCrop}
+              className={`shrink-0 min-h-9 px-3 rounded-full text-xs font-bold ${
+                myCropMax ? "bg-secondary text-muted-foreground" : "bg-primary/10 text-primary"
+              }`}
+            >
+              {myCropMax ? "최대 3개" : `+ 추가 (${profile.myCrops.length}/3개)`}
+            </button>
+          </div>
+          {profile.myCrops.length === 0 ? (
+            <div className="bg-card border border-dashed border-border rounded-2xl p-5 text-center">
+              <p className="text-sm text-muted-foreground mb-3">아직 등록된 작물이 없어요. 작물을 추가해보세요.</p>
+              <button
+                onClick={() => navigate("/crop/add")}
+                className="min-h-11 px-4 rounded-xl bg-primary text-white text-sm font-bold"
+              >
+                작물 추가하기
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-2.5">
+              {profile.myCrops.map((id) => {
+                const c = findCrop(id);
+                const setting = profile.cropSettings?.[id];
+                const regType = setting?.regType ?? "growing";
+                const mId = setting?.marketId ?? marketId;
+                const m = findMarket(mId);
+                const v = c.varieties[0] ?? variety;
+                const p = seedPrice(id, mId, v);
+                const hist = seedPriceHistory(id, mId, v, 7);
+                const kgPrice = Math.round(p / c.defaultUnitKg);
+                const uplift = ((id.charCodeAt(0) + mId.charCodeAt(0)) % 8) + 4;
+                const day = 10 + (id.charCodeAt(0) % 12);
+                return (
+                  <div key={id} className="bg-card rounded-2xl border border-border overflow-hidden">
+                    <div className="px-3.5 pt-3.5 pb-3 flex items-start gap-3">
+                      <div className="w-11 h-11 rounded-xl bg-background flex items-center justify-center text-2xl shrink-0">
+                        {c.emoji}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5 mb-1">
+                          <span className="text-sm font-bold text-foreground">{c.name}</span>
+                          <span className={`text-[9.5px] font-bold px-1.5 py-[1px] rounded-md ${
+                            regType === "growing"
+                              ? "bg-[hsl(150_55%_94%)] text-[hsl(150_55%_28%)]"
+                              : "bg-secondary text-muted-foreground"
+                          }`}>
+                            {regType === "growing" ? "재배 중" : "관심"}
+                          </span>
+                        </div>
+                        <div className="flex items-baseline gap-1.5">
+                          <span className="text-xl font-extrabold text-foreground leading-none">{p.toLocaleString()}</span>
+                          <span className="text-[11px] font-semibold text-muted-foreground">원/{c.defaultUnitKg}kg</span>
+                          <span className="text-[11px] font-bold price-up">▲ +2.7%</span>
+                        </div>
+                        <p className="text-[10.5px] text-muted-foreground mt-1 leading-tight">
+                          {m.name} · ≒ {kgPrice.toLocaleString()}원/kg
+                        </p>
+                      </div>
+                      <div className="shrink-0">
+                        <PriceSparkline data={hist} width={80} height={36} showMarker={false} className="w-20 h-9" />
+                      </div>
+                    </div>
+
+                    {/* AI prediction bar */}
+                    <button
+                      onClick={() => { setCrop(id, v); navigate("/prediction"); }}
+                      className="w-full flex items-center gap-2 px-3.5 py-2 text-left bg-[#FAFFF8] border-t border-dashed border-[#E8F4E8]"
+                    >
+                      <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded-md bg-[#1A3A1F] text-white shrink-0">🤖 AI</span>
+                      <p className="flex-1 text-[12px] text-foreground leading-tight">
+                        5월 {day}일 출하 시 <em className="not-italic font-extrabold" style={{ color: "#E03030" }}>+{uplift}.1%</em> 더 유리해요
+                      </p>
+                      <ChevronRight className="w-4 h-4 text-[#1A3A1F]/70 shrink-0" />
+                    </button>
+
+                    {/* CTAs */}
+                    <div className="grid grid-cols-2 gap-2 p-2.5 border-t border-border">
+                      <button
+                        onClick={() => { setCrop(id, v); navigate("/prediction"); }}
+                        className="min-h-11 rounded-xl bg-[#1A3A1F] text-white text-[12.5px] font-bold"
+                      >
+                        AI 예측 상세
+                      </button>
+                      <button
+                        onClick={() => { setCrop(id, v); navigate("/market"); }}
+                        className="min-h-11 rounded-xl bg-[hsl(150_55%_94%)] text-[hsl(150_55%_28%)] text-[12.5px] font-bold"
+                      >
+                        시세 보기
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </section>
+
+        {/* Section B — 판매처 비교 */}
+        <div className="h-px bg-border" />
+        <section>
+          <button
+            onClick={() => navigate("/sales")}
+            className="w-full bg-card border border-border rounded-2xl p-3.5 flex items-center gap-3 text-left active:scale-[0.99] transition-transform"
+          >
+            <div className="w-11 h-11 rounded-xl bg-[#FFF1E0] flex items-center justify-center text-xl shrink-0">📍</div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-bold text-foreground">판매처 비교</p>
+              <p className="text-[11px] text-muted-foreground mt-0.5">물류비 포함 순이익이 가장 높은 시장을 찾아드려요</p>
+            </div>
+            <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
+          </button>
+        </section>
+
+        {/* Section C — 다음 시즌 유망 작물 */}
+        <div className="h-px bg-border" />
+        <div>
+          <h2 className="text-base font-bold text-foreground">다음 시즌 유망 작물</h2>
+          <p className="text-[11px] text-muted-foreground mt-0.5">조건을 조정하면 AI가 작물을 다시 추천해드려요.</p>
+        </div>
+
         {/* 조건 */}
         <div className="grid grid-cols-2 gap-2">
+
           <FilterPill
             onClick={() => setCropOpen(true)}
             icon={<span className="text-base leading-none">{crop.emoji}</span>}
