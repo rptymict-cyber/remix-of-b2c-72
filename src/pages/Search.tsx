@@ -315,7 +315,7 @@ const SearchPage = () => {
       </main>
 
       {selReady && (
-        <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-border p-3 z-30">
+        <div className="fixed bottom-[68px] left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-border p-3 z-[90]">
           <button
             onClick={() => goSearch(sel)}
             className="w-full h-12 rounded-2xl bg-[#1A3A1F] text-white text-[14px] font-bold"
@@ -324,8 +324,10 @@ const SearchPage = () => {
           </button>
         </div>
       )}
+      <BottomNav />
     </div>
   );
 };
 
 export default SearchPage;
+
