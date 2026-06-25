@@ -459,7 +459,7 @@ const Onboarding = () => {
     return (
       <div className="absolute inset-0 bg-white flex flex-col">
         <MobileStatusBar />
-        <Header onBack={() => setStep("size")} />
+        <Header onBack={() => setStep("userType")} />),
         <div className="px-5 pt-2">
           <h2 className="text-[20px] font-extrabold leading-snug text-foreground">
             현재 재배 중인 작물을<br />모두 선택해주세요.
