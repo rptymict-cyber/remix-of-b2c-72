@@ -6,6 +6,7 @@ export type Unit = "kg" | "box" | "ton";
 export type ShipmentBasis = "current" | "forecast";
 export type CultivationMethod = "노지" | "시설";
 export type SeasonBasis = "이번" | "다음";
+export type UserType = "farmer" | "wholesaler" | "retailer" | "enterprise" | null;
 
 export type CropRegType = "growing" | "interest";
 export interface CropSetting {
