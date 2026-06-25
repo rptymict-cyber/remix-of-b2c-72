@@ -97,8 +97,8 @@ const Onboarding = () => {
 
   const expectedYieldKg = Math.round(sizeM2 * 0.3); // 고추 기준 대략 환산
 
-  const stepIndex = (["name", "region", "size", "crops"] as const).indexOf(step as any);
-  const progress = stepIndex >= 0 ? (stepIndex + 1) / 4 : 0;
+  const stepIndex = (["name", "region", "size", "userType", "crops"] as const).indexOf(step as any);
+  const progress = stepIndex >= 0 ? (stepIndex + 1) / 5 : 0;
 
   // ===================== SPLASH =====================
   const SplashOverlay = ({ leaving }: { leaving?: boolean }) => (
