@@ -598,6 +598,9 @@ const MarketPricePage = () => {
           { key: "count", label: "거래건수 기준" },
           { key: "volume", label: "거래량 기준" },
         ]}
+      />
+
+
 
 
       {/* 경매 상세 */}
