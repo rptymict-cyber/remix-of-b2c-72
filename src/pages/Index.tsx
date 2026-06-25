@@ -378,33 +378,6 @@ const HomePage = () => {
           </div>
         </section>
 
-        {/* 주요 서비스 */}
-        <section className="pb-2">
-          <h2 className="text-sm font-semibold text-foreground mb-2.5">주요 서비스</h2>
-          <div className="grid grid-cols-2 gap-3">
-            {[
-              { icon: BarChart3, title: "실시간 경락가 조회", desc: "전국 도매시장 시세", color: "bg-primary/10", iconColor: "text-primary", route: "/market" },
-              { icon: BrainCircuit, title: "AI 출하 예측", desc: "10일 예측 · 출하 추천", color: "bg-accent/10", iconColor: "text-accent", route: "/prediction" },
-              { icon: Store, title: "판매처 비교", desc: "물류비 포함 순이익 1위", color: "bg-warning/10", iconColor: "text-warning", route: "/sales" },
-              { icon: Sprout, title: "내 작물 관리", desc: "작물 등록 · 추천", color: "bg-success/10", iconColor: "text-success", route: "/crop" },
-            ].map((item) => (
-              <button
-                key={item.title}
-                onClick={() => navigate(item.route)}
-                className="bg-card rounded-2xl border border-border p-4 text-left shadow-[var(--shadow-sm)] active:scale-[0.98] transition-transform"
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <div className={`w-9 h-9 rounded-full ${item.color} flex items-center justify-center`}>
-                    <item.icon className={`w-5 h-5 ${item.iconColor}`} />
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-muted-foreground/50" />
-                </div>
-                <p className="text-sm font-semibold text-foreground">{item.title}</p>
-                <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">{item.desc}</p>
-              </button>
-            ))}
-          </div>
-        </section>
       </main>
 
       <BottomNav />
