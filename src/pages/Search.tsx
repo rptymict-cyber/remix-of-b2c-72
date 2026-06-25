@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Search as SearchIcon, X, Clock, Store, Sprout, ChevronRight } from "lucide-react";
+import BottomNav from "@/components/BottomNav";
 import { CROPS, MARKETS, findCrop, findMarket } from "@/data/catalog";
+
 
 const RECENT_KEY = "recentSearches";
 
