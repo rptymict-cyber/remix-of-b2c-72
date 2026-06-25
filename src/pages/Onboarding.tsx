@@ -68,6 +68,7 @@ const Onboarding = () => {
   const [unit, setUnit] = useState<"평" | "㎡">("㎡");
   const [sizeInput, setSizeInput] = useState("");
   const [selectedCrops, setSelectedCrops] = useState<string[]>([]);
+  const [userType, setUserType] = useState<UserTypeId | null>(null);
   const [cropQuery, setCropQuery] = useState("");
   const introRef = useRef<HTMLDivElement>(null);
 
