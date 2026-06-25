@@ -144,7 +144,7 @@ const SearchPage = () => {
         )}
       </header>
 
-      <main className="flex-1 overflow-y-auto px-4 py-4 space-y-6 safe-bottom" style={{ paddingBottom: selReady ? 96 : 24 }}>
+      <main className="flex-1 overflow-y-auto px-4 py-4 space-y-6 safe-bottom" style={{ paddingBottom: selReady ? 168 : 96 }}>
         {!query ? (
           <>
             {/* 최근 검색 */}
