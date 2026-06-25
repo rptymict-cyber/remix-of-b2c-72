@@ -94,6 +94,16 @@ const HomePage = () => {
       <AppHeader title="농산물 시세" />
 
       <main className="h-full overflow-y-auto px-4 pt-[calc(var(--app-header-height)+0.75rem)] safe-bottom space-y-4">
+        {/* 통합 검색창 */}
+        <button
+          onClick={() => navigate("/search")}
+          className="w-full h-12 px-3.5 rounded-2xl bg-white border border-border flex items-center gap-2 text-left shadow-[var(--shadow-sm)]"
+          aria-label="검색"
+        >
+          <Search className="w-4 h-4 text-muted-foreground shrink-0" />
+          <span className="text-[13.5px] text-muted-foreground">품목, 품종, 시장 검색</span>
+        </button>
+
         {/* 업데이트 상태 바 */}
         <section
           className={`${ss.bg} rounded-[14px] h-11 px-[14px] flex items-center justify-between transition-colors`}
@@ -114,6 +124,41 @@ const HomePage = () => {
           >
             <RefreshCw className={`w-4 h-4 ${updateStatus === "loading" ? "animate-spin" : ""}`} />
           </button>
+        </section>
+
+        {/* 빠른 시세 조회 */}
+        <section>
+          <div className="mb-2">
+            <h2 className="text-sm font-semibold text-foreground">빠른 시세 조회</h2>
+            <p className="text-[11px] text-muted-foreground mt-0.5">자주 쓰는 시세 조회 기능을 바로 확인하세요.</p>
+          </div>
+          <div className="bg-white rounded-[18px] border border-[#EFEFEF] shadow-[var(--shadow-sm)] px-3 py-3.5">
+            <div className="grid grid-cols-4">
+              {[
+                { icon: Radio, label: "실시간 경락가", iconBg: "bg-[#EAF7EA]", iconColor: "text-[#1A3A1F]", emphasize: true, route: "/market?tab=auction" },
+                { icon: Clock, label: "이전 가격", iconBg: "bg-[#FBEFDC]", iconColor: "text-[#7A4A12]", route: "/market?mode=previous" },
+                { icon: BarChart3, label: "시장 비교", iconBg: "bg-[#E5EFFB]", iconColor: "text-[#1F3A5A]", route: "/market?tab=compare" },
+                { icon: History, label: "최근 조회", iconBg: "bg-[#E8F3EF]", iconColor: "text-[#2F6E55]", route: "/search" },
+              ].map((m) => (
+                <button
+                  key={m.label}
+                  onClick={() => navigate(m.route)}
+                  className="flex flex-col items-center gap-1.5 py-1 active:scale-[0.97] transition-transform"
+                >
+                  <span
+                    className={`w-12 h-12 rounded-[14px] ${m.iconBg} flex items-center justify-center ${
+                      m.emphasize ? "ring-2 ring-primary/30" : ""
+                    }`}
+                  >
+                    <m.icon className={`w-5 h-5 ${m.iconColor}`} />
+                  </span>
+                  <span className="text-[12px] font-semibold text-foreground text-center leading-tight">
+                    {m.label}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
         </section>
 
         {/* 내 작물 칩 */}
@@ -157,6 +202,7 @@ const HomePage = () => {
             </button>
           )}
         </section>
+
 
         {/* 오늘 시세 Hero */}
         {hasCrops && (
