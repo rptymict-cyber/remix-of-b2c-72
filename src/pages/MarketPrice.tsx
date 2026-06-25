@@ -384,52 +384,76 @@ const MarketPricePage = () => {
         )}
 
         {/* ===== 법인 ===== */}
-        {tab === "법인" && (
-          <div className="space-y-3 animate-fade-in">
-            <div className="bg-card rounded-2xl border border-border p-4">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-[13px] font-bold text-foreground">법인별 평균가 & 점유율</span>
-                <span className="text-[10px] text-muted-foreground">{market.name} 기준</span>
-              </div>
-              <div className="space-y-3">
-                {corpData.map((c) => {
-                  const maxP = Math.max(...corpData.map((x) => x.avgPrice));
-                  return (
+        {tab === "법인" && (() => {
+          const formatValue = (c: typeof corpData[number]) => {
+            if (corpMetric === "avgPrice") return `${c.avgPrice.toLocaleString()}원`;
+            if (corpMetric === "share") return `${c.share}%`;
+            if (corpMetric === "count") return `${c.count}건`;
+            return `${c.volume}t`;
+          };
+          const formatSub = (c: typeof corpData[number]) => {
+            if (corpMetric === "avgPrice") return `점유율 ${c.share}% · ${c.count}건`;
+            if (corpMetric === "share") return `평균가 ${c.avgPrice.toLocaleString()}원 · ${c.count}건`;
+            if (corpMetric === "count") return `평균가 ${c.avgPrice.toLocaleString()}원 · 점유율 ${c.share}%`;
+            return `평균가 ${c.avgPrice.toLocaleString()}원 · 점유율 ${c.share}%`;
+          };
+          const getVal = (c: typeof corpData[number]) =>
+            corpMetric === "avgPrice" ? c.avgPrice : corpMetric === "share" ? c.share : corpMetric === "count" ? c.count : c.volume;
+          const sortedCorps = [...corpData].sort((a, b) => getVal(b) - getVal(a));
+          const maxVal = Math.max(...sortedCorps.map(getVal));
+
+          return (
+            <div className="space-y-3 animate-fade-in">
+              <div className="bg-card rounded-2xl border border-border p-4">
+                <div className="flex items-center justify-between gap-2 mb-1">
+                  <span className="text-[13px] font-bold text-foreground">{corpCardTitle[corpMetric]}</span>
+                  <button
+                    onClick={() => setCorpMetricOpen(true)}
+                    className="h-9 px-3 inline-flex items-center gap-1 rounded-full border border-border bg-card text-[12px] font-bold text-primary active:scale-[0.98] shrink-0"
+                  >
+                    {corpMetricLabel[corpMetric]}
+                    <ChevronDown className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+                <p className="text-[10px] text-muted-foreground mb-3">{market.name} 기준</p>
+                <div className="space-y-3">
+                  {sortedCorps.map((c, i) => (
                     <button key={c.name} onClick={() => setCorpDetail(c)} className="w-full text-left">
-                      <div className="flex items-center justify-between text-[12px] mb-1">
-                        <span className="font-semibold text-foreground">{c.name}</span>
-                        <span className="text-foreground"><b>{c.avgPrice.toLocaleString()}원</b> <span className="text-muted-foreground">· {c.share}%</span></span>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-[12px] font-extrabold text-primary w-4 text-center shrink-0">{i + 1}</span>
+                        <span className="flex-1 text-[12px] font-semibold text-foreground truncate">{c.name}</span>
+                        <span className="text-[12px] font-extrabold text-foreground shrink-0">{formatValue(c)}</span>
                       </div>
-                      <div className="flex items-center gap-1.5">
-                        <div className="flex-1 h-2 bg-secondary rounded-full overflow-hidden">
-                          <div className="h-full bg-primary rounded-full" style={{ width: `${(c.avgPrice / maxP) * 100}%` }} />
+                      <div className="pl-6">
+                        <div className="h-2 bg-secondary rounded-full overflow-hidden mb-1">
+                          <div className="h-full bg-primary rounded-full" style={{ width: `${(getVal(c) / maxVal) * 100}%` }} />
                         </div>
-                        <div className="w-16 h-2 bg-secondary rounded-full overflow-hidden">
-                          <div className="h-full bg-primary/50 rounded-full" style={{ width: `${c.share * 2.5}%` }} />
-                        </div>
+                        <p className="text-[10px] text-muted-foreground">{formatSub(c)}</p>
                       </div>
                     </button>
-                  );
-                })}
+                  ))}
+                </div>
               </div>
-            </div>
 
-            <div className="bg-card rounded-xl border border-border overflow-hidden">
-              <div className="grid grid-cols-[2fr_1.6fr_1.1fr_1.1fr] px-3 py-2 text-[10px] text-muted-foreground border-b border-border">
-                <span>법인명</span><span className="text-right">평균가</span><span className="text-right">점유율</span><span className="text-right">건수</span>
-              </div>
-              <div className="divide-y divide-border">
-                {corpData.map((c) => (
-                  <button key={c.name} onClick={() => setCorpDetail(c)} className="w-full grid grid-cols-[2fr_1.6fr_1.1fr_1.1fr] px-3 py-2.5 text-[12px] text-left active:bg-secondary/50">
-                    <span className="font-semibold text-foreground truncate">{c.name}</span>
-                    <span className="text-right font-bold text-foreground">{c.avgPrice.toLocaleString()}</span>
-                    <span className="text-right text-muted-foreground">{c.share}%</span>
-                    <span className="text-right text-muted-foreground">{c.count}건</span>
-                  </button>
-                ))}
+              <div className="bg-card rounded-xl border border-border overflow-hidden">
+                <div className="grid grid-cols-[2fr_1.4fr_1fr_1fr] px-3 py-2 text-[10px] text-muted-foreground border-b border-border">
+                  <span>법인명</span><span className="text-right">평균가</span><span className="text-right">점유율</span><span className="text-right">거래량</span>
+                </div>
+                <div className="divide-y divide-border">
+                  {sortedCorps.map((c) => (
+                    <button key={c.name} onClick={() => setCorpDetail(c)} className="w-full grid grid-cols-[2fr_1.4fr_1fr_1fr] px-3 py-2.5 text-[12px] text-left active:bg-secondary/50">
+                      <span className="font-semibold text-foreground truncate">{c.name}</span>
+                      <span className="text-right font-bold text-foreground">{c.avgPrice.toLocaleString()}</span>
+                      <span className="text-right text-muted-foreground">{c.share}%</span>
+                      <span className="text-right text-muted-foreground">{c.volume}t</span>
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
+          );
+        })()}
+
         )}
 
         {/* ===== 산지 ===== */}
