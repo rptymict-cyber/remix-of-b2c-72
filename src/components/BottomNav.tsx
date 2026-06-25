@@ -3,9 +3,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 const tabs = [
   { id: "/", label: "홈", icon: HomeIcon },
   { id: "/market", label: "시세", icon: TrendIcon },
-  { id: "/prediction", label: "예측", icon: ChartIcon },
-  { id: "/sales", label: "판매처", icon: LocationIcon },
-  { id: "/crop", label: "작물", icon: SproutIcon },
+  { id: "/crop", label: "내 작물", icon: SproutIcon },
+  { id: "/mypage", label: "마이", icon: PersonIcon },
 ];
 
 function HomeIcon({ active }: { active: boolean }) {
@@ -26,25 +25,6 @@ function TrendIcon({ active }: { active: boolean }) {
   );
 }
 
-function ChartIcon({ active }: { active: boolean }) {
-  return (
-    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.2 : 1.8} strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="4 18 8 10 12 14 16 8 20 12" />
-      <line x1="4" y1="20" x2="4" y2="6" />
-      <line x1="4" y1="20" x2="20" y2="20" />
-    </svg>
-  );
-}
-
-function LocationIcon({ active }: { active: boolean }) {
-  return (
-    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.2 : 1.8} strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="10" r="3" />
-      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
-    </svg>
-  );
-}
-
 function SproutIcon({ active }: { active: boolean }) {
   return (
     <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.2 : 1.8} strokeLinecap="round" strokeLinejoin="round">
@@ -56,13 +36,33 @@ function SproutIcon({ active }: { active: boolean }) {
   );
 }
 
+function PersonIcon({ active }: { active: boolean }) {
+  return (
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.2 : 1.8} strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="8" r="4" />
+      <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+    </svg>
+  );
+}
+
 const BottomNav = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
   const isActive = (path: string) => {
-    if (path === "/prediction") return location.pathname.startsWith("/prediction");
-    return location.pathname === path;
+    const p = location.pathname;
+    if (path === "/") return p === "/";
+    if (path === "/market") return p === "/market";
+    if (path === "/crop") return p.startsWith("/crop");
+    if (path === "/mypage") {
+      return (
+        p === "/mypage" ||
+        p === "/notifications" ||
+        p === "/notification-settings" ||
+        p === "/farm-edit"
+      );
+    }
+    return false;
   };
 
   return (
