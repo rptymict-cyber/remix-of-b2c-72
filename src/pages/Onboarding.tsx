@@ -439,6 +439,97 @@ const Onboarding = () => {
     );
   }
 
+  // ===================== USER TYPE =====================
+  if (step === "userType") {
+    const goNext = (type: UserTypeId | null) => {
+      setProfile({ userType: type });
+      setStep("crops");
+    };
+    return (
+      <div className="absolute inset-0 bg-white flex flex-col">
+        <MobileStatusBar />
+        <Header onBack={() => setStep("size")} />
+        <div className="flex-1 px-5 pt-2 overflow-y-auto">
+          <h2 className="text-[20px] font-extrabold leading-snug text-foreground">
+            어떤 목적으로 시세를 보시나요?
+          </h2>
+          <p className="mt-2 text-[13px] text-muted-foreground leading-relaxed">
+            선택하신 유형에 맞게 화면을 구성해드려요. 나중에 언제든지 바꿀 수 있어요.
+          </p>
+
+          <div className="mt-6 space-y-3">
+            {USER_TYPE_OPTIONS.map((opt) => {
+              const sel = userType === opt.id;
+              return (
+                <button
+                  key={opt.id}
+                  onClick={() => setUserType(opt.id)}
+                  className="w-full text-left rounded-2xl p-4 transition active:scale-[0.995]"
+                  style={{
+                    border: sel ? "2px solid #1A3A1F" : "1.5px solid #E8E8E8",
+                    background: sel ? "#F0F7EE" : "#FFFFFF",
+                  }}
+                >
+                  <div className="flex items-start gap-3">
+                    <span className="text-[28px] leading-none shrink-0">{opt.icon}</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[15px] font-extrabold text-foreground leading-tight">{opt.title}</p>
+                      <p className="mt-1 text-[12.5px] text-muted-foreground leading-snug">{opt.desc}</p>
+                    </div>
+                    <span
+                      className="shrink-0 w-6 h-6 rounded-full flex items-center justify-center"
+                      style={{
+                        background: sel ? "#1A3A1F" : "transparent",
+                        border: sel ? "2px solid #1A3A1F" : "1.5px solid #CFCFCF",
+                      }}
+                    >
+                      {sel && (
+                        <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />
+                      )}
+                    </span>
+                  </div>
+                  <div className="mt-3 flex flex-wrap gap-1.5">
+                    {opt.tags.map((t) => (
+                      <span
+                        key={t}
+                        className="text-[11.5px] px-2 py-1 rounded-full"
+                        style={{
+                          background: sel ? "#C8E6C2" : "#F2F2F2",
+                          color: sel ? "#1A3A1F" : "#666666",
+                        }}
+                      >
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+        <div className="px-5 pt-3 pb-3 bg-white">
+          <button
+            onClick={() => userType && goNext(userType)}
+            disabled={!userType}
+            className="w-full h-[52px] rounded-2xl text-[15px] font-bold text-white transition active:scale-[0.99]"
+            style={{
+              background: userType ? "#1A3A1F" : "#D0D0D0",
+            }}
+          >
+            다음으로 →
+          </button>
+          <button
+            onClick={() => goNext(null)}
+            className="w-full h-11 mt-2 text-[13px]"
+            style={{ color: "#AAAAAA" }}
+          >
+            나중에 설정하기
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   // ===================== CROPS =====================
   if (step === "crops") {
     const filtered = CROPS.filter((c) => c.name.includes(cropQuery.trim()));
