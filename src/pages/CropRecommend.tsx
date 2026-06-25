@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { ChevronDown, ChevronUp, Sprout, TrendingUp, AlertTriangle, BarChart2, ThermometerSun, FileText, MapPin, Ruler, Leaf, Activity } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { ChevronDown, ChevronUp, ChevronRight, Sprout, TrendingUp, AlertTriangle, BarChart2, ThermometerSun, FileText, MapPin, Ruler, Leaf, Activity, Plus } from "lucide-react";
 import AppHeader from "@/components/AppHeader";
 import BottomNav from "@/components/BottomNav";
 import CropSheet from "@/components/sheets/CropSheet";
@@ -7,9 +8,12 @@ import RegionSheet, { shortCity, expandRegion } from "@/components/sheets/Region
 import FarmSizeSheet from "@/components/sheets/FarmSizeSheet";
 import CultivationSheet from "@/components/sheets/CultivationSheet";
 import FilterPill from "@/components/common/FilterPill";
+import PriceSparkline from "@/components/PriceSparkline";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/hooks/use-toast";
 import { useApp } from "@/store/appStore";
-import { findCrop } from "@/data/catalog";
+import { findCrop, findMarket, seedPrice, seedPriceHistory } from "@/data/catalog";
+
 
 const cropData = [
   {
