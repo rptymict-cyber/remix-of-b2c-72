@@ -313,7 +313,7 @@ const HomePage = () => {
           </div>
         </section>
 
-        {/* 오늘 주목 작물 */}
+        {/* 오늘 주목 작물 - compact 세로 리스트 */}
         <section>
           <div className="flex items-center justify-between mb-2.5">
             <div>
@@ -326,10 +326,10 @@ const HomePage = () => {
               onClick={() => navigate("/market")}
               className="text-[11px] font-semibold text-primary flex items-center gap-0.5 shrink-0"
             >
-              전체 보기 <ChevronRight className="w-3 h-3" />
+              더보기 <ChevronRight className="w-3 h-3" />
             </button>
           </div>
-          <div className="flex gap-2.5 overflow-x-auto scrollbar-hide -mx-4 px-4 pb-1">
+          <div className="space-y-2">
             {FEATURED_CROPS.map((f) => {
               const fc = findCrop(f.cropId);
               const fm = findMarket(f.marketId);
@@ -337,46 +337,40 @@ const HomePage = () => {
               const up = f.priceChangePct > 0;
               const badgeColor =
                 f.badge === "거래량 급증"
-                  ? "bg-warning/15 text-warning"
+                  ? "bg-[#FBEFDC] text-[#7A4A12]"
                   : f.badge === "가격 상승"
-                    ? "bg-[hsl(0_72%_50%/0.1)] price-up"
-                    : "bg-[hsl(215_80%_55%/0.1)] price-down";
+                    ? "bg-[hsl(0_72%_50%/0.12)] price-up"
+                    : "bg-[hsl(215_80%_55%/0.12)] price-down";
               return (
                 <button
                   key={f.cropId}
                   onClick={() => navigate("/market")}
-                  className="flex-shrink-0 w-[210px] bg-card rounded-2xl border border-border p-3.5 shadow-[var(--shadow-sm)] text-left active:scale-[0.98] transition-transform"
+                  className="w-full bg-card rounded-[14px] border border-[#E8E8E8] shadow-[var(--shadow-sm)] px-3 py-2.5 flex items-center gap-3 text-left active:scale-[0.99] transition-transform min-h-[72px]"
                 >
-                  <div className="flex items-center justify-between mb-2">
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${badgeColor}`}>
-                      {f.badge}
-                    </span>
-                    {up ? (
-                      <TrendingUp className="w-3.5 h-3.5 price-up" />
-                    ) : (
-                      <TrendingDown className="w-3.5 h-3.5 price-down" />
-                    )}
+                  <div className="w-11 h-11 rounded-full bg-background flex items-center justify-center text-2xl shrink-0">
+                    {fc.emoji}
                   </div>
-                  <p className="text-[14px] font-bold text-foreground flex items-center gap-1">
-                    <span className="text-base">{fc.emoji}</span> {fc.name}
-                  </p>
-                  <p className="text-[10px] text-muted-foreground mt-0.5">{fm.name}</p>
-                  <p className="text-[16px] font-extrabold text-foreground mt-2 leading-none">
-                    {f.price.toLocaleString()}
-                    <span className="text-[11px] font-medium text-muted-foreground ml-1">원/{f.unitKg}kg</span>
-                  </p>
-                  <div className="mt-1.5">
-                    <PriceSparkline data={hist} width={180} height={36} showMarker={false} className="w-full h-9" />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-1.5 mb-0.5">
+                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${badgeColor}`}>
+                        {f.badge}
+                      </span>
+                      <span className="text-[13px] font-bold text-foreground truncate">{fc.name}</span>
+                    </div>
+                    <p className="text-[10.5px] text-muted-foreground truncate leading-tight">{fm.name}</p>
+                    <p className="text-[14px] font-extrabold text-foreground mt-0.5 leading-none">
+                      {f.price.toLocaleString()}
+                      <span className="text-[10.5px] font-medium text-muted-foreground ml-0.5">
+                        원/{f.unitKg}kg
+                      </span>
+                    </p>
                   </div>
-                  <div className="flex items-center justify-between mt-1.5 text-[11px]">
-                    <span className={`font-bold ${up ? "price-up" : "price-down"}`}>
-                      가격 {up ? "+" : ""}
+                  <div className="shrink-0 flex flex-col items-end gap-1">
+                    <span className={`text-[12px] font-extrabold ${up ? "price-up" : "price-down"}`}>
+                      {up ? "+" : ""}
                       {f.priceChangePct}%
                     </span>
-                    <span className="text-muted-foreground">
-                      거래량 {f.volumeChangePct > 0 ? "+" : ""}
-                      {f.volumeChangePct}%
-                    </span>
+                    <PriceSparkline data={hist} width={64} height={28} showMarker={false} className="w-16 h-7" />
                   </div>
                 </button>
               );
