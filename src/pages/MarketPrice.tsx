@@ -665,6 +665,23 @@ const MarketPricePage = () => {
         ]}
       />
 
+      <SortSheet<MarketMetric>
+        open={marketMetricOpen}
+        onOpenChange={setMarketMetricOpen}
+        title="비교 기준 선택"
+        selected={marketMetric}
+        onSelect={setMarketMetric}
+        options={[
+          { key: "price", label: "현재가 기준" },
+          { key: "share", label: "거래량 점유율 기준" },
+          { key: "dayChange", label: "전일 상승률 기준" },
+          { key: "volume", label: "거래량 기준" },
+          { key: "inbound", label: "반입량 기준" },
+        ]}
+      />
+
+
+
 
 
 
