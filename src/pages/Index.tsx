@@ -274,45 +274,6 @@ const HomePage = () => {
           </section>
         )}
 
-        {/* 빠른 시세 조회 */}
-        <section>
-          <div className="mb-2.5">
-            <h2 className="text-sm font-semibold text-foreground">빠른 시세 조회</h2>
-            <p className="text-[11px] text-muted-foreground mt-0.5">
-              도매시장·품목·품종을 선택해 경락가를 바로 확인하세요.
-            </p>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            {[
-              { icon: Radio, title: "실시간 경락가 조회", desc: "전국 도매시장 경락가", route: "/market", emphasize: true },
-              { icon: Clock, title: "이전 가격 조회", desc: "날짜별 과거 시세", route: "/market" },
-              { icon: Search, title: "품목 검색", desc: "품목·품종 바로 찾기", route: "/market" },
-              { icon: History, title: "최근 조회", desc: "자주 본 조건 다시 보기", route: "/market" },
-            ].map((b) => (
-              <button
-                key={b.title}
-                onClick={() => navigate(b.route)}
-                className={`min-h-[64px] bg-card rounded-2xl p-4 text-left shadow-[var(--shadow-sm)] active:scale-[0.98] transition-transform ${
-                  b.emphasize ? "border-2 border-primary/40" : "border border-border"
-                }`}
-              >
-                <div className="flex items-start justify-between mb-2">
-                  <div
-                    className={`w-9 h-9 rounded-full flex items-center justify-center ${
-                      b.emphasize ? "bg-primary/20" : "bg-primary/10"
-                    }`}
-                  >
-                    <b.icon className="w-5 h-5 text-primary" />
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-muted-foreground/50" />
-                </div>
-                <p className="text-sm font-bold text-foreground">{b.title}</p>
-                <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">{b.desc}</p>
-              </button>
-            ))}
-          </div>
-        </section>
-
         {/* 오늘 주목 작물 - compact 세로 리스트 */}
         <section>
           <div className="flex items-center justify-between mb-2.5">
@@ -377,6 +338,46 @@ const HomePage = () => {
             })}
           </div>
         </section>
+
+        {/* 빠른 시세 조회 */}
+        <section>
+          <div className="mb-2.5">
+            <h2 className="text-sm font-semibold text-foreground">빠른 시세 조회</h2>
+            <p className="text-[11px] text-muted-foreground mt-0.5">
+              도매시장·품목·품종을 선택해 경락가를 바로 확인하세요.
+            </p>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            {[
+              { icon: Radio, title: "실시간 경락가 조회", desc: "전국 도매시장 경락가", route: "/market", emphasize: true },
+              { icon: Clock, title: "이전 가격 조회", desc: "날짜별 과거 시세", route: "/market" },
+              { icon: Search, title: "품목 검색", desc: "품목·품종 바로 찾기", route: "/market" },
+              { icon: History, title: "최근 조회", desc: "자주 본 조건 다시 보기", route: "/market" },
+            ].map((b) => (
+              <button
+                key={b.title}
+                onClick={() => navigate(b.route)}
+                className={`min-h-[64px] bg-card rounded-2xl p-4 text-left shadow-[var(--shadow-sm)] active:scale-[0.98] transition-transform ${
+                  b.emphasize ? "border-2 border-primary/40" : "border border-border"
+                }`}
+              >
+                <div className="flex items-start justify-between mb-2">
+                  <div
+                    className={`w-9 h-9 rounded-full flex items-center justify-center ${
+                      b.emphasize ? "bg-primary/20" : "bg-primary/10"
+                    }`}
+                  >
+                    <b.icon className="w-5 h-5 text-primary" />
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-muted-foreground/50" />
+                </div>
+                <p className="text-sm font-bold text-foreground">{b.title}</p>
+                <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">{b.desc}</p>
+              </button>
+            ))}
+          </div>
+        </section>
+
 
       </main>
 
