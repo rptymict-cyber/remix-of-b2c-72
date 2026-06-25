@@ -296,11 +296,11 @@ const Watchlist = () => {
     <div className="h-full bg-background">
       <AppHeader
         title="관심"
-        right={
+        rightAction={
           <button
             onClick={handleAdd}
             aria-label="추가"
-            className="w-9 h-9 rounded-full bg-primary/[0.08] text-primary flex items-center justify-center"
+            className="w-8 h-8 rounded-full bg-primary/[0.08] text-primary flex items-center justify-center"
           >
             <Plus className="w-5 h-5" />
           </button>
