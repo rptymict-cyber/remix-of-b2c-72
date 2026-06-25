@@ -9,7 +9,15 @@ import koreaMapImg from "@/assets/korea-map.png";
 import chartImg from "@/assets/onboarding-chart.png";
 import splashFull from "@/assets/splash-full.png";
 
-type Step = "splash" | "intro" | "name" | "region" | "size" | "crops" | "done";
+type Step = "splash" | "intro" | "name" | "region" | "size" | "userType" | "crops" | "done";
+
+type UserTypeId = "farmer" | "wholesaler" | "retailer" | "enterprise";
+const USER_TYPE_OPTIONS: { id: UserTypeId; icon: string; title: string; desc: string; tags: string[] }[] = [
+  { id: "farmer", icon: "👨‍🌾", title: "농민 · 농업법인", desc: "내 작물을 직접 재배하고 판매해요", tags: ["출하 시점 추천", "내 작물 시세", "수익 시뮬레이션"] },
+  { id: "wholesaler", icon: "🏪", title: "도매상 · 중도매인", desc: "시장에서 농산물을 사고 팔아요", tags: ["반입량 · 낙찰가", "산지별 시세", "법인 비교"] },
+  { id: "retailer", icon: "🛒", title: "소매상 · 마트 바이어", desc: "농산물을 매입해서 소비자에게 판매해요", tags: ["도소매 가격차", "매입 적정가", "가격 경보"] },
+  { id: "enterprise", icon: "🏢", title: "식품기업 · 유통업체", desc: "대량 조달 전략과 수급 분석이 필요해요", tags: ["공급량 동향", "산지 분석", "중기 예측"] },
+];
 
 const intros = [
   {
