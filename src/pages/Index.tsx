@@ -315,64 +315,79 @@ const HomePage = () => {
           </section>
         )}
 
-        {/* 오늘 주목 작물 - compact 세로 리스트 */}
+        {/* 오늘 급변 작물 - watchlist 리스트 */}
         <section>
           <div className="flex items-center justify-between mb-2.5">
             <div>
-              <h2 className="text-sm font-semibold text-foreground">오늘 주목 작물</h2>
+              <h2 className="text-sm font-semibold text-foreground">오늘 급변 작물</h2>
               <p className="text-[11px] text-muted-foreground mt-0.5">
-                거래량이나 가격 변동이 큰 품목이에요.
+                가격이나 거래량 변동이 큰 품목이에요.
               </p>
             </div>
             <button
               onClick={() => navigate("/market")}
               className="text-[11px] font-semibold text-primary flex items-center gap-0.5 shrink-0"
             >
-              더보기 <ChevronRight className="w-3 h-3" />
+              전체 보기 <ChevronRight className="w-3 h-3" />
             </button>
           </div>
           <div className="space-y-2">
             {FEATURED_CROPS.map((f) => {
               const fc = findCrop(f.cropId);
               const fm = findMarket(f.marketId);
-              const hist = seedPriceHistory(f.cropId, f.marketId, f.variety, 7);
+              // 가격 방향성에 맞춰 7일 추이 생성 (상승=오름세, 하락=내림세)
+              const baseHist = seedPriceHistory(f.cropId, f.marketId, f.variety, 7);
               const up = f.priceChangePct > 0;
+              const sorted = [...baseHist].sort((a, b) => a - b);
+              const hist = up ? sorted : sorted.reverse();
+              const priceColor = up ? "price-up" : "price-down";
+              const volUp = f.volumeChangePct > 0;
               const badgeColor =
                 f.badge === "거래량 급증"
-                  ? "bg-[#FBEFDC] text-[#7A4A12]"
+                  ? "bg-[#FBEFDC] text-[#A65A12]"
                   : f.badge === "가격 상승"
-                    ? "bg-[hsl(0_72%_50%/0.12)] price-up"
-                    : "bg-[hsl(215_80%_55%/0.12)] price-down";
+                    ? "bg-[hsl(0_72%_50%/0.10)] price-up"
+                    : "bg-[hsl(215_80%_55%/0.10)] price-down";
               return (
                 <button
                   key={f.cropId}
                   onClick={() => navigate("/market")}
-                  className="w-full bg-card rounded-[14px] border border-[#E8E8E8] shadow-[var(--shadow-sm)] px-3 py-2.5 flex items-center gap-3 text-left active:scale-[0.99] transition-transform min-h-[72px]"
+                  className="w-full bg-white rounded-[14px] border border-[#EFEFEF] shadow-[0_1px_2px_rgba(0,0,0,0.03)] px-3 py-2.5 flex items-center gap-3 text-left active:scale-[0.99] transition-transform min-h-[76px]"
                 >
-                  <div className="w-11 h-11 rounded-full bg-background flex items-center justify-center text-2xl shrink-0">
-                    {fc.emoji}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-1.5 mb-0.5">
-                      <span className="text-[13px] font-bold text-foreground truncate">{fc.name}</span>
-                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${badgeColor}`}>
-                        {f.badge}
-                      </span>
+                  {/* 좌측: 작물 정보 */}
+                  <div className="flex items-center gap-2.5 min-w-0 w-[42%]">
+                    <div className="w-10 h-10 rounded-full bg-[#F6F7F5] flex items-center justify-center text-xl shrink-0">
+                      {fc.emoji}
                     </div>
-                    <p className="text-[10.5px] text-muted-foreground truncate leading-tight">{fm.name}</p>
-                    <p className="text-[14px] font-extrabold text-foreground mt-0.5 leading-none">
-                      {f.price.toLocaleString()}
-                      <span className="text-[10.5px] font-medium text-muted-foreground ml-0.5">
-                        원/{f.unitKg}kg
-                      </span>
-                    </p>
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-1 mb-0.5">
+                        <span className="text-[13px] font-bold text-foreground truncate">{fc.name}</span>
+                        <span className={`text-[9.5px] font-bold px-1.5 py-[1px] rounded-md whitespace-nowrap ${badgeColor}`}>
+                          {f.badge}
+                        </span>
+                      </div>
+                      <p className="text-[10.5px] text-muted-foreground truncate leading-tight">
+                        {fm.name} · {f.unitKg}kg
+                      </p>
+                    </div>
                   </div>
-                  <div className="shrink-0 flex flex-col items-end gap-1">
-                    <span className={`text-[12px] font-extrabold ${up ? "price-up" : "price-down"}`}>
-                      {up ? "+" : ""}
-                      {f.priceChangePct}%
+
+                  {/* 중앙: 미니 그래프 */}
+                  <div className="flex-1 flex justify-center">
+                    <PriceSparkline data={hist} width={72} height={32} showMarker={false} className="w-[72px] h-8" />
+                  </div>
+
+                  {/* 우측: 현재가 + 변동률 */}
+                  <div className="shrink-0 flex flex-col items-end">
+                    <span className="text-[14px] font-extrabold text-foreground leading-none">
+                      {f.price.toLocaleString()}원
                     </span>
-                    <PriceSparkline data={hist} width={64} height={28} showMarker={false} className="w-16 h-7" />
+                    <span className={`text-[10.5px] font-bold mt-1 leading-none ${priceColor}`}>
+                      가격 {up ? "+" : ""}{f.priceChangePct}%
+                    </span>
+                    <span className={`text-[10.5px] font-semibold mt-0.5 leading-none ${volUp ? "price-up" : "price-down"}`}>
+                      거래량 {volUp ? "+" : ""}{f.volumeChangePct}%
+                    </span>
                   </div>
                 </button>
               );
