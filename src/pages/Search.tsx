@@ -146,9 +146,19 @@ const SearchPage = () => {
     <div className="min-h-full bg-background flex flex-col">
       {/* Header */}
       <header
-        className="sticky top-0 z-20 bg-white border-b border-border flex items-center gap-2.5"
-        style={{ padding: "12px 14px" }}
+        className="sticky top-0 z-20 bg-white border-b border-border flex items-center gap-2"
+        style={{ padding: "12px 10px 12px 4px" }}
       >
+        <button
+          onClick={() => navigate(-1)}
+          className="shrink-0 flex items-center justify-center text-foreground"
+          style={{ width: 40, height: 40 }}
+          aria-label="뒤로가기"
+        >
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+        </button>
         <div className="relative flex-1">
           <SearchIcon
             className="absolute top-1/2 -translate-y-1/2 text-primary"
