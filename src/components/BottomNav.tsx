@@ -3,7 +3,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 const tabs = [
   { id: "/", label: "홈", icon: HomeIcon },
   { id: "/market", label: "시세", icon: TrendIcon },
-  { id: "/search", label: "검색", icon: SearchIcon },
   { id: "/watchlist", label: "관심", icon: StarIcon },
   { id: "/mypage", label: "마이", icon: PersonIcon },
 ];
