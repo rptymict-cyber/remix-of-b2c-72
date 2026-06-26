@@ -1,90 +1,20 @@
-# 홈 화면 시세 조회 중심 리디자인
+## Goal
+Export the current Home page (`/`) as a single self-contained HTML file that the user can download.
 
-기존 기능(GNB, 알림, 마이페이지, 내 작물, 오늘 시세, AI 예측, 주요 서비스)과 그린 톤·카드·둥근 모서리·그림자 디자인은 유지하면서, "AI 예측 앱"이 아닌 "시세 조회 앱" 첫인상으로 재구성합니다.
+## Approach
+1. Render the running app's Home page via headless Chromium (Playwright) at the mobile viewport (430px wide, matching the app shell).
+2. Capture the fully rendered DOM after hydration.
+3. Inline all external resources:
+   - Inline computed CSS (collect all stylesheets and embed into a single `<style>` block).
+   - Inline fonts/images as base64 data URIs.
+   - Strip `<script>` tags (static export — no React runtime needed).
+4. Wrap into a single standalone `.html` file.
+5. Save to `/mnt/documents/home.html` and deliver via `<presentation-artifact>`.
 
-## 작업 범위
+## Notes
+- Output is a static visual snapshot of the current Home state (update bar, my crops chips, today's hero card, 오늘 급변 작물 list). Interactions (bottom sheets, navigation) will not function — this is by design for a single-file export.
+- Korean text and emojis preserved with UTF-8.
+- Bottom nav rendered but non-functional.
 
-수정/생성 파일:
-- `src/pages/Index.tsx` — 전체 레이아웃 재구성
-- `src/components/PriceSparkline.tsx` (신규) — 7일 미니 라인 차트 (SVG, 라이브러리 없음)
-- `src/components/sheets/UnitSheet.tsx` (기존 활용/확장) — "거래 단량 선택" 바텀시트
-- `src/store/appStore.ts` — `unitMode` 상태 추가 (kg/10kg/20kg/상자)
-- `src/data/catalog.ts` — 7일 시세 시드 함수 추가, "오늘 주목 작물" 더미 데이터 추가
-- `src/components/AppHeader.tsx` — 타이틀 "농산물 시세"로 사용 (props로 처리, 컴포넌트 자체 변경 없음)
-
-## 새 홈 화면 구조 (위→아래)
-
-```
-[헤더] 농산물 시세 (기존 컴포넌트, 타이틀만 변경)
-
-[지역·날씨 슬림 바]  ← 기존 큰 그린 카드 → 얇은 1줄 카드
- 📍 충북 제천시  ·  18°C 맑음  ·  14:32 업데이트
- 향후 10일 기상 반영 (작은 보조 문구)
-
-[내 작물 칩 가로 스크롤]
- 🍎 사과(선택=진한 그린) | 🥬 배추 | 🧅 양파 | + 작물 추가(아웃라인, 톤 다운)
-
-[오늘 시세 Hero 카드]  ← 핵심 강화
- 🍎 사과 · 후지 · 서울 가락시장
- 32,000원 / 20kg              [20kg 기준 ▼] ← 탭 시 UnitSheet
- 환산가 1,600원 / kg
- ─────────────────────────────
- [7일 미니 라인 차트]  현재가 포인트 말풍선
- ─────────────────────────────
- 전일 +2.7%  |  전주 +8.1%  |  전년 -4.4%  |  거래량 1,240t
- [실시간 경락가 조회]  [시세 상세 보기]   ← CTA 2개
-
-[빠른 시세 조회]
- 도매시장·품목·품종을 선택해 경락가를 바로 확인하세요.
- ┌────────┬────────┐
- │ 실시간   │ 이전가격 │
- │ 경락가   │ 조회    │
- ├────────┼────────┤
- │ 품목검색 │ 최근조회 │
- └────────┴────────┘  (48px+ 터치 영역)
-
-[오늘 주목 작물]  ← 기존 "주요 작물 시세" 대체
- 가로 스크롤 카드 3개:
-  · 거래량 급증 배지 | 🥬 배추 | 서울 가락시장 | 12,800원/10kg | +4.8% / 거래량 +31.2% | 미니 그래프
-  · 가격 상승 배지 | 🧅 양파 | 대구북부시장 | 18,400원/15kg | +6.1% / 거래량 +12.4% | 미니 그래프
-  · 하락 주의 배지 | 🍅 토마토 | 부산엄궁시장 | 9,000원/5kg | -3.2% / 거래량 -8.7% | 미니 그래프
-
-[AI 출하 타이밍 추천]  ← 기존 AI 예측 카드, 위치만 아래로
- 문구: "AI 출하 타이밍 추천 / 5월 12일(화) 출하가 가장 유리합니다 / 예상 추가 수익 +8.1%"
- [예측 상세 보기]
-
-[주요 서비스 2x2]
- 실시간 경락가 조회 · AI 출하 예측 · 판매처 비교 · 내 작물 관리
-
-[BottomNav] (유지)
-```
-
-## 거래 단량 선택 바텀시트
-
-- 제목: "거래 단량 선택"
-- 설명: "가격을 비교하기 쉽게 기준 단량을 바꿀 수 있습니다."
-- 옵션: kg 환산 / 10kg 기준 / 20kg 기준 / 상자 기준
-- 선택 항목: 진한 그린 테두리 + 체크
-- 하단 버튼: [초기화] [적용하기]
-- 적용 시 `appStore.unitMode` 업데이트 → Hero 카드 가격 자동 환산
-
-## 미니 라인 차트 (PriceSparkline)
-
-- 순수 SVG, 라이브러리 미사용 (의존성 추가 없음)
-- props: `data: number[]`, `width`, `height`
-- 추세 색상: 마지막값>첫값 빨강(price-up), <첫값 파랑(price-down), 동일 회색
-- 마지막 포인트에 원형 마커 + 현재가 말풍선
-
-## 디자인 가이드
-
-- 모바일 375~430px 폭 (기존 max-w-[430px] 유지)
-- 가격 숫자 28~34px, 본문 14~15px, 보조 11px
-- 터치 타깃 최소 48px
-- 그린 톤 `#2d5a3d` 유지, 가격 상승/하락은 기존 `price-up`/`price-down` 토큰 사용
-- 임시 텍스트 금지, 모든 더미는 실제 작물·시장·가격으로 작성
-
-## 보존 사항
-
-- 라우팅, BottomNav, 알림/마이페이지 아이콘, 작물·시장 시트, AI 예측·판매처·작물 페이지 전부 그대로
-- 전역 상태 동기화 로직(`ensureSelectedCrop`) 유지
-- AI 예측 카드 자체는 삭제 없이 우선순위만 하향 배치
+## Deliverable
+`/mnt/documents/home.html` — one self-contained file, openable in any browser.
