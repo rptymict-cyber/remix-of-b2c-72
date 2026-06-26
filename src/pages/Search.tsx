@@ -196,13 +196,6 @@ const SearchPage = () => {
             </button>
           )}
         </div>
-        <button
-          onClick={() => navigate(-1)}
-          className="shrink-0 text-muted-foreground font-semibold"
-          style={{ fontSize: 14 }}
-        >
-          취소
-        </button>
       </header>
 
       <main className="flex-1 px-4 py-4 space-y-7 safe-bottom pb-24">
