@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Search as SearchIcon, X, Clock, ChevronRight, Store, TrendingUp } from "lucide-react";
 import { CROPS, MARKETS, findCrop, findMarket, seedPrice } from "@/data/catalog";
 import { useApp } from "@/store/appStore";
+import BottomNav from "@/components/BottomNav";
 
 const RECENT_KEY = "recentSearches";
 
@@ -592,6 +593,7 @@ const SearchPage = () => {
           </div>
         )}
       </main>
+      <BottomNav />
     </div>
   );
 };
