@@ -85,7 +85,7 @@ const BottomNav = () => {
         {tabs.map((tab) => {
           const active = isActive(tab.id);
           const Icon = tab.icon;
-          const target = tab.id === "/watchlist" ? "/crop" : tab.id;
+          const target = tab.id;
           return (
             <button
               key={tab.id}
