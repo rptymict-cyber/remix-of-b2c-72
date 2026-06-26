@@ -4,9 +4,10 @@ interface Props {
   height?: number;
   showMarker?: boolean;
   className?: string;
+  color?: string;
 }
 
-const PriceSparkline = ({ data, width = 320, height = 80, showMarker = true, className = "" }: Props) => {
+const PriceSparkline = ({ data, width = 320, height = 80, showMarker = true, className = "", color }: Props) => {
   if (data.length < 2) return null;
   const min = Math.min(...data);
   const max = Math.max(...data);
@@ -28,9 +29,10 @@ const PriceSparkline = ({ data, width = 320, height = 80, showMarker = true, cla
   const first = data[0];
   const last = data[data.length - 1];
   const trend = last > first ? "up" : last < first ? "down" : "flat";
-  const stroke =
-    trend === "up" ? "hsl(0 72% 50%)" : trend === "down" ? "hsl(215 80% 55%)" : "hsl(215 10% 55%)";
-  const fillId = `spark-fill-${trend}`;
+  const stroke = color
+    ?? (trend === "up" ? "hsl(0 72% 50%)" : trend === "down" ? "hsl(215 80% 55%)" : "hsl(215 10% 55%)");
+  const fillId = `spark-fill-${trend}-${Math.abs(stroke.split("").reduce((a, c) => a + c.charCodeAt(0), 0))}`;
+
 
   const lastPt = points[points.length - 1];
 
