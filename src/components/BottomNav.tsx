@@ -60,7 +60,7 @@ const BottomNav = () => {
     if (path === "/") return p === "/";
     if (path === "/market") return p === "/market";
     if (path === "/search") return p === "/search";
-    if (path === "/watchlist") return p.startsWith("/crop") || p === "/watchlist";
+    if (path === "/watchlist") return p === "/watchlist" || p.startsWith("/crop");
     if (path === "/mypage") {
       return (
         p === "/mypage" ||
