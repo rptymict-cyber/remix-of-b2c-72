@@ -8,6 +8,7 @@ import MarketPrice from "./pages/MarketPrice.tsx";
 import AIPrediction from "./pages/AIPrediction.tsx";
 import SalesChannel from "./pages/SalesChannel.tsx";
 import CropRecommend from "./pages/CropRecommend.tsx";
+import Watchlist from "./pages/Watchlist.tsx";
 import Onboarding from "./pages/Onboarding.tsx";
 import Notifications from "./pages/Notifications.tsx";
 import NotificationSettings from "./pages/NotificationSettings.tsx";
