@@ -44,6 +44,7 @@ const App = () => (
           <Route path="/prediction/expanded" element={<Gate><AIPrediction defaultExpanded /></Gate>} />
           <Route path="/sales" element={<Gate><SalesChannel /></Gate>} />
           <Route path="/crop" element={<Gate><CropRecommend /></Gate>} />
+          <Route path="/watchlist" element={<Gate><Watchlist /></Gate>} />
           <Route path="/crop/add" element={<Gate><AddCrop /></Gate>} />
           <Route path="/farm-edit" element={<Gate><FarmEdit /></Gate>} />
           <Route path="/crop-settings/:id" element={<Gate><CropSettings /></Gate>} />
