@@ -8,6 +8,7 @@ import MarketPrice from "./pages/MarketPrice.tsx";
 import AIPrediction from "./pages/AIPrediction.tsx";
 import SalesChannel from "./pages/SalesChannel.tsx";
 import CropRecommend from "./pages/CropRecommend.tsx";
+import Watchlist from "./pages/Watchlist.tsx";
 import Onboarding from "./pages/Onboarding.tsx";
 import Notifications from "./pages/Notifications.tsx";
 import NotificationSettings from "./pages/NotificationSettings.tsx";
@@ -43,6 +44,7 @@ const App = () => (
           <Route path="/prediction/expanded" element={<Gate><AIPrediction defaultExpanded /></Gate>} />
           <Route path="/sales" element={<Gate><SalesChannel /></Gate>} />
           <Route path="/crop" element={<Gate><CropRecommend /></Gate>} />
+          <Route path="/watchlist" element={<Gate><Watchlist /></Gate>} />
           <Route path="/crop/add" element={<Gate><AddCrop /></Gate>} />
           <Route path="/farm-edit" element={<Gate><FarmEdit /></Gate>} />
           <Route path="/crop-settings/:id" element={<Gate><CropSettings /></Gate>} />

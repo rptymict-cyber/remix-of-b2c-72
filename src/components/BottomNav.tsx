@@ -60,7 +60,7 @@ const BottomNav = () => {
     if (path === "/") return p === "/";
     if (path === "/market") return p === "/market";
     if (path === "/search") return p === "/search";
-    if (path === "/watchlist") return p.startsWith("/crop") || p === "/watchlist";
+    if (path === "/watchlist") return p === "/watchlist" || p.startsWith("/crop");
     if (path === "/mypage") {
       return (
         p === "/mypage" ||
@@ -85,7 +85,7 @@ const BottomNav = () => {
         {tabs.map((tab) => {
           const active = isActive(tab.id);
           const Icon = tab.icon;
-          const target = tab.id === "/watchlist" ? "/crop" : tab.id;
+          const target = tab.id;
           return (
             <button
               key={tab.id}
