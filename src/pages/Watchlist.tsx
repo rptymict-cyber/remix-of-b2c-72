@@ -177,7 +177,6 @@ const MyCropsTab = ({
         <InfoBanner
           icon={<span className="text-base leading-none">🌱</span>}
           message="내가 재배하거나 관리하는 작물의 시세를 빠르게 확인하고 알림을 설정할 수 있습니다."
-          onClose={onCloseBanner}
         />
       )}
 
