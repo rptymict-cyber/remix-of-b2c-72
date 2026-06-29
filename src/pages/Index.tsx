@@ -70,9 +70,7 @@ type HomeConfig = {
   mainPrice: number;
   mainUnit: string;
   subPrice: string;
-  graphTitle: string;
-  graphBadge: string;
-  graphBadgeCls: string;
+  priceChangeBadge: { text: string; cls: string };
   graphColor: string;
   kpis: KPI[];
   insightTitle: string;
@@ -87,6 +85,7 @@ type HomeConfig = {
   movementRows: MovementRow[];
   secondary?: React.ReactNode;
 };
+
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -163,10 +162,9 @@ const HomePage = () => {
     mainPrice: displayPrice,
     mainUnit: unitLabel,
     subPrice: subInfoFarmer,
-    graphTitle: "최근 7일 시세 흐름",
-    graphBadge: "최근 하락 후 반등",
-    graphBadgeCls: "bg-[hsl(0_72%_50%/0.08)] price-up",
+    priceChangeBadge: { text: "전일 대비 +2.7%", cls: "bg-[hsl(0_72%_50%/0.10)] price-up" },
     graphColor: "hsl(0 72% 50%)",
+
     kpis: [
       { label: "전일", value: "+2.7%", cls: "price-up" },
       { label: "전주", value: "+8.1%", cls: "price-up" },
@@ -207,10 +205,9 @@ const HomePage = () => {
     mainPrice: 12800,
     mainUnit: "10kg",
     subPrice: "실거래가 25,600원 / 20kg",
-    graphTitle: "최근 7일 거래 흐름",
-    graphBadge: "거래량 증가",
-    graphBadgeCls: "bg-[#E8F0FE] text-[#1F6FE8]",
+    priceChangeBadge: { text: "전일 대비 +3.2%", cls: "bg-[#E8F0FE] text-[#1F6FE8]" },
     graphColor: "#1F6FE8",
+
     kpis: [
       { label: "거래량", value: "+31.2%", cls: "text-[#1F6FE8]" },
       { label: "거래건수", value: "142건", cls: "text-foreground" },
@@ -279,10 +276,9 @@ const HomePage = () => {
     mainPrice: 18400,
     mainUnit: "15kg",
     subPrice: "실거래가 36,800원 / 30kg",
-    graphTitle: "최근 7일 매입가 흐름",
-    graphBadge: "상승세 지속",
-    graphBadgeCls: "bg-[#FDECE0] text-[#C45000]",
+    priceChangeBadge: { text: "전일 대비 +6.1%", cls: "bg-[#FDECE0] text-[#C45000]" },
     graphColor: "#F08A24",
+
     kpis: [
       { label: "전일", value: "+6.1%", cls: "price-up" },
       { label: "시장 최저가", value: "17,900원", cls: "text-foreground" },
@@ -337,10 +333,9 @@ const HomePage = () => {
     mainPrice: 18400,
     mainUnit: "15kg",
     subPrice: "실거래가 36,800원 / 30kg",
-    graphTitle: "최근 7일 기준가 흐름",
-    graphBadge: "안정 후 상승",
-    graphBadgeCls: "bg-[#F1ECFB] text-[#7C3AED]",
+    priceChangeBadge: { text: "전주 대비 +4.8%", cls: "bg-[#F1ECFB] text-[#7C3AED]" },
     graphColor: "#8B5CF6",
+
     kpis: [
       { label: "전주", value: "+4.8%", cls: "price-up" },
       { label: "공급 안정도", value: "주의", cls: "text-[#C45000]" },
@@ -504,33 +499,28 @@ const HomePage = () => {
               </div>
 
               <div className="mt-3">
-                <div className="flex items-baseline gap-1.5">
-                  <span className="text-[32px] font-extrabold text-foreground leading-none tracking-tight">
-                    {config.mainPrice.toLocaleString()}
+                <div className="flex items-end justify-between gap-2">
+                  <div className="flex items-baseline gap-1.5 min-w-0">
+                    <span className="text-[32px] font-extrabold text-foreground leading-none tracking-tight">
+                      {config.mainPrice.toLocaleString()}
+                    </span>
+                    <span className="text-[14px] font-semibold text-muted-foreground">원 / {config.mainUnit}</span>
+                  </div>
+                  <span className={`shrink-0 text-[11px] font-extrabold px-2 py-1 rounded-full ${config.priceChangeBadge.cls}`}>
+                    {config.priceChangeBadge.text}
                   </span>
-                  <span className="text-[14px] font-semibold text-muted-foreground">원 / {config.mainUnit}</span>
                 </div>
                 <p className="text-[12px] text-muted-foreground mt-1.5">{config.subPrice}</p>
               </div>
             </div>
 
-            <div className="px-5">
-              <div className="flex items-center justify-between mb-1">
-                <p className="text-[11px] font-semibold text-muted-foreground">{config.graphTitle}</p>
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${config.graphBadgeCls}`}>
-                  {config.graphBadge}
-                </span>
-              </div>
-              <div className="relative pt-4">
-                <PriceSparkline data={heroHistory} width={340} height={70} className="w-full h-[70px]" color={config.graphColor} />
-                <div className="absolute right-0 -top-0.5 bg-[#1A3A1F] text-white text-[10px] font-bold px-2 py-0.5 rounded-md">
-                  현재 {config.mainPrice.toLocaleString()}원
-                </div>
-              </div>
+            <div className="px-5 pt-3">
+              <PriceSparkline data={heroHistory} width={340} height={70} className="w-full h-[70px]" color={config.graphColor} />
               <div className="flex justify-between mt-1 text-[9.5px] text-muted-foreground">
                 <span>5/6</span><span>5/7</span><span>5/8</span><span>5/9</span><span>5/10</span><span>5/11</span><span className="font-bold text-foreground">5/12 오늘</span>
               </div>
             </div>
+
 
             <div className="px-5 pt-3">
               <div className="grid grid-cols-4 gap-1.5">
