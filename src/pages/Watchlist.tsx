@@ -372,26 +372,6 @@ const MyCropsTab = ({
           >
             <Plus className="w-4 h-4" /> 내 작물 추가
           </button>
-          <div className="bg-white border border-border rounded-2xl p-4" style={{ boxShadow: "0 1px 2px rgba(17,24,39,0.04)" }}>
-            <p className="text-[13px] font-bold text-foreground mb-3">작물 관리</p>
-            <div className="grid grid-cols-3 gap-2">
-              {[
-                { icon: <Bell className="w-5 h-5" />, label: "가격 알림\n설정", to: "/notification-settings" },
-                { icon: <Scale className="w-5 h-5" />, label: "기준 단량\n설정", to: "/mypage" },
-                { icon: <Store className="w-5 h-5" />, label: "기준 시장\n설정", to: "/mypage" },
-              ].map((item, i) => (
-                <button
-                  key={i}
-                  onClick={() => navigate(item.to)}
-                  className="flex flex-col items-center justify-center gap-1.5 min-h-[72px] rounded-xl bg-secondary/60 active:bg-secondary"
-                  style={{ color: PRIMARY }}
-                >
-                  {item.icon}
-                  <span className="text-[11px] font-semibold text-foreground text-center whitespace-pre-line leading-tight">{item.label}</span>
-                </button>
-              ))}
-            </div>
-          </div>
         </>
       )}
     </div>
