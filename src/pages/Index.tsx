@@ -60,6 +60,16 @@ type MovementRow = {
   up: boolean;
 };
 
+type CtaTarget = "market" | "prediction" | "notification";
+type CtaParams = {
+  tab?: string;
+  metric?: string;
+  sort?: string;
+  view?: string;
+  type?: string; // for notification settings
+};
+type Cta = { label: string; target: CtaTarget; params?: CtaParams };
+
 type HomeConfig = {
   searchPlaceholder: string;
   chipsTitle: string;
@@ -78,8 +88,13 @@ type HomeConfig = {
   insightLine2: React.ReactNode;
   insightBg: string;
   insightIconColor: string;
-  ctaPrimary: { label: string; route: string };
-  ctaSecondary: { label: string; route: string };
+  ctaPrimary: Cta;
+  ctaSecondary: Cta;
+  // 컨텍스트(상세 화면 진입 시 함께 전달)
+  ctaCrop: string;
+  ctaVariety: string;
+  ctaMarket: string;
+  ctaPriceMode: PriceMode;
   movementTitle: string;
   movementDesc: string;
   movementRows: MovementRow[];
