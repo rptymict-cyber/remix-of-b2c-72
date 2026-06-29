@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, MapPin, Recycle, Search, Check, X, ChevronDown } from "lucide-react";
-import { useApp } from "@/store/appStore";
+import { useApp, MAX_MY_CROPS } from "@/store/appStore";
 import { CROPS, REGIONS_KR } from "@/data/catalog";
 import { useToast } from "@/hooks/use-toast";
 import MobileStatusBar from "@/components/MobileStatusBar";

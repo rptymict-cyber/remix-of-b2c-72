@@ -5,7 +5,7 @@ import AppHeader from "@/components/AppHeader";
 import BottomNav from "@/components/BottomNav";
 import PriceSparkline from "@/components/PriceSparkline";
 import { useToast } from "@/hooks/use-toast";
-import { useApp } from "@/store/appStore";
+import { useApp, MAX_MY_CROPS } from "@/store/appStore";
 import {
   findCrop,
   findMarket,
@@ -40,10 +40,11 @@ const Watchlist = () => {
   // ---- + 버튼 컨텍스트 액션 ----
   const handleAdd = () => {
     if (tab === "mine") {
-      if (profile.myCrops.length >= 3) {
-        toast({ description: "내 작물은 최대 3개까지 등록할 수 있어요" });
+      if (profile.myCrops.length >= MAX_MY_CROPS) {
+        toast({ description: `내 작물은 최대 ${MAX_MY_CROPS}개까지 등록할 수 있어요` });
         return;
       }
+
       navigate("/crop/add");
     } else if (tab === "interest") {
       navigate("/search");
@@ -337,7 +338,7 @@ const Watchlist = () => {
                 <h2 className="text-[13px] font-bold text-foreground">
                   내 작물 <span className="text-muted-foreground font-medium">{profile.myCrops.length}</span>
                 </h2>
-                <span className="text-[11px] text-muted-foreground">최대 3개</span>
+                <span className="text-[11px] text-muted-foreground">최대 {MAX_MY_CROPS}개</span>
               </div>
 
               {profile.myCrops.length === 0 ? (
