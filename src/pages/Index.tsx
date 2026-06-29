@@ -39,11 +39,19 @@ const USER_TYPE_OPTIONS: { id: NonNullable<UserType>; icon: string; title: strin
 ];
 
 const TYPE_META: Record<NonNullable<UserType> | "default", { dot: string; color: string; name: string; desc: string }> = {
-  farmer: { dot: "bg-[#16A34A]", color: "text-[#16A34A]", name: "👨‍🌾 농민 모드", desc: "출하 시점 · 내 작물 시세 중심" },
-  wholesaler: { dot: "bg-[#1F6FE8]", color: "text-[#1F6FE8]", name: "🏪 도매상 모드", desc: "반입량 · 낙찰가 · 법인 중심" },
-  retailer: { dot: "bg-[#F08A24]", color: "text-[#F08A24]", name: "🛒 소매상 모드", desc: "매입 적정가 · 가격 정보 중심" },
-  enterprise: { dot: "bg-[#8B5CF6]", color: "text-[#8B5CF6]", name: "🏢 기업 모드", desc: "수급 동향 · 산지 분석 중심" },
-  default: { dot: "bg-[#16A34A]", color: "text-[#16A34A]", name: "👨‍🌾 농민 모드", desc: "출하 시점 · 내 작물 시세 중심" },
+  farmer: { dot: "bg-[#16A34A]", color: "text-[#15803D]", name: "👨‍🌾 농민 모드", desc: "출하 시점 · 내 작물 시세 중심" },
+  wholesaler: { dot: "bg-[#2563EB]", color: "text-[#1D4ED8]", name: "🏪 도매상 모드", desc: "반입량 · 낙찰가 · 법인 중심" },
+  retailer: { dot: "bg-[#F97316]", color: "text-[#EA580C]", name: "🛒 소매상 모드", desc: "매입 적정가 · 가격 정보 중심" },
+  enterprise: { dot: "bg-[#8B5CF6]", color: "text-[#7C3AED]", name: "🏢 기업 모드", desc: "수급 동향 · 산지 분석 중심" },
+  default: { dot: "bg-[#16A34A]", color: "text-[#15803D]", name: "👨‍🌾 농민 모드", desc: "출하 시점 · 내 작물 시세 중심" },
+};
+
+const TYPE_BTN: Record<NonNullable<UserType> | "default", { bg: string; border: string; text: string }> = {
+  farmer: { bg: "bg-[#F0FDF4]", border: "border-[#BBF7D0]", text: "text-[#15803D]" },
+  wholesaler: { bg: "bg-[#EFF6FF]", border: "border-[#BFDBFE]", text: "text-[#1D4ED8]" },
+  retailer: { bg: "bg-[#FFF7ED]", border: "border-[#FED7AA]", text: "text-[#EA580C]" },
+  enterprise: { bg: "bg-[#F5F3FF]", border: "border-[#DDD6FE]", text: "text-[#7C3AED]" },
+  default: { bg: "bg-[#F0FDF4]", border: "border-[#BBF7D0]", text: "text-[#15803D]" },
 };
 
 type KPI = { label: string; value: string; cls?: string };
@@ -121,6 +129,7 @@ const HomePage = () => {
 
   const userType: NonNullable<UserType> = (profile.userType as NonNullable<UserType>) ?? "farmer";
   const typeMeta = TYPE_META[userType];
+  const btnMeta = TYPE_BTN[userType];
 
   const crop = cropId ? findCrop(cropId) : findCrop("pepper");
   const market = findMarket(marketId);
@@ -472,12 +481,23 @@ const HomePage = () => {
           </button>
         </section>
 
-        {/* 유형 배지 */}
-        <div className="flex items-center gap-1.5 pt-1.5 pb-0.5">
-          <span className={`w-[7px] h-[7px] rounded-full ${typeMeta.dot}`} />
-          <span className={`text-[11.5px] font-bold ${typeMeta.color}`}>{typeMeta.name}</span>
-          <span className="text-[10.5px] text-muted-foreground">{typeMeta.desc}</span>
-          <button onClick={openTypeSheet} className="ml-auto text-[11px] font-semibold text-primary underline">변경</button>
+        {/* 모드 카드 */}
+        <div className="w-full min-h-[64px] flex items-center justify-between gap-3 px-4 py-3.5 rounded-[20px] bg-white border border-[#D8EEDC] shadow-[0_4px_12px_rgba(22,101,52,0.06)]">
+          <div className="flex items-center min-w-0 gap-2">
+            <span className={`w-2 h-2 rounded-full shrink-0 ${typeMeta.dot}`} />
+            <span className={`text-[15px] font-bold whitespace-nowrap ${typeMeta.color}`}>{typeMeta.name}</span>
+            <span className="w-px h-4 bg-[#E5E7EB] mx-1 shrink-0" />
+            <span className="text-[12px] font-normal text-[#6B7280] whitespace-nowrap overflow-hidden text-ellipsis">
+              {typeMeta.desc}
+            </span>
+          </div>
+          <button
+            onClick={openTypeSheet}
+            className={`h-9 px-3 rounded-[14px] flex items-center gap-1.5 text-[13px] font-bold shrink-0 border ${btnMeta.bg} ${btnMeta.border} ${btnMeta.text}`}
+          >
+            모드 변경
+            <ChevronRight className="w-4 h-4" />
+          </button>
         </div>
 
         {/* 검색창 */}
