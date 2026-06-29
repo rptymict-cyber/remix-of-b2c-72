@@ -158,8 +158,8 @@ function useDragReorder<T>(items: T[], onReorder: (next: T[]) => void) {
 
 // ====== My Crops Tab ======
 const MyCropsTab = ({
-  showBanner, onCloseBanner, isEditing, onEdit, onDone,
-}: { showBanner: boolean; onCloseBanner: () => void; isEditing: boolean; onEdit: () => void; onDone: () => void }) => {
+  showBanner, isEditing, onEdit, onDone,
+}: { showBanner: boolean; isEditing: boolean; onEdit: () => void; onDone: () => void }) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { profile, setProfile, setCrop, setMarket, removeMyCrop } = useApp();
