@@ -14,7 +14,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
       position="top-center"
       duration={3000}
       visibleToasts={1}
-      offset={`calc(env(safe-area-inset-top, 0px) + 56px)`}
+      offset={`calc(var(--app-header-height, 84px) + 8px)`}
       icons={{
         success: <CheckCircle2 className="h-5 w-5 text-emerald-500 fill-emerald-50" strokeWidth={2.5} />,
         error: <XCircle className="h-5 w-5 text-red-500" strokeWidth={2.5} />,

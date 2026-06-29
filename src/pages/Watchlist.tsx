@@ -1105,7 +1105,7 @@ const Watchlist = () => {
             </button>
           ) : activeTab === "interests" ? (
             <button
-              onClick={() => navigate("/crop/add?mode=interest", { state: { returnTo: "/crop?tab=interest" } })}
+              onClick={() => navigate("/crop/add?mode=interest", { state: { returnTo: "/watchlist?tab=interest" } })}
               aria-label="관심 품목 추가"
               className="w-9 h-9 rounded-lg flex items-center justify-center"
               style={{ color: PRIMARY }}
@@ -1134,7 +1134,7 @@ const Watchlist = () => {
               isEditing={isEditing}
               onEdit={() => setIsEditing(true)}
               onDone={() => setIsEditing(false)}
-              onOpenAdd={() => navigate("/crop/add?mode=interest", { state: { returnTo: "/crop?tab=interest" } })}
+              onOpenAdd={() => navigate("/crop/add?mode=interest", { state: { returnTo: "/watchlist?tab=interest" } })}
             />
           )}
           {activeTab === "markets" && (
