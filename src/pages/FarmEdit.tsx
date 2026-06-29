@@ -108,12 +108,13 @@ const FarmEdit = () => {
 
   const toggleCropPick = (id: string) => {
     if (myCrops.includes(id)) return;
-    if (myCrops.length >= 3) {
-      toast("최대 3개까지 등록 가능합니다");
+    if (myCrops.length >= MAX_MY_CROPS) {
+      toast(`최대 ${MAX_MY_CROPS}개까지 등록 가능합니다`);
       return;
     }
     setMyCrops((prev) => [...prev, id]);
   };
+
 
   return (
     <div className="h-full bg-white">
@@ -296,8 +297,9 @@ const FarmEdit = () => {
         <section>
           <h2 className="text-[15px] font-bold text-foreground">재배 작물</h2>
           <p className="text-[12px] text-muted-foreground mt-1">
-            최대 3개까지 등록 가능합니다
+            최대 {MAX_MY_CROPS}개까지 등록 가능합니다
           </p>
+
 
           <div className="mt-3 space-y-2">
             {myCrops.map((id) => {
@@ -323,7 +325,7 @@ const FarmEdit = () => {
                 </button>
               );
             })}
-            {myCrops.length < 3 && (
+            {myCrops.length < MAX_MY_CROPS && (
               <button
                 onClick={() => {
                   setCropQuery("");
