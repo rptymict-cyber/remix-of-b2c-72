@@ -327,7 +327,7 @@ const AddCrop = () => {
               <div className="flex items-center gap-2.5">
                 <span className="text-2xl">{crop.icon}</span>
                 <div>
-                  <p className="text-[11px] text-muted-foreground">선택한 작물</p>
+                  <p className="text-[11px] text-muted-foreground">{isInterest ? "선택한 품목" : "선택한 작물"}</p>
                   <p className="text-sm font-bold text-foreground truncate max-w-[200px]">
                     {crop.name} · {varietyLabel}
                   </p>
@@ -338,7 +338,7 @@ const AddCrop = () => {
                 className="text-xs font-semibold text-primary flex items-center gap-1"
               >
                 <Pencil className="w-3 h-3" />
-                변경
+                품종 변경
               </button>
             </div>
           )}
