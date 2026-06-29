@@ -430,7 +430,7 @@ const InterestsTab = ({
           message="관심 품목이 없어요."
           subMessage="자주 보는 품목을 저장해두면 홈과 시세에서 빠르게 확인할 수 있어요."
           buttonLabel="관심 품목 추가"
-          onAction={() => navigate("/search")}
+          onAction={onOpenAdd}
         />
       ) : isEditing ? (
         /* ===== EDIT MODE ===== */
