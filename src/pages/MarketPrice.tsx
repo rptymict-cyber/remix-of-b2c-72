@@ -147,7 +147,7 @@ const MarketPricePage = () => {
   const basePrice = seedPrice(cropId, marketId, variety);
 
   const [tab, setTab] = useState<Tab>("경매내역");
-  const [date, setDate] = useState<typeof DATE_OPTIONS[number]>("오늘");
+  const [period, setPeriod] = useState<PeriodValue>(() => buildPeriodValue("today"));
   const [cropOpen, setCropOpen] = useState(false);
   const [marketOpen, setMarketOpen] = useState(false);
   const [varietyOpen, setVarietyOpen] = useState(false);
