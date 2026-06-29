@@ -234,7 +234,7 @@ const MarketPricePage = () => {
   const [marketDetail, setMarketDetail] = useState<typeof marketData[number] | null>(null);
   const [corpDetail, setCorpDetail] = useState<typeof corpData[number] | null>(null);
   const [originDetail, setOriginDetail] = useState<typeof originData[number] | null>(null);
-  const [varietyDetail, setVarietyDetail] = useState<typeof varietyData[number] | null>(null);
+  const [varietyDetail, setVarietyDetail] = useState<VarietyRow | null>(null);
   const [activeOriginPin, setActiveOriginPin] = useState<string | null>(null);
 
   const avgAuction = Math.round(auctionFlow.reduce((s, x) => s + x.price, 0) / auctionFlow.length);
