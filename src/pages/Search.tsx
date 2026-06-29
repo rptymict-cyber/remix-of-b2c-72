@@ -16,9 +16,8 @@ const RECOMMEND_KEYWORDS = [
   { label: "고구마 거래량", emoji: "🍠" },
 ];
 
-const POPULAR_CROPS = ["cabbage", "onion", "tomato", "apple", "sweet_potato", "green_onion"];
-const FAV_MARKETS = ["garak", "daegu", "busan", "anyang"];
-const RANK_CROPS = ["cabbage", "onion", "tomato", "apple", "green_onion"];
+  const POPULAR_CROPS = ["cabbage", "onion", "tomato", "apple", "sweet_potato", "green_onion"];
+  const RANK_CROPS = ["cabbage", "onion", "tomato", "apple", "green_onion"];
 
 const SAMPLE_RECENT: string[] = [
   "배추 · 서울가락시장",
