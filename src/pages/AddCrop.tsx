@@ -397,7 +397,7 @@ const AddCrop = () => {
           {showRepresentative ? (
             <div>
               <p className="text-[13px] font-bold text-foreground mb-3">대표 작물</p>
-              <CropGrid items={REPRESENTATIVE_CROPS} selectedId={selectedCropId} onPick={handlePickCrop} />
+              <CropGrid items={REPRESENTATIVE_CROPS} selectedId={selectedCropId} myCrops={profile.myCrops} onPick={handlePickCrop} />
             </div>
           ) : listed.length === 0 ? (
             <div className="text-center py-10">
@@ -411,7 +411,7 @@ const AddCrop = () => {
               <p className="text-[13px] font-bold text-foreground mb-3">
                 {q.trim() ? `검색 결과 (${listed.length})` : `${category} (${listed.length})`}
               </p>
-              <CropGrid items={listed} selectedId={selectedCropId} onPick={handlePickCrop} />
+              <CropGrid items={listed} selectedId={selectedCropId} myCrops={profile.myCrops} onPick={handlePickCrop} />
             </div>
           )}
         </main>
