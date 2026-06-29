@@ -1,5 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { resolveRepresentativeId } from "@/data/catalog";
+
 
 export type Plan = "Free" | "Basic" | "Pro" | "Premium";
 export type Unit = "kg" | "box" | "ton";
@@ -205,6 +207,24 @@ export const useApp = create<AppState>()(
       completeOnboarding: () =>
         set((s) => ({ profile: { ...s.profile, onboarded: true } })),
     }),
-    { name: "farminsight-app" },
+    {
+      name: "farminsight-app",
+      // 기존에 저장된 확장 카탈로그 id (예: "c0-0") 를 가능한 경우 대표 id 로 마이그레이션.
+      // 매핑이 없는 id는 그대로 두며 findCrop 이 안전하게 처리한다.
+      onRehydrateStorage: () => (state) => {
+        if (!state) return;
+        const remap = (id: string) => (id ? resolveRepresentativeId(id) ?? id : id);
+        state.cropId = remap(state.cropId);
+        state.profile.myCrops = (state.profile.myCrops ?? []).map(remap);
+        state.profile.interestCrops = (state.profile.interestCrops ?? []).map(remap);
+        if (state.profile.cropSettings) {
+          const next: Record<string, CropSetting> = {};
+          for (const [k, v] of Object.entries(state.profile.cropSettings)) {
+            next[remap(k)] = v;
+          }
+          state.profile.cropSettings = next;
+        }
+      },
+    },
   ),
 );
