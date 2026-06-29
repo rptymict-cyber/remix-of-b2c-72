@@ -1018,6 +1018,7 @@ const Watchlist = () => {
               isEditing={isEditing}
               onEdit={() => setIsEditing(true)}
               onDone={() => setIsEditing(false)}
+              onOpenAdd={() => setInterestAddOpen(true)}
             />
           )}
           {activeTab === "markets" && (
@@ -1033,6 +1034,7 @@ const Watchlist = () => {
       </main>
 
       <AddMarketSheet open={marketAddOpen} onOpenChange={setMarketAddOpen} />
+      <AddInterestSheet open={interestAddOpen} onOpenChange={setInterestAddOpen} />
       <BottomNav />
     </div>
   );
