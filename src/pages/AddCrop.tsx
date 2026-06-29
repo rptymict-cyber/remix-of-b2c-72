@@ -111,6 +111,9 @@ const ALERT_RULES = [
 
 const AddCrop = () => {
   const nav = useNavigate();
+  const location = useLocation();
+  const rawReturnTo = (location.state as { returnTo?: string } | null)?.returnTo;
+  const returnTo = rawReturnTo && !rawReturnTo.startsWith("/crop/add") ? rawReturnTo : "/crop";
   const { profile, marketId, setMarket, addMyCrop, setCrop, setCropSetting } = useApp();
 
   const [step, setStep] = useState<1 | 2>(1);
