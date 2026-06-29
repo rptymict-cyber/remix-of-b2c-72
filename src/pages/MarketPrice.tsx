@@ -264,9 +264,25 @@ const MarketPricePage = () => {
           <div className="px-5 pb-3 flex items-end justify-between gap-3">
             <div>
               <div className="flex items-baseline gap-1.5">
-                <span className="text-[30px] font-extrabold text-foreground leading-none tracking-tight">{price.toLocaleString()}</span>
-                <span className="text-sm font-medium text-muted-foreground">원/{crop.defaultUnitKg}kg</span>
-              </div>
+              {(() => {
+                const kg = basePrice / crop.defaultUnitKg;
+                const r100 = (n: number) => Math.round(n / 100) * 100;
+                const dp =
+                  priceMode === "perKg" ? { p: Math.round(kg), u: "kg" } :
+                  priceMode === "per10kg" ? { p: r100(kg * 10), u: "10kg" } :
+                  priceMode === "per20kg" ? { p: r100(kg * 20), u: "20kg" } :
+                  priceMode === "per100kg" ? { p: r100(kg * 100), u: "100kg" } :
+                  { p: basePrice, u: `${crop.defaultUnitKg}kg` };
+                return (
+                  <>
+                    <div className="flex items-baseline gap-1.5">
+                      <span className="text-[30px] font-extrabold text-foreground leading-none tracking-tight">{dp.p.toLocaleString()}</span>
+                      <span className="text-sm font-medium text-muted-foreground">원/{dp.u}</span>
+                    </div>
+                    <p className="text-[11px] text-muted-foreground mt-1">실거래가 {basePrice.toLocaleString()}원 / {crop.defaultUnitKg}kg</p>
+                  </>
+                );
+              })()}
               <div className="mt-1.5 flex items-center gap-1">
                 <Change v={2.3} big />
                 <span className="text-[11px] text-muted-foreground">전일 대비</span>
