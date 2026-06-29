@@ -987,6 +987,15 @@ const Watchlist = () => {
             >
               <Plus className="w-5 h-5" />
             </button>
+          ) : activeTab === "interests" ? (
+            <button
+              onClick={() => setInterestAddOpen(true)}
+              aria-label="관심 품목 추가"
+              className="w-9 h-9 rounded-lg flex items-center justify-center"
+              style={{ color: PRIMARY }}
+            >
+              <Plus className="w-5 h-5" />
+            </button>
           ) : undefined
         }
       />
