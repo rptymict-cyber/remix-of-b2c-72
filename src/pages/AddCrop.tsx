@@ -452,6 +452,50 @@ const AddCrop = () => {
             </Section>
           )}
 
+          <Section
+            title="거래 단위"
+            desc="보통 어떤 단위로 거래하세요? 시세가 이 단위 기준으로 표시돼요."
+          >
+            <div className="grid grid-cols-3 gap-2">
+              {unitOptions.map((opt) => {
+                const sel = selectedUnitKg === opt.kg && selectedUnitLabel === opt.label;
+                return (
+                  <button
+                    key={`${opt.label}-${opt.kg}`}
+                    onClick={() => {
+                      setSelectedUnitKg(opt.kg);
+                      setSelectedUnitLabel(opt.label);
+                    }}
+                    className={`bg-card rounded-2xl py-3 px-2 text-center border-2 transition-all ${
+                      sel ? "border-primary bg-primary/5" : "border-border"
+                    }`}
+                  >
+                    <p className={`text-[15px] font-extrabold leading-tight ${sel ? "text-primary" : "text-foreground"}`}>
+                      {opt.label}
+                    </p>
+                    <p className="text-[10px] text-muted-foreground mb-1.5">{opt.sublabel}</p>
+                    <p className="text-[12px] font-bold text-destructive">
+                      {opt.price.toLocaleString()}원
+                    </p>
+                  </button>
+                );
+              })}
+            </div>
+            {selectedUnitKg !== null && (
+              <div className="bg-primary/5 border border-primary/20 rounded-xl px-3 py-2.5 flex items-center gap-2 mt-2">
+                <span className="text-[18px]">⚖️</span>
+                <span className="text-[12px] font-semibold text-primary">
+                  ≒ {Math.round(cropBasePrice / selectedUnitKg).toLocaleString()}원/kg으로 환산해서 보여드려요
+                </span>
+              </div>
+            )}
+            <p className="text-[11px] text-muted-foreground mt-1.5">
+              단위는 나중에 내 작물 설정에서 바꿀 수 있어요
+            </p>
+          </Section>
+
+
+
           {!isInterest && (
             <Section title="재배 지역" desc="이 지역의 기상 정보가 AI 예측에 반영됩니다.">
               <div className="bg-card border border-border rounded-2xl px-4 py-3.5 flex items-center justify-between">
