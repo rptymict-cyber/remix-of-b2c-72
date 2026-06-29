@@ -372,7 +372,7 @@ const AddCrop = () => {
               <div className="flex items-center gap-2.5">
                 <span className="text-2xl">{crop.icon}</span>
                 <div>
-                  <p className="text-[11px] text-muted-foreground">선택한 작물</p>
+                  <p className="text-[11px] text-muted-foreground">{isInterest ? "선택한 품목" : "선택한 작물"}</p>
                   <p className="text-sm font-bold text-foreground truncate max-w-[200px]">
                     {crop.name} · {varietyLabel}
                   </p>
@@ -388,44 +388,48 @@ const AddCrop = () => {
             </div>
           )}
 
-          <Section title="등록 유형" desc="이 작물을 어떤 목적으로 등록할지 선택해 주세요.">
-            <div className="space-y-2">
-              <TypeOption
-                active={regType === "growing"}
-                onClick={() => setRegType("growing")}
-                title="재배 중인 작물"
-                desc="시세 예측과 출하 추천에 활용됩니다."
-              />
-              <TypeOption
-                active={regType === "interest"}
-                onClick={() => setRegType("interest")}
-                title="관심 작물"
-                desc="시세 흐름을 확인하는 데 활용됩니다."
-              />
-            </div>
-          </Section>
-
-          <Section title="재배 지역" desc="이 지역의 기상 정보가 AI 예측에 반영됩니다.">
-            <div className="bg-card border border-border rounded-2xl px-4 py-3.5 flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
-                  <MapPin className="w-4 h-4 text-primary" />
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-foreground">{profile.region}</p>
-                  <p className="text-[11px] text-muted-foreground mt-0.5">
-                    향후 10일 기상이 이 지역 기준으로 반영됩니다.
-                  </p>
-                </div>
+          {!isInterest && (
+            <Section title="등록 유형" desc="이 작물을 어떤 목적으로 등록할지 선택해 주세요.">
+              <div className="space-y-2">
+                <TypeOption
+                  active={regType === "growing"}
+                  onClick={() => setRegType("growing")}
+                  title="재배 중인 작물"
+                  desc="시세 예측과 출하 추천에 활용됩니다."
+                />
+                <TypeOption
+                  active={regType === "interest"}
+                  onClick={() => setRegType("interest")}
+                  title="관심 작물"
+                  desc="시세 흐름을 확인하는 데 활용됩니다."
+                />
               </div>
-              <button
-                onClick={() => nav("/mypage")}
-                className="text-xs font-semibold text-primary"
-              >
-                지역 변경
-              </button>
-            </div>
-          </Section>
+            </Section>
+          )}
+
+          {!isInterest && (
+            <Section title="재배 지역" desc="이 지역의 기상 정보가 AI 예측에 반영됩니다.">
+              <div className="bg-card border border-border rounded-2xl px-4 py-3.5 flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
+                    <MapPin className="w-4 h-4 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-foreground">{profile.region}</p>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">
+                      향후 10일 기상이 이 지역 기준으로 반영됩니다.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => nav("/mypage")}
+                  className="text-xs font-semibold text-primary"
+                >
+                  지역 변경
+                </button>
+              </div>
+            </Section>
+          )}
 
           <Section
             title="기준 시장"
