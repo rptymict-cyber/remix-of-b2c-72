@@ -64,13 +64,24 @@ const originData = [
   { region: "충북 청주시", share: 8, avgPrice: 37000, volume: 102, x: 50, y: 38, markets: [["청주시장", 42], ["서울 가락시장", 30]] as const },
 ];
 
-const varietyData = [
-  { name: "일반토마토", unit: "5kg", price: 38000, kg: 7600, dayChange: 2.3, volume: 1280 },
-  { name: "방울토마토", unit: "1kg", price: 8500, kg: 8500, dayChange: 1.4, volume: 320 },
-  { name: "대저토마토", unit: "0.5kg", price: 12000, kg: 24000, dayChange: 4.2, volume: 86 },
-  { name: "대저토마토", unit: "5kg", price: 55000, kg: 11000, dayChange: 3.1, volume: 142 },
-  { name: "완숙토마토", unit: "5kg", price: 32000, kg: 6400, dayChange: -1.2, volume: 268 },
-];
+type VarietyRow = { name: string; unit: string; price: number; kg: number; dayChange: number; volume: number };
+
+const buildVarietyData = (
+  cropId: string,
+  marketId: string,
+  varieties: string[],
+  defaultUnitKg: number,
+): VarietyRow[] => {
+  const unitKg = defaultUnitKg > 0 ? defaultUnitKg : 10;
+  return varieties.map((name, i) => {
+    const price = seedPrice(cropId, marketId, name);
+    const seed = [...(cropId + marketId + name)].reduce((a, c) => a + c.charCodeAt(0), 0);
+    const kg = Math.round(price / unitKg);
+    const dayChange = Math.round(((seed % 130) / 10 - 6) * 10) / 10; // -6.0 ~ +6.9%
+    const volume = 80 + ((seed * 7) % 1200) + i * 12;
+    return { name, unit: `${unitKg}kg`, price, kg, dayChange, volume };
+  });
+};
 
 const tabs = ["경매내역", "시장비교", "법인", "산지", "품종"] as const;
 type Tab = typeof tabs[number];
