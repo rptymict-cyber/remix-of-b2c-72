@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, X, Bell, Bookmark, ChevronRight, Store, GripVertical, Info, Scale, Star, Trash2 } from "lucide-react";
+import { Plus, Bell, Bookmark, ChevronRight, Store, GripVertical, Info, Scale, Star, Trash2 } from "lucide-react";
 import AppHeader from "@/components/AppHeader";
 import BottomNav from "@/components/BottomNav";
 import PriceSparkline from "@/components/PriceSparkline";
@@ -407,7 +407,6 @@ const InterestsTab = ({
         <InfoBanner
           icon={<Bookmark className="w-3.5 h-3.5" fill="currentColor" />}
           message="자주 보는 품목을 관심 품목으로 등록하면 홈과 시세 화면에서 빠르게 확인할 수 있습니다."
-          onClose={onCloseBanner}
         />
       )}
 
@@ -579,8 +578,8 @@ const InterestsTab = ({
 
 // ====== Markets Tab ======
 const MarketsTab = ({
-  showBanner, onCloseBanner, isEditing, onEdit, onDone,
-}: { showBanner: boolean; onCloseBanner: () => void; isEditing: boolean; onEdit: () => void; onDone: () => void }) => {
+  showBanner, isEditing, onEdit, onDone,
+}: { showBanner: boolean; isEditing: boolean; onEdit: () => void; onDone: () => void }) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { profile, setProfile, marketId, setMarket, toggleFavMarket } = useApp();
@@ -599,7 +598,6 @@ const MarketsTab = ({
         <InfoBanner
           icon={<Store className="w-3.5 h-3.5" />}
           message="자주 보는 도매시장을 즐겨찾기하면 시장별 주요 품목 시세를 빠르게 확인할 수 있습니다."
-          onClose={onCloseBanner}
         />
       )}
 
@@ -895,7 +893,6 @@ const Watchlist = () => {
           {activeTab === "myCrops" && (
             <MyCropsTab
               showBanner={showMyCropsBanner}
-              onCloseBanner={() => setShowMyCropsBanner(false)}
               isEditing={isEditing}
               onEdit={() => setIsEditing(true)}
               onDone={() => setIsEditing(false)}
@@ -904,7 +901,6 @@ const Watchlist = () => {
           {activeTab === "interests" && (
             <InterestsTab
               showBanner={showInterestBanner}
-              onCloseBanner={() => setShowInterestBanner(false)}
               isEditing={isEditing}
               onEdit={() => setIsEditing(true)}
               onDone={() => setIsEditing(false)}
@@ -913,7 +909,6 @@ const Watchlist = () => {
           {activeTab === "markets" && (
             <MarketsTab
               showBanner={showMarketBanner}
-              onCloseBanner={() => setShowMarketBanner(false)}
               isEditing={isEditing}
               onEdit={() => setIsEditing(true)}
               onDone={() => setIsEditing(false)}
