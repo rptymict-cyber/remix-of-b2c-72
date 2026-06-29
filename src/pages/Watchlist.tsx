@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, X, Bell, Bookmark, ChevronRight, Store, GripVertical, Info, Scale, Star, Trash2 } from "lucide-react";
+import { Plus, Bell, Bookmark, ChevronRight, Store, GripVertical, Info, Scale, Star, Trash2 } from "lucide-react";
 import AppHeader from "@/components/AppHeader";
 import BottomNav from "@/components/BottomNav";
 import PriceSparkline from "@/components/PriceSparkline";
@@ -86,16 +86,13 @@ const TabBar = ({ activeTab, onTabChange }: { activeTab: WatchTab; onTabChange: 
   );
 };
 
-// ====== Info banner (closable) ======
-const InfoBanner = ({ icon, message, onClose }: { icon: React.ReactNode; message: string; onClose: () => void }) => (
+// ====== Info banner ======
+const InfoBanner = ({ icon, message }: { icon: React.ReactNode; message: string }) => (
   <div className="flex items-start gap-2.5 p-3 rounded-xl" style={{ background: LIGHT_GREEN_BG }}>
     <div className="shrink-0 w-7 h-7 rounded-full bg-white flex items-center justify-center" style={{ color: PRIMARY }}>
       {icon}
     </div>
     <p className="flex-1 text-[12.5px] leading-relaxed text-foreground/85">{message}</p>
-    <button onClick={onClose} aria-label="닫기" className="shrink-0 w-6 h-6 flex items-center justify-center text-muted-foreground">
-      <X className="w-4 h-4" />
-    </button>
   </div>
 );
 
@@ -161,8 +158,8 @@ function useDragReorder<T>(items: T[], onReorder: (next: T[]) => void) {
 
 // ====== My Crops Tab ======
 const MyCropsTab = ({
-  showBanner, onCloseBanner, isEditing, onEdit, onDone,
-}: { showBanner: boolean; onCloseBanner: () => void; isEditing: boolean; onEdit: () => void; onDone: () => void }) => {
+  showBanner, isEditing, onEdit, onDone,
+}: { showBanner: boolean; isEditing: boolean; onEdit: () => void; onDone: () => void }) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { profile, setProfile, setCrop, setMarket, removeMyCrop } = useApp();
@@ -180,7 +177,6 @@ const MyCropsTab = ({
         <InfoBanner
           icon={<span className="text-base leading-none">🌱</span>}
           message="내가 재배하거나 관리하는 작물의 시세를 빠르게 확인하고 알림을 설정할 수 있습니다."
-          onClose={onCloseBanner}
         />
       )}
 
@@ -387,8 +383,8 @@ const MyCropsTab = ({
 
 // ====== Interests Tab ======
 const InterestsTab = ({
-  showBanner, onCloseBanner, isEditing, onEdit, onDone,
-}: { showBanner: boolean; onCloseBanner: () => void; isEditing: boolean; onEdit: () => void; onDone: () => void }) => {
+  showBanner, isEditing, onEdit, onDone,
+}: { showBanner: boolean; isEditing: boolean; onEdit: () => void; onDone: () => void }) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { profile, setProfile, setCrop, setMarket, toggleInterestCrop } = useApp();
@@ -411,7 +407,6 @@ const InterestsTab = ({
         <InfoBanner
           icon={<Bookmark className="w-3.5 h-3.5" fill="currentColor" />}
           message="자주 보는 품목을 관심 품목으로 등록하면 홈과 시세 화면에서 빠르게 확인할 수 있습니다."
-          onClose={onCloseBanner}
         />
       )}
 
@@ -583,8 +578,8 @@ const InterestsTab = ({
 
 // ====== Markets Tab ======
 const MarketsTab = ({
-  showBanner, onCloseBanner, isEditing, onEdit, onDone,
-}: { showBanner: boolean; onCloseBanner: () => void; isEditing: boolean; onEdit: () => void; onDone: () => void }) => {
+  showBanner, isEditing, onEdit, onDone,
+}: { showBanner: boolean; isEditing: boolean; onEdit: () => void; onDone: () => void }) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { profile, setProfile, marketId, setMarket, toggleFavMarket } = useApp();
@@ -603,7 +598,6 @@ const MarketsTab = ({
         <InfoBanner
           icon={<Store className="w-3.5 h-3.5" />}
           message="자주 보는 도매시장을 즐겨찾기하면 시장별 주요 품목 시세를 빠르게 확인할 수 있습니다."
-          onClose={onCloseBanner}
         />
       )}
 
@@ -899,7 +893,6 @@ const Watchlist = () => {
           {activeTab === "myCrops" && (
             <MyCropsTab
               showBanner={showMyCropsBanner}
-              onCloseBanner={() => setShowMyCropsBanner(false)}
               isEditing={isEditing}
               onEdit={() => setIsEditing(true)}
               onDone={() => setIsEditing(false)}
@@ -908,7 +901,6 @@ const Watchlist = () => {
           {activeTab === "interests" && (
             <InterestsTab
               showBanner={showInterestBanner}
-              onCloseBanner={() => setShowInterestBanner(false)}
               isEditing={isEditing}
               onEdit={() => setIsEditing(true)}
               onDone={() => setIsEditing(false)}
@@ -917,7 +909,6 @@ const Watchlist = () => {
           {activeTab === "markets" && (
             <MarketsTab
               showBanner={showMarketBanner}
-              onCloseBanner={() => setShowMarketBanner(false)}
               isEditing={isEditing}
               onEdit={() => setIsEditing(true)}
               onDone={() => setIsEditing(false)}
