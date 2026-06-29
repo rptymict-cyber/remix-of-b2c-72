@@ -349,15 +349,13 @@ const MyCropsTab = ({
       {/* 작물 관리 (view 모드만) */}
       {!isEditing && myCropList.length > 0 && (
         <>
-          {myCropList.length < 3 && (
-            <button
-              onClick={() => navigate("/crop/add")}
-              className="w-full min-h-12 rounded-2xl border border-dashed text-[13px] font-bold flex items-center justify-center gap-1.5"
-              style={{ borderColor: "hsl(150 55% 70%)", color: PRIMARY }}
-            >
-              <Plus className="w-4 h-4" /> 내 작물 추가
-            </button>
-          )}
+          <button
+            onClick={() => navigate("/crop/add")}
+            className="w-full min-h-12 rounded-2xl border border-dashed text-[13px] font-bold flex items-center justify-center gap-1.5"
+            style={{ borderColor: "hsl(150 55% 70%)", color: PRIMARY }}
+          >
+            <Plus className="w-4 h-4" /> 내 작물 추가
+          </button>
           <div className="bg-white border border-border rounded-2xl p-4" style={{ boxShadow: "0 1px 2px rgba(17,24,39,0.04)" }}>
             <p className="text-[13px] font-bold text-foreground mb-3">작물 관리</p>
             <div className="grid grid-cols-3 gap-2">
