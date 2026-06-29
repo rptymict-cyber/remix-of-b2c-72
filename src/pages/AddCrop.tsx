@@ -257,7 +257,7 @@ const AddCrop = () => {
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
-          <h1 className="text-[15px] font-semibold text-foreground">작물 추가</h1>
+          <h1 className="text-[15px] font-semibold text-foreground">{isInterest ? "관심 품목 추가" : "작물 추가"}</h1>
         </div>
         {/* progress */}
         <div className="px-4 pb-3 flex items-center gap-2">
@@ -268,7 +268,7 @@ const AddCrop = () => {
             />
           </div>
           <span className="text-[11px] font-semibold text-muted-foreground">
-            {step}/2 {step === 1 ? "작물 선택" : "조회 기준 설정"}
+            {step}/2 {step === 1 ? "품목 선택" : "조회 기준 설정"}
           </span>
         </div>
       </header>
@@ -277,10 +277,16 @@ const AddCrop = () => {
         <main className="h-full overflow-y-auto px-4 pt-[calc(var(--app-header-progress-height)+1.25rem)] pb-32 space-y-4">
           <div>
             <h2 className="text-[18px] font-extrabold text-foreground leading-tight">
-              <span className="text-primary">작물</span>을 선택해 주세요
+              {isInterest ? (
+                <><span className="text-primary">관심 품목</span>을 선택해 주세요</>
+              ) : (
+                <><span className="text-primary">작물</span>을 선택해 주세요</>
+              )}
             </h2>
             <p className="text-[12px] text-muted-foreground mt-1.5 leading-relaxed">
-              시세와 예측을 확인할 작물을 선택하면<br />품종/품목을 함께 설정할 수 있습니다.
+              {isInterest
+                ? "자주 확인할 품목을 선택하면 시세 흐름을 빠르게 볼 수 있어요."
+                : <>시세와 예측을 확인할 작물을 선택하면<br />품종/품목을 함께 설정할 수 있습니다.</>}
             </p>
           </div>
 
