@@ -9,10 +9,15 @@ export type SeasonBasis = "이번" | "다음";
 export type UserType = "farmer" | "wholesaler" | "retailer" | "enterprise" | null;
 
 export type CropRegType = "growing" | "interest";
+export type PriceDisplayMode = "actual" | "1kg" | "10kg" | "20kg" | "100kg" | "default";
 export interface CropSetting {
   regType: CropRegType;
   region: string;
   marketId: string;
+  selectedVarieties?: string[];
+  priceDisplayMode?: PriceDisplayMode;
+  alertEnabled?: boolean;
+  alertRules?: string[];
 }
 
 export interface UserProfile {

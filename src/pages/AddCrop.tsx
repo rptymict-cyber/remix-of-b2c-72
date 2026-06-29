@@ -1,8 +1,8 @@
 import { useMemo, useRef, useState } from "react";
-import { ChevronLeft, Search, Check, MapPin, Store, Pencil } from "lucide-react";
+import { ChevronLeft, Search, Check, MapPin, Store, Pencil, Scale, Bell } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { useApp } from "@/store/appStore";
+import { useApp, type PriceDisplayMode } from "@/store/appStore";
 import { MARKETS, findMarket } from "@/data/catalog";
 import {
   ALL_CROPS,
@@ -15,6 +15,7 @@ import {
 } from "@/data/cropCatalog";
 import MobileStatusBar from "@/components/MobileStatusBar";
 import { Drawer, DrawerContent } from "@/components/ui/drawer";
+import { Switch } from "@/components/ui/switch";
 
 type RegType = "growing" | "interest";
 const ALL_LABEL = "전체 품종";
@@ -77,9 +78,40 @@ const DragScroller = ({
   );
 };
 
+// 가격 환산 예시(고정 샘플): 32,000원 / 40kg
+const SAMPLE_PRICE = 32000;
+const SAMPLE_KG = 40;
+const PRICE_MODES: { id: PriceDisplayMode; label: string; targetKg: number | null }[] = [
+  { id: "actual", label: "실거래 단위", targetKg: null },
+  { id: "1kg", label: "1kg 기준", targetKg: 1 },
+  { id: "10kg", label: "10kg 기준", targetKg: 10 },
+  { id: "20kg", label: "20kg 기준", targetKg: 20 },
+  { id: "100kg", label: "100kg 기준", targetKg: 100 },
+  { id: "default", label: "작물 기본 단위", targetKg: null },
+];
+const won = (n: number) => `${Math.round(n).toLocaleString()}원`;
+const convertLabel = (mode: PriceDisplayMode, cropDefaultKg = SAMPLE_KG) => {
+  if (mode === "actual") return `${won(SAMPLE_PRICE)} / ${SAMPLE_KG}kg`;
+  if (mode === "default") return `${won(SAMPLE_PRICE)} / ${cropDefaultKg}kg`;
+  const target = PRICE_MODES.find((m) => m.id === mode)?.targetKg ?? 1;
+  return `${won((SAMPLE_PRICE / SAMPLE_KG) * target)} / ${target === 1 ? "kg" : `${target}kg`}`;
+};
+const modeShort = (mode: PriceDisplayMode) => {
+  if (mode === "actual") return "실거래 단위";
+  if (mode === "default") return "작물 기본 단위";
+  const m = PRICE_MODES.find((m) => m.id === mode);
+  return `${m?.targetKg ?? ""}kg 기준`;
+};
+
+const ALERT_RULES = [
+  "가격이 전일 대비 ±5% 이상 변동",
+  "거래량이 평소 대비 30% 이상 변동",
+  "목표 가격 도달 시",
+];
+
 const AddCrop = () => {
   const nav = useNavigate();
-  const { profile, marketId, setMarket, addMyCrop, setCrop } = useApp();
+  const { profile, marketId, setMarket, addMyCrop, setCrop, setCropSetting } = useApp();
 
   const [step, setStep] = useState<1 | 2>(1);
   const [q, setQ] = useState("");
@@ -90,6 +122,10 @@ const AddCrop = () => {
   const [regType, setRegType] = useState<RegType>("growing");
   const [marketSel, setMarketSel] = useState<string>(marketId || "gwangju");
   const [marketOpen, setMarketOpen] = useState(false);
+  const [priceMode, setPriceMode] = useState<PriceDisplayMode>("20kg");
+  const [priceModeOpen, setPriceModeOpen] = useState(false);
+  const [alertEnabled, setAlertEnabled] = useState(true);
+  const [alertRules, setAlertRules] = useState<string[]>([ALERT_RULES[0]]);
 
   const crop = selectedCropId ? findCropById(selectedCropId) : null;
   const market = findMarket(marketSel);
@@ -122,6 +158,12 @@ const AddCrop = () => {
     });
   };
 
+  const toggleAlertRule = (r: string) => {
+    setAlertRules((prev) =>
+      prev.includes(r) ? prev.filter((x) => x !== r) : [...prev, r]
+    );
+  };
+
   const varietyLabel = (() => {
     if (varieties.length === 0 || varieties[0] === ALL_LABEL) return ALL_LABEL;
     if (varieties.length === 1) return varieties[0];
@@ -136,11 +178,29 @@ const AddCrop = () => {
 
   const submit = () => {
     if (!crop) return;
+    const already = profile.myCrops.includes(crop.id);
+    if (!already && profile.myCrops.length >= 3) {
+      toast.error("내 작물은 최대 3개까지 등록할 수 있어요.");
+      return;
+    }
     addMyCrop(crop.id);
     const firstVar = varieties[0] === ALL_LABEL ? (crop.varieties?.[0] ?? ALL_LABEL) : varieties[0];
     setCrop(crop.id, firstVar);
     setMarket(marketSel);
-    toast.success(`${crop.name}이(가) 내 작물에 추가됐어요`);
+    setCropSetting(crop.id, {
+      regType,
+      region: profile.region,
+      marketId: marketSel,
+      selectedVarieties: varieties,
+      priceDisplayMode: priceMode,
+      alertEnabled,
+      alertRules: alertEnabled ? alertRules : [],
+    });
+    if (already) {
+      toast("이미 등록된 작물이에요. 선택 작물로 이동했어요.");
+    } else {
+      toast.success(`${crop.name}이(가) 내 작물에 추가됐어요`);
+    }
     nav("/crop");
   };
 
@@ -167,7 +227,7 @@ const AddCrop = () => {
             />
           </div>
           <span className="text-[11px] font-semibold text-muted-foreground">
-            {step}/2 {step === 1 ? "작물 선택" : "등록 정보 설정"}
+            {step}/2 {step === 1 ? "작물 선택" : "조회 기준 설정"}
           </span>
         </div>
       </header>
@@ -345,6 +405,81 @@ const AddCrop = () => {
               선택한 시장은 작물별 기본 시세 기준으로 사용됩니다.
             </p>
           </Section>
+
+          <Section
+            title="가격 표시 기준"
+            desc="작물마다 거래 단위가 달라서, 같은 기준으로 환산해 비교할 수 있어요."
+          >
+            <div className="bg-card border border-border rounded-2xl px-4 py-3.5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Scale className="w-4 h-4 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-foreground">{modeShort(priceMode)}</p>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">
+                      실거래가를 {modeShort(priceMode)}으로 환산해 보여드려요.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setPriceModeOpen(true)}
+                  className="text-xs font-semibold text-primary"
+                >
+                  기준 변경
+                </button>
+              </div>
+              <div className="mt-3 px-3 py-2 rounded-xl border border-dashed border-primary/30 bg-primary/5">
+                <p className="text-[11px] text-foreground">
+                  <span className="text-muted-foreground">예시 </span>
+                  {won(SAMPLE_PRICE)} / {SAMPLE_KG}kg → <span className="font-bold text-primary">{convertLabel(priceMode)}</span>
+                </p>
+              </div>
+            </div>
+          </Section>
+
+          <Section title="가격 알림 (선택)" desc="가격이 크게 변하면 알려드려요.">
+            <div className="bg-card border border-border rounded-2xl px-4 py-3.5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Bell className="w-4 h-4 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-foreground">가격 변동 알림</p>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">
+                      가격이 크게 변하면 알려드려요.
+                    </p>
+                  </div>
+                </div>
+                <Switch checked={alertEnabled} onCheckedChange={setAlertEnabled} />
+              </div>
+              {alertEnabled && (
+                <div className="mt-3 pt-3 border-t border-border space-y-2">
+                  {ALERT_RULES.map((r) => {
+                    const sel = alertRules.includes(r);
+                    return (
+                      <button
+                        key={r}
+                        onClick={() => toggleAlertRule(r)}
+                        className="w-full flex items-center justify-between"
+                      >
+                        <span className="text-[13px] text-foreground text-left">{r}</span>
+                        <span
+                          className={`w-5 h-5 rounded-md border-2 flex items-center justify-center ${
+                            sel ? "border-primary bg-primary" : "border-border bg-card"
+                          }`}
+                        >
+                          {sel && <Check className="w-3 h-3 text-white" strokeWidth={3} />}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </Section>
         </main>
       )}
 
@@ -435,6 +570,42 @@ const AddCrop = () => {
               );
             })}
           </div>
+        </DrawerContent>
+      </Drawer>
+
+      {/* 가격 표시 기준 시트 */}
+      <Drawer open={priceModeOpen} onOpenChange={setPriceModeOpen}>
+        <DrawerContent className="px-4 pb-6">
+          <h3 className="text-base font-bold text-foreground text-center mb-1 pt-2">가격 표시 기준</h3>
+          <p className="text-[12px] text-muted-foreground text-center mb-3">
+            서로 다른 거래 단위를 같은 기준으로 환산해 비교할 수 있어요.
+          </p>
+          <div className="space-y-1.5 max-h-[55vh] overflow-y-auto">
+            {PRICE_MODES.map((m) => {
+              const sel = priceMode === m.id;
+              return (
+                <button
+                  key={m.id}
+                  onClick={() => {
+                    setPriceMode(m.id);
+                    setPriceModeOpen(false);
+                  }}
+                  className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border ${
+                    sel ? "border-primary bg-primary/5" : "border-border bg-card"
+                  }`}
+                >
+                  <div className="text-left">
+                    <p className="text-sm font-semibold text-foreground">{m.label}</p>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">{convertLabel(m.id)}</p>
+                  </div>
+                  {sel && <Check className="w-4 h-4 text-primary" />}
+                </button>
+              );
+            })}
+          </div>
+          <p className="text-[11px] text-muted-foreground text-center mt-3">
+            모든 가격은 선택한 기준으로 자동 환산되어 표시됩니다.
+          </p>
         </DrawerContent>
       </Drawer>
     </div>
