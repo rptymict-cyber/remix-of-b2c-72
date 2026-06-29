@@ -129,6 +129,7 @@ const HomePage = () => {
 
   const userType: NonNullable<UserType> = (profile.userType as NonNullable<UserType>) ?? "farmer";
   const typeMeta = TYPE_META[userType];
+  const btnMeta = TYPE_BTN[userType];
 
   const crop = cropId ? findCrop(cropId) : findCrop("pepper");
   const market = findMarket(marketId);
