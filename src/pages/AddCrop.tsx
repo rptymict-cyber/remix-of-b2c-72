@@ -765,29 +765,41 @@ const AddCrop = () => {
 const CropGrid = ({
   items,
   selectedId,
+  myCrops,
   onPick,
 }: {
   items: CropItem[];
   selectedId: string;
+  myCrops: string[];
   onPick: (c: CropItem) => void;
 }) => (
   <div className="grid grid-cols-3 gap-x-3 gap-y-5">
     {items.map((c) => {
       const sel = selectedId === c.id;
+      const added = myCrops.includes(c.id);
       return (
         <button
           key={c.id}
           onClick={() => onPick(c)}
-          className="flex flex-col items-center gap-2"
+          className={`flex flex-col items-center gap-2 relative ${added ? "opacity-60" : ""}`}
         >
-          <div
-            className={`w-[72px] h-[72px] rounded-full flex items-center justify-center text-[32px] border-2 transition-all ${
-              sel
-                ? "border-primary bg-primary/10 shadow-[0_4px_14px_-4px_hsl(var(--primary)/0.4)]"
-                : "border-border bg-card"
-            }`}
-          >
-            {c.icon}
+          <div className="relative">
+            <div
+              className={`w-[72px] h-[72px] rounded-full flex items-center justify-center text-[32px] border-2 transition-all ${
+                sel
+                  ? "border-primary bg-primary/10 shadow-[0_4px_14px_-4px_hsl(var(--primary)/0.4)]"
+                  : added
+                    ? "border-primary/30 bg-card"
+                    : "border-border bg-card"
+              }`}
+            >
+              {c.icon}
+            </div>
+            {added && (
+              <span className="absolute -top-0.5 -right-0.5 bg-primary/10 text-primary text-[9px] font-bold rounded-full px-1.5 py-0.5">
+                추가됨
+              </span>
+            )}
           </div>
           <span
             className={`text-[12px] font-semibold text-center leading-tight ${
