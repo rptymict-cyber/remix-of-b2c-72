@@ -333,10 +333,9 @@ const HomePage = () => {
     mainPrice: 18400,
     mainUnit: "15kg",
     subPrice: "실거래가 36,800원 / 30kg",
-    graphTitle: "최근 7일 기준가 흐름",
-    graphBadge: "안정 후 상승",
-    graphBadgeCls: "bg-[#F1ECFB] text-[#7C3AED]",
+    priceChangeBadge: { text: "전주 대비 +4.8%", cls: "bg-[#F1ECFB] text-[#7C3AED]" },
     graphColor: "#8B5CF6",
+
     kpis: [
       { label: "전주", value: "+4.8%", cls: "price-up" },
       { label: "공급 안정도", value: "주의", cls: "text-[#C45000]" },
