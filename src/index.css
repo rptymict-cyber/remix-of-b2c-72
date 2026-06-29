@@ -158,23 +158,41 @@ html, body, #root {
     gap: 0.375rem;
   }
 
-  /* App-wide toast (sonner) */
+  /* App-wide toast (sonner) — constrained to mobile app frame */
+  [data-sonner-toaster] {
+    position: fixed !important;
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+    width: min(calc(100vw - 32px), 398px) !important;
+    max-width: calc(430px - 32px) !important;
+    z-index: 9999 !important;
+    box-sizing: border-box;
+  }
+  [data-sonner-toaster] [data-sonner-toast] {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box;
+  }
   .app-toast {
     display: flex;
     align-items: center;
     gap: 12px;
-    width: calc(100vw - 32px);
-    max-width: 398px;
-    min-height: 64px;
-    border-radius: 26px;
+    width: 100%;
+    max-width: 100%;
+    min-height: 56px;
+    border-radius: 22px;
     padding: 14px 18px;
-    background: hsl(215 14% 48% / 0.92);
+    background: hsl(215 14% 48% / 0.94);
     color: #fff;
     box-shadow: 0 8px 24px rgba(15, 23, 42, 0.18);
     border: none;
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     pointer-events: auto;
+    box-sizing: border-box;
+    word-break: keep-all;
+    overflow-wrap: break-word;
   }
   .app-toast-icon {
     display: flex;
@@ -189,13 +207,18 @@ html, body, #root {
     line-height: 1.45;
     text-align: left;
     flex: 1;
+    min-width: 0;
     word-break: keep-all;
+    overflow-wrap: break-word;
+    white-space: normal;
   }
   .app-toast-description {
     color: rgba(255, 255, 255, 0.85);
     font-size: 13px;
     line-height: 1.45;
     margin-top: 2px;
+    word-break: keep-all;
+    overflow-wrap: break-word;
   }
 
 
