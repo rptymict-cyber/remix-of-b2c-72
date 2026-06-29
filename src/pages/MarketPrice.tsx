@@ -158,6 +158,10 @@ const MarketPricePage = () => {
   const crop = findCrop(cropId);
   const market = findMarket(marketId);
   const basePrice = seedPrice(cropId, marketId, variety);
+  const varietyData = useMemo(
+    () => buildVarietyData(cropId, marketId, crop.varieties, crop.defaultUnitKg),
+    [cropId, marketId, crop.varieties, crop.defaultUnitKg],
+  );
 
   const [tab, setTab] = useState<Tab>("경매내역");
   const [period, setPeriod] = useState<PeriodValue>(() => buildPeriodValue("today"));
