@@ -412,9 +412,6 @@ const InterestsTab = ({
           <h2 className="text-[13.5px] font-bold text-foreground">
             관심 품목 <span className="ml-0.5">{interestCrops.length}</span>
           </h2>
-          {interestCrops.length > 0 && (
-            <button onClick={onEdit} className="text-[12.5px] font-semibold" style={{ color: PRIMARY }}>편집</button>
-          )}
         </div>
       )}
 
@@ -714,9 +711,6 @@ const MarketsTab = ({
           <h2 className="text-[13.5px] font-bold text-foreground">
             즐겨찾기 시장 <span className="ml-0.5">{favMarkets.length}</span>
           </h2>
-          {favMarkets.length > 0 && (
-            <button onClick={onEdit} className="text-[12.5px] font-semibold" style={{ color: PRIMARY }}>편집</button>
-          )}
         </div>
       )}
 
