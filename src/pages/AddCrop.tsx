@@ -572,6 +572,42 @@ const AddCrop = () => {
           </div>
         </DrawerContent>
       </Drawer>
+
+      {/* 가격 표시 기준 시트 */}
+      <Drawer open={priceModeOpen} onOpenChange={setPriceModeOpen}>
+        <DrawerContent className="px-4 pb-6">
+          <h3 className="text-base font-bold text-foreground text-center mb-1 pt-2">가격 표시 기준</h3>
+          <p className="text-[12px] text-muted-foreground text-center mb-3">
+            서로 다른 거래 단위를 같은 기준으로 환산해 비교할 수 있어요.
+          </p>
+          <div className="space-y-1.5 max-h-[55vh] overflow-y-auto">
+            {PRICE_MODES.map((m) => {
+              const sel = priceMode === m.id;
+              return (
+                <button
+                  key={m.id}
+                  onClick={() => {
+                    setPriceMode(m.id);
+                    setPriceModeOpen(false);
+                  }}
+                  className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border ${
+                    sel ? "border-primary bg-primary/5" : "border-border bg-card"
+                  }`}
+                >
+                  <div className="text-left">
+                    <p className="text-sm font-semibold text-foreground">{m.label}</p>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">{convertLabel(m.id)}</p>
+                  </div>
+                  {sel && <Check className="w-4 h-4 text-primary" />}
+                </button>
+              );
+            })}
+          </div>
+          <p className="text-[11px] text-muted-foreground text-center mt-3">
+            모든 가격은 선택한 기준으로 자동 환산되어 표시됩니다.
+          </p>
+        </DrawerContent>
+      </Drawer>
     </div>
   );
 };
