@@ -191,7 +191,8 @@ const HomePage = () => {
 
   const farmerConfig: HomeConfig = {
     searchPlaceholder: "품목, 품종, 시장 검색",
-    chipsTitle: "내 작물",
+    chipsTitle: "관심 작물",
+    chipsSubtitle: "재배 중인 작물의 시세와 출하 흐름을 확인하세요.",
     chips: myCropList.map((c) => ({ id: c.id, name: c.name, emoji: c.emoji })),
     addChipLabel: "작물 추가",
     heroSubtitle: `${crop.emoji} ${crop.name} · ${variety} · ${market.name}`,
