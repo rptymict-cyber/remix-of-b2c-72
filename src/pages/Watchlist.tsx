@@ -198,7 +198,7 @@ const MyCropsTab = ({
           message="아직 등록한 내 작물이 없어요."
           subMessage="내가 재배하거나 관리하는 작물을 등록하면 시세를 빠르게 확인할 수 있어요."
           buttonLabel="내 작물 추가"
-          onAction={() => navigate("/crop/add")}
+          onAction={() => navigate("/crop/add", { state: { returnTo: window.location.pathname + window.location.search } })}
         />
       ) : isEditing ? (
         /* ===== EDIT MODE ===== */
@@ -264,7 +264,7 @@ const MyCropsTab = ({
           })}
 
           <button
-            onClick={() => navigate("/crop/add")}
+            onClick={() => navigate("/crop/add", { state: { returnTo: window.location.pathname + window.location.search } })}
             className="w-full min-h-12 rounded-2xl border border-dashed text-[13px] font-bold flex items-center justify-center gap-1.5"
             style={{ borderColor: "hsl(150 55% 70%)", color: PRIMARY }}
           >
@@ -350,7 +350,7 @@ const MyCropsTab = ({
       {!isEditing && myCropList.length > 0 && (
         <>
           <button
-            onClick={() => navigate("/crop/add")}
+            onClick={() => navigate("/crop/add", { state: { returnTo: window.location.pathname + window.location.search } })}
             className="w-full min-h-12 rounded-2xl border border-dashed text-[13px] font-bold flex items-center justify-center gap-1.5"
             style={{ borderColor: "hsl(150 55% 70%)", color: PRIMARY }}
           >

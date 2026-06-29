@@ -537,7 +537,7 @@ const HomePage = () => {
                 );
               })}
               <button
-                onClick={() => navigate("/crop/add")}
+                onClick={() => navigate("/crop/add", { state: { returnTo: window.location.pathname + window.location.search } })}
                 className="flex-shrink-0 min-h-11 flex items-center gap-1 px-3.5 py-2 rounded-full border border-dashed border-primary/50 text-primary text-sm font-semibold"
               >
                 <Plus className="w-3.5 h-3.5" />
@@ -546,7 +546,7 @@ const HomePage = () => {
             </div>
           ) : (
             <button
-              onClick={() => navigate("/crop/add")}
+              onClick={() => navigate("/crop/add", { state: { returnTo: window.location.pathname + window.location.search } })}
               className="w-full min-h-12 flex items-center justify-center gap-1.5 rounded-2xl border-2 border-dashed border-primary/40 text-primary text-sm font-semibold"
             >
               <Plus className="w-4 h-4" /> {config.addChipLabel}

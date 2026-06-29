@@ -45,7 +45,7 @@ const Watchlist = () => {
         return;
       }
 
-      navigate("/crop/add");
+      navigate("/crop/add", { state: { returnTo: window.location.pathname + window.location.search } });
     } else if (tab === "interest") {
       navigate("/search");
     } else {
@@ -346,7 +346,7 @@ const Watchlist = () => {
                   msg="아직 등록한 내 작물이 없어요."
                   desc="내가 재배하거나 관리하는 작물을 등록하면 시세를 빠르게 확인할 수 있어요."
                   btn="내 작물 추가"
-                  onClick={() => navigate("/crop/add")}
+                  onClick={() => navigate("/crop/add", { state: { returnTo: window.location.pathname + window.location.search } })}
                 />
               ) : (
                 <div className="space-y-2">
