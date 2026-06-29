@@ -17,6 +17,7 @@ import AddCrop from "./pages/AddCrop.tsx";
 import FarmEdit from "./pages/FarmEdit.tsx";
 import CropSettings from "./pages/CropSettings.tsx";
 import SearchPage from "./pages/Search.tsx";
+import InterestCropDetail from "./pages/InterestCropDetail.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import { useApp } from "./store/appStore";
 
@@ -52,6 +53,7 @@ const App = () => (
           <Route path="/notification-settings" element={<Gate><NotificationSettings /></Gate>} />
           <Route path="/mypage" element={<Gate><MyPage /></Gate>} />
           <Route path="/search" element={<Gate><SearchPage /></Gate>} />
+          <Route path="/interest/:id" element={<Gate><InterestCropDetail /></Gate>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         </div>

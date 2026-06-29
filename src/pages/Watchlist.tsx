@@ -505,7 +505,7 @@ const InterestsTab = ({
               <div key={crop.id}>
                 {idx > 0 && <div className="h-px bg-border mx-4" />}
                 <button
-                  onClick={() => { setCrop(crop.id, vrty); setMarket(mktId); navigate("/market"); }}
+                  onClick={() => navigate(`/interest/${crop.id}`)}
                   className="w-full px-4 py-3.5 flex items-center gap-3 text-left active:bg-secondary/50 transition-colors min-h-[76px]"
                 >
                   <div className="shrink-0 w-11 h-11 rounded-full bg-[#F6F7F5] flex items-center justify-center text-xl">{crop.emoji}</div>
