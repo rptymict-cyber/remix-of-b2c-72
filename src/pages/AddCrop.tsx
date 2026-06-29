@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from "react";
 import { ChevronLeft, Search, Check, MapPin, Store, Pencil, Scale, Bell } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "sonner";
 import { useApp, MAX_MY_CROPS, type PriceDisplayMode } from "@/store/appStore";
 import { MARKETS, findMarket, resolveRepresentativeId, findCrop } from "@/data/catalog";
@@ -111,6 +111,9 @@ const ALERT_RULES = [
 
 const AddCrop = () => {
   const nav = useNavigate();
+  const location = useLocation();
+  const rawReturnTo = (location.state as { returnTo?: string } | null)?.returnTo;
+  const returnTo = rawReturnTo && !rawReturnTo.startsWith("/crop/add") ? rawReturnTo : "/crop";
   const { profile, marketId, setMarket, addMyCrop, setCrop, setCropSetting } = useApp();
 
   const [step, setStep] = useState<1 | 2>(1);
@@ -206,7 +209,7 @@ const AddCrop = () => {
     } else {
       toast.success(`${displayName}이(가) 내 작물에 추가됐어요`);
     }
-    nav("/");
+    nav(returnTo, { replace: true });
   };
 
 
@@ -216,7 +219,7 @@ const AddCrop = () => {
         <MobileStatusBar />
         <div className="relative flex items-center justify-center h-14 px-4">
           <button
-            onClick={() => (step === 2 ? setStep(1) : nav(-1))}
+            onClick={() => (step === 2 ? setStep(1) : (rawReturnTo ? nav(returnTo, { replace: true }) : nav(-1)))}
             className="absolute left-4 text-foreground"
             aria-label="뒤로"
           >

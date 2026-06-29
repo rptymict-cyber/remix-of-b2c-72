@@ -147,7 +147,7 @@ const CropSettings = () => {
               </div>
             </div>
             <button
-              onClick={() => nav("/crop/add")}
+              onClick={() => nav("/crop/add", { state: { returnTo: window.location.pathname + window.location.search } })}
               className="text-[12px] font-semibold text-[hsl(152_55%_42%)] inline-flex items-center gap-1 shrink-0"
             >
               <Pencil className="w-3 h-3" /> 변경

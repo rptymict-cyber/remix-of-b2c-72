@@ -97,7 +97,7 @@ const CropSheet = ({ open, onOpenChange }: Props) => {
                     <button
                       onClick={() => {
                         onOpenChange(false);
-                        navigate("/crop/add");
+                        navigate("/crop/add", { state: { returnTo: window.location.pathname + window.location.search } });
                       }}
                       className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-primary text-white text-sm font-bold"
                     >
