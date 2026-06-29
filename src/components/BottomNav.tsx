@@ -69,6 +69,7 @@ const BottomNav = () => {
     const p = location.pathname;
     if (path === "/") return p === "/";
     if (path === "/market") return p === "/market";
+    if (path === "/prediction") return p === "/prediction" || p.startsWith("/prediction");
     if (path === "/search") return p === "/search";
     if (path === "/watchlist") return p === "/watchlist" || p.startsWith("/crop");
     if (path === "/mypage") {
