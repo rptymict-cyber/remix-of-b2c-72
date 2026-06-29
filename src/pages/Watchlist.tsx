@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Bell, Bookmark, ChevronRight, Store, GripVertical, Info, Scale, Star, Trash2 } from "lucide-react";
+import { Plus, Bell, Bookmark, ChevronRight, Store, GripVertical, Info, Scale, Star, Trash2, Search, X } from "lucide-react";
 import AppHeader from "@/components/AppHeader";
 import BottomNav from "@/components/BottomNav";
 import PriceSparkline from "@/components/PriceSparkline";
@@ -579,10 +579,145 @@ const InterestsTab = ({
   );
 };
 
+// ====== Add Market Sheet ======
+const REGION_FILTER_CHIPS = ["전체", "서울/경기", "영남", "호남", "충청"] as const;
+type RegionFilter = (typeof REGION_FILTER_CHIPS)[number];
+
+const MARKET_STATUS_STYLE = (status: string) => {
+  if (status === "경매 진행중") return { background: "hsl(150 55% 94%)", color: "hsl(150 55% 38%)" };
+  if (status === "일부 완료") return { background: "hsl(40 80% 90%)", color: "hsl(40 80% 35%)" };
+  return { background: "hsl(var(--secondary))", color: "hsl(var(--muted-foreground))" };
+};
+
+const AddMarketSheet = ({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) => {
+  const { profile, toggleFavMarket } = useApp();
+  const { toast } = useToast();
+  const [search, setSearch] = useState("");
+  const [region, setRegion] = useState<RegionFilter>("전체");
+
+  const favIds = profile.favMarkets ?? [];
+  const q = search.trim().toLowerCase();
+  const filtered = MARKETS.filter((m) => {
+    if (region !== "전체" && m.regionGroup !== region) return false;
+    if (q && !(m.name.toLowerCase().includes(q) || m.region.toLowerCase().includes(q))) return false;
+    return true;
+  });
+
+  return (
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent side="bottom" className="rounded-t-3xl p-5 max-h-[85vh] overflow-y-auto">
+        <SheetHeader>
+          <SheetTitle className="text-[16px] font-extrabold text-left">시장 추가</SheetTitle>
+        </SheetHeader>
+
+        {/* Search */}
+        <div className="mt-4 mb-3 flex items-center gap-2 bg-secondary rounded-xl px-3 py-2.5">
+          <Search className="w-4 h-4 text-muted-foreground shrink-0" />
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="시장명 또는 지역 검색"
+            className="flex-1 bg-transparent border-0 outline-none text-sm placeholder:text-muted-foreground"
+          />
+          {search && (
+            <button onClick={() => setSearch("")} aria-label="검색어 지우기">
+              <X className="w-4 h-4 text-muted-foreground" />
+            </button>
+          )}
+        </div>
+
+        {/* Region chips */}
+        <div className="flex gap-1.5 mb-3 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
+          {REGION_FILTER_CHIPS.map((r) => {
+            const active = region === r;
+            return (
+              <button
+                key={r}
+                onClick={() => setRegion(r)}
+                className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold ${
+                  active ? "text-white" : "bg-secondary text-muted-foreground"
+                }`}
+                style={active ? { background: PRIMARY } : undefined}
+              >
+                {r}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Market list */}
+        {filtered.length === 0 ? (
+          <div className="py-10 text-center">
+            <div className="text-3xl mb-2">🔍</div>
+            <p className="text-sm font-semibold text-foreground">검색 결과가 없어요</p>
+            <p className="text-xs text-muted-foreground mt-1">다른 시장명이나 지역으로 검색해보세요</p>
+          </div>
+        ) : (
+          <div>
+            {filtered.map((market, i) => {
+              const isFav = favIds.includes(market.id);
+              const status = MARKET_STATUS[market.id] ?? "경매 진행중";
+              const statusStyle = MARKET_STATUS_STYLE(status);
+              return (
+                <div
+                  key={market.id}
+                  className={`flex items-center gap-3 px-1 py-3 min-h-16 ${
+                    i < filtered.length - 1 ? "border-b border-border" : ""
+                  }`}
+                >
+                  <div className="shrink-0 w-10 h-10 rounded-xl bg-secondary flex items-center justify-center text-xl">🏪</div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[14px] font-bold text-foreground truncate">{market.name}</p>
+                    <p className="text-[11px] text-muted-foreground truncate">{market.region}</p>
+                    <span
+                      className="inline-flex items-center mt-[3px] px-2 py-0.5 rounded-full text-[10px] font-semibold"
+                      style={statusStyle}
+                    >
+                      {status}
+                    </span>
+                  </div>
+                  {isFav ? (
+                    <button
+                      onClick={() => {
+                        toggleFavMarket(market.id);
+                        toast({ description: "즐겨찾기에서 제거했어요" });
+                      }}
+                      aria-label="즐겨찾기 해제"
+                      className="shrink-0 w-9 h-9 flex items-center justify-center"
+                      style={{ color: "hsl(42 95% 55%)" }}
+                    >
+                      <Star className="w-5 h-5" fill="currentColor" />
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        toggleFavMarket(market.id);
+                        toast({ description: `${market.name}을(를) 즐겨찾기에 추가했어요` });
+                      }}
+                      className="shrink-0 px-3 py-1.5 rounded-full text-[12px] font-semibold"
+                      style={{ background: LIGHT_GREEN_BG, color: PRIMARY }}
+                    >
+                      + 추가
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        <p className="text-[11px] text-muted-foreground text-center mt-3">
+          탭하면 즐겨찾기에 추가돼요. 언제든 해제할 수 있어요.
+        </p>
+      </SheetContent>
+    </Sheet>
+  );
+};
+
 // ====== Markets Tab ======
 const MarketsTab = ({
-  showBanner, isEditing, onEdit, onDone,
-}: { showBanner: boolean; isEditing: boolean; onEdit: () => void; onDone: () => void }) => {
+  showBanner, isEditing, onEdit, onDone, onOpenAdd,
+}: { showBanner: boolean; isEditing: boolean; onEdit: () => void; onDone: () => void; onOpenAdd: () => void }) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { profile, setProfile, marketId, setMarket, toggleFavMarket } = useApp();
@@ -621,11 +756,8 @@ const MarketsTab = ({
         <EmptyState
           message="즐겨찾기한 시장이 없어요."
           subMessage="자주 보는 도매시장을 저장해두면 시장별 시세를 빠르게 볼 수 있어요."
-          buttonLabel="아래 시장에서 추가"
-          onAction={() => {
-            const el = document.getElementById("market-add-list");
-            el?.scrollIntoView({ behavior: "smooth", block: "start" });
-          }}
+          buttonLabel="시장 추가하기"
+          onAction={onOpenAdd}
         />
       ) : isEditing ? (
         /* ===== EDIT MODE ===== */
@@ -690,14 +822,11 @@ const MarketsTab = ({
           })}
 
           <button
-            onClick={() => {
-              const el = document.getElementById("market-add-list");
-              el?.scrollIntoView({ behavior: "smooth", block: "start" });
-            }}
+            onClick={onOpenAdd}
             className="w-full min-h-12 rounded-2xl border border-dashed text-[13px] font-bold flex items-center justify-center gap-1.5"
             style={{ borderColor: "hsl(150 55% 70%)", color: PRIMARY }}
           >
-            <Plus className="w-4 h-4" /> 시장 추가
+            <Plus className="w-4 h-4" /> 시장 추가하기
           </button>
 
           <EditHint>대표 시장은 홈과 시세 화면의 기본 시장으로 사용됩니다.</EditHint>
@@ -818,44 +947,12 @@ const MarketsTab = ({
 
       {!isEditing && addableMarkets.length > 0 && (
         <button
-          onClick={() => {
-            const el = document.getElementById("market-add-list");
-            el?.scrollIntoView({ behavior: "smooth", block: "start" });
-          }}
+          onClick={onOpenAdd}
           className="w-full min-h-12 rounded-2xl border border-dashed text-[13px] font-bold flex items-center justify-center gap-1.5"
           style={{ borderColor: "hsl(150 55% 70%)", color: PRIMARY }}
         >
-          <Plus className="w-4 h-4" /> 시장 추가
+          <Plus className="w-4 h-4" /> 시장 추가하기
         </button>
-      )}
-
-
-      {!isEditing && addableMarkets.length > 0 && (
-        <div id="market-add-list" className="space-y-2 pt-1">
-          <h3 className="text-[13px] font-bold text-foreground px-1">시장 추가</h3>
-          <div className="bg-white border border-border rounded-2xl overflow-hidden">
-            {addableMarkets.map((m, i) => (
-              <div key={m.id}>
-                {i > 0 && <div className="h-px bg-border mx-4" />}
-                <div className="flex items-center px-4 py-3 min-h-12">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[13px] font-bold text-foreground truncate">{m.name}</p>
-                    <p className="text-[11px] text-muted-foreground truncate">{m.region}</p>
-                  </div>
-                  <button
-                    onClick={() => { toggleFavMarket(m.id); toast({ description: "즐겨찾기에 추가했어요" }); }}
-                    aria-label="즐겨찾기 추가"
-                    className="shrink-0 w-9 h-9 rounded-lg flex items-center justify-center text-muted-foreground"
-                  >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round">
-                      <polygon points="12 2.7 14.9 9 21.6 9.7 16.5 14.3 18 21 12 17.5 6 21 7.5 14.3 2.4 9.7 9.1 9" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
       )}
     </div>
   );
@@ -869,6 +966,7 @@ const Watchlist = () => {
   const [showMyCropsBanner, setShowMyCropsBanner] = useState(true);
   const [showInterestBanner, setShowInterestBanner] = useState(true);
   const [showMarketBanner, setShowMarketBanner] = useState(true);
+  const [marketAddOpen, setMarketAddOpen] = useState(false);
 
   const changeTab = (t: WatchTab) => {
     setIsEditing(false);
@@ -877,7 +975,21 @@ const Watchlist = () => {
 
   return (
     <div className="h-full bg-background">
-      <AppHeader title="관심" />
+      <AppHeader
+        title="관심"
+        rightAction={
+          activeTab === "markets" ? (
+            <button
+              onClick={() => setMarketAddOpen(true)}
+              aria-label="시장 추가"
+              className="w-9 h-9 rounded-lg flex items-center justify-center"
+              style={{ color: PRIMARY }}
+            >
+              <Plus className="w-5 h-5" />
+            </button>
+          ) : undefined
+        }
+      />
 
       <main className="h-full overflow-y-auto px-4 pt-[calc(var(--app-header-height)+0.75rem)] pb-28 safe-bottom space-y-3">
         <TabBar activeTab={activeTab} onTabChange={changeTab} />
@@ -905,11 +1017,13 @@ const Watchlist = () => {
               isEditing={isEditing}
               onEdit={() => setIsEditing(true)}
               onDone={() => setIsEditing(false)}
+              onOpenAdd={() => setMarketAddOpen(true)}
             />
           )}
         </div>
       </main>
 
+      <AddMarketSheet open={marketAddOpen} onOpenChange={setMarketAddOpen} />
       <BottomNav />
     </div>
   );
