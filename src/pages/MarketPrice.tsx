@@ -18,6 +18,7 @@ import VarietySheet from "@/components/sheets/VarietySheet";
 import FilterPill from "@/components/common/FilterPill";
 import SortSheet, { SortOption } from "@/components/sheets/SortSheet";
 import { Drawer, DrawerContent } from "@/components/ui/drawer";
+import PeriodSheet, { PeriodValue, buildPeriodValue } from "@/components/sheets/PeriodSheet";
 
 /* ---------- mock data ---------- */
 const auctionFlow = [
