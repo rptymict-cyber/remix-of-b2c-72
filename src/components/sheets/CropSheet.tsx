@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Drawer, DrawerContent } from "@/components/ui/drawer";
 import { CROPS } from "@/data/catalog";
 import { useApp } from "@/store/appStore";
-import { Check, Search } from "lucide-react";
+import { Check, Search, Plus } from "lucide-react";
 
 // 작물 추가 화면 대표 작물 순서 (전체 탭 노출 기준)
 const REPRESENTATIVE_ORDER = [
