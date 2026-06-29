@@ -34,8 +34,6 @@ const MARKET_MAIN_CROPS: Record<string, string[]> = {
   cheongju: ["apple", "pear", "radish"],
 };
 
-const RECOMMEND_IDS = ["radish", "green_onion", "sweet_potato", "lettuce", "garlic", "potato"];
-
 const MARKET_STATUS: Record<string, string> = {
   garak: "경매 진행중",
   daegu: "경매 진행중",
@@ -392,8 +390,6 @@ const InterestsTab = ({
   const { profile, setProfile, setCrop, setMarket, toggleInterestCrop } = useApp();
   const ids = profile.interestCrops ?? [];
   const interestCrops = ids.map((id) => findCrop(id));
-  const recommendCrops = RECOMMEND_IDS.filter((id) => !ids.includes(id)).map((id) => findCrop(id));
-
   const drag = useDragReorder(ids, (next) => setProfile({ interestCrops: next }));
 
   const removeInterest = (id: string, name: string) => {
@@ -548,30 +544,6 @@ const InterestsTab = ({
             <Plus className="w-4 h-4" /> 관심 품목 추가
           </button>
 
-          {recommendCrops.length > 0 && (
-            <div className="space-y-2 pt-1">
-              <div className="flex items-center justify-between px-1">
-                <h3 className="text-[13px] font-bold text-foreground">추천 관심 품목</h3>
-                <button onClick={() => navigate("/search")} className="text-[11.5px] font-semibold text-muted-foreground inline-flex items-center">
-                  더 보기 <ChevronRight className="w-3 h-3" />
-                </button>
-              </div>
-              <div className="flex flex-wrap gap-1.5">
-                {recommendCrops.slice(0, 6).map((crop) => (
-                  <button
-                    key={crop.id}
-                    onClick={() => { toggleInterestCrop(crop.id); toast({ description: `${crop.name}을(를) 관심 품목에 추가했어요` }); }}
-                    className="inline-flex items-center gap-1.5 min-h-9 px-3.5 py-2 rounded-full bg-white border border-border text-[12px] font-semibold text-foreground"
-                    style={{ boxShadow: "0 1px 2px rgba(17,24,39,0.04)" }}
-                  >
-                    <span className="text-base leading-none">{crop.emoji}</span>
-                    {crop.name}
-                    <Plus className="w-3 h-3 ml-0.5" style={{ color: PRIMARY }} />
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
         </>
       )}
     </div>
