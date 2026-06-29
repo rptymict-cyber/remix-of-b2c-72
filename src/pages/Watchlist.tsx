@@ -23,15 +23,32 @@ const PRIMARY = "hsl(150 55% 38%)";
 const LIGHT_GREEN_BG = "hsl(150 55% 94%)";
 const DANGER = "hsl(0 72% 50%)";
 
-const MARKET_MAIN_CROPS: Record<string, string[]> = {
-  garak: ["cabbage", "onion", "tomato"],
-  daegu: ["onion", "radish", "green_onion"],
-  busan: ["tomato", "strawberry", "cucumber"],
-  anyang: ["cabbage", "apple", "radish"],
-  gwangju: ["cabbage", "green_onion", "garlic"],
-  gangseo: ["cabbage", "onion", "radish"],
-  suwon: ["lettuce", "cabbage", "tomato"],
-  cheongju: ["apple", "pear", "radish"],
+// 시장별 오늘 거래량 상위 3개 작물을 시뮬레이션으로 계산한다.
+// 실제 API 연동 시: GET /markets/:id/top-crops?metric=volume&limit=3 응답으로 대체.
+// 각 항목: { cropId, todayVolumeTon, currentPrice(기준단위), changePctVsYesterday }
+interface MarketTopCrop {
+  cropId: string;
+  volumeTon: number;
+  price: number;
+  unitKg: number;
+  changePct: number;
+  isUp: boolean;
+}
+
+const getMarketTopCrops = (marketId: string, limit = 3): MarketTopCrop[] => {
+  // 모든 작물에 대해 (작물,시장) 시드로 오늘 거래량(t) 점수를 만든다.
+  const scored = CROPS.map((c) => {
+    const seed = [...(c.id + marketId)].reduce((a, ch) => a + ch.charCodeAt(0), 0);
+    const volumeTon = 8 + (seed % 142); // 8 ~ 149t
+    const variety = c.varieties[0] ?? "";
+    const price = seedPrice(c.id, marketId, variety);
+    const dSeed = (seed * 7) % 199;
+    const isUp = dSeed % 2 === 0;
+    const changePct = ((dSeed % 13) + 1) * 0.6 * (isUp ? 1 : -1); // ±0.6 ~ ±7.8%
+    return { cropId: c.id, volumeTon, price, unitKg: c.defaultUnitKg, changePct, isUp };
+  });
+  scored.sort((a, b) => b.volumeTon - a.volumeTon);
+  return scored.slice(0, limit);
 };
 
 const MARKET_STATUS: Record<string, string> = {
@@ -836,15 +853,10 @@ const MarketsTab = ({
         /* ===== VIEW MODE ===== */
         <div className="space-y-3">
           {favMarkets.map((market) => {
-            const mainCropIds = MARKET_MAIN_CROPS[market.id] ?? ["cabbage", "onion", "tomato"];
-            const mainCrops = mainCropIds.map((cid) => {
-              const c = findCrop(cid);
-              const p = seedPrice(cid, market.id, c.varieties[0]);
-              const seed = (cid.charCodeAt(0) + market.id.charCodeAt(0)) % 11;
-              const u = seed % 2 === 0;
-              const pct = ((seed % 7) + 1) * (u ? 1 : -1);
-              return { crop: c, price: p, pct, isUp: u };
-            });
+            const topCrops = getMarketTopCrops(market.id, 3).map((t) => ({
+              ...t,
+              crop: findCrop(t.cropId),
+            }));
             return (
               <div key={market.id} className="bg-white border border-border rounded-2xl p-3.5" style={{ boxShadow: "0 1px 2px rgba(17,24,39,0.04)" }}>
                 <div className="flex items-start gap-3">
@@ -878,22 +890,26 @@ const MarketsTab = ({
                     </svg>
                   </button>
                 </div>
-                <div className="h-px bg-border my-3" />
+                <div className="flex items-center justify-between mt-3 mb-2">
+                  <p className="text-[11.5px] font-bold text-foreground">오늘 거래량 TOP 3</p>
+                  <span className="text-[10px] text-muted-foreground">전일 대비</span>
+                </div>
                 <div className="grid grid-cols-3 gap-2">
-                  {mainCrops.map(({ crop, price, pct, isUp }) => {
-                    const unitKg = crop.defaultUnitKg;
+                  {topCrops.map(({ crop, price, unitKg, changePct, isUp, volumeTon }, i) => {
                     const perKg = Math.round(price / unitKg);
                     return (
-                      <div key={crop.id} className="text-left">
-                        <p className="text-[11px] text-muted-foreground flex items-center gap-0.5 truncate">
+                      <div key={crop.id} className="text-left rounded-xl bg-secondary/40 p-2">
+                        <p className="text-[10px] font-bold" style={{ color: PRIMARY }}>{i + 1}위 · {volumeTon}t</p>
+                        <p className="text-[11.5px] text-foreground flex items-center gap-0.5 truncate mt-0.5">
                           <span className="text-sm leading-none">{crop.emoji}</span>
-                          <span className="truncate">{crop.name}</span>
+                          <span className="truncate font-semibold">{crop.name}</span>
                         </p>
-                        <p className="text-[13px] font-extrabold text-foreground mt-1">
-                          {price.toLocaleString()}원<span className="text-[10px] font-medium text-muted-foreground">/{unitKg}kg</span>
+                        <p className="text-[13px] font-extrabold text-foreground mt-1 leading-tight">
+                          {price.toLocaleString()}원
+                          <span className="text-[10px] font-medium text-muted-foreground">/{unitKg}kg</span>
                         </p>
-                        <p className={`text-[10px] font-bold mt-0.5 ${isUp ? "price-up" : "price-down"}`}>
-                          {isUp ? "+" : ""}{pct.toFixed(1)}%
+                        <p className={`text-[10.5px] font-bold mt-0.5 ${isUp ? "price-up" : "price-down"}`}>
+                          {isUp ? "▲" : "▼"} {Math.abs(changePct).toFixed(1)}%
                         </p>
                         <p className="text-[9px] text-muted-foreground mt-0.5">
                           ≒ {perKg.toLocaleString()}원/kg
