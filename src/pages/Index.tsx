@@ -499,14 +499,17 @@ const HomePage = () => {
           {config.chips.length > 0 ? (
             <div className="flex gap-2 overflow-x-auto scrollbar-hide items-center -mx-4 px-4">
               {config.chips.map((c) => {
-                const sel = isFarmer && c.id === cropId;
+                const sel = c.id === cropId;
                 return (
                   <button
                     key={c.id}
                     onClick={() => {
-                      if (!isFarmer) return;
                       const cd = findCrop(c.id);
-                      sel ? setCropOpen(true) : setCrop(c.id, cd.varieties[0]);
+                      if (sel && isFarmer) {
+                        setCropOpen(true);
+                      } else {
+                        setCrop(c.id, cd.varieties[0]);
+                      }
                     }}
                     className={`flex-shrink-0 min-h-11 flex items-center gap-1.5 px-3.5 py-2 rounded-full text-sm font-semibold transition-all ${
                       sel ? "bg-[#1A3A1F] text-white shadow-[var(--shadow-sm)]" : "bg-card border border-border text-foreground"

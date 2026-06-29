@@ -58,7 +58,7 @@ const sizePresets = [
 const Onboarding = () => {
   const nav = useNavigate();
   const { toast } = useToast();
-  const { profile, setProfile, completeOnboarding } = useApp();
+  const { profile, setProfile, completeOnboarding, setCrop } = useApp();
   const [step, setStep] = useState<Step>("splash");
   const [splashOut, setSplashOut] = useState(false);
   const [intro, setIntro] = useState(0);
@@ -673,6 +673,11 @@ const Onboarding = () => {
       </div>
       <button
         onClick={() => {
+          const firstId = selectedCrops[0];
+          if (firstId) {
+            const c = CROPS.find((x) => x.id === firstId);
+            setCrop(firstId, c?.varieties?.[0]);
+          }
           completeOnboarding();
           nav("/", { replace: true });
         }}
