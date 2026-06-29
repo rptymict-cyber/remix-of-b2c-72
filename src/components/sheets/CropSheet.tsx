@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Drawer, DrawerContent } from "@/components/ui/drawer";
-import { CROPS } from "@/data/catalog";
+import { CROPS, findCrop } from "@/data/catalog";
 import { useApp } from "@/store/appStore";
 import { Check, Search, Plus } from "lucide-react";
 
@@ -31,7 +31,7 @@ const CropSheet = ({ open, onOpenChange }: Props) => {
   }, [open, cropId]);
 
   const list = useMemo(() => {
-    if (tab === "my") return CROPS.filter((c) => profile.myCrops.includes(c.id));
+    if (tab === "my") return profile.myCrops.map((id) => findCrop(id));
     if (q.trim()) return CROPS.filter((c) => c.name.includes(q.trim()));
     // 대표 작물 순서대로 정렬해서 노출
     const byName = new Map(CROPS.map((c) => [c.name, c]));
@@ -40,7 +40,7 @@ const CropSheet = ({ open, onOpenChange }: Props) => {
 
   const confirm = () => {
     if (!draftId) return;
-    const c = CROPS.find((x) => x.id === draftId)!;
+    const c = findCrop(draftId);
     setCrop(draftId, c.varieties[0]);
     onOpenChange(false);
   };
