@@ -39,13 +39,26 @@ interface PredictionPageProps {
 const PredictionPage = ({ defaultExpanded = false }: PredictionPageProps) => {
   const [expanded, setExpanded] = useState(defaultExpanded);
   const [selectedPeriod, setSelectedPeriod] = useState("10일");
-  const { cropId, variety, marketId, shipQtyKg } = useApp();
+  const { cropId, variety, marketId, shipQtyKg, setCrop, setVariety, setMarket } = useApp();
+  const [sp] = useSearchParams();
+  const initRef = useRef(false);
+  useEffect(() => {
+    if (initRef.current) return;
+    initRef.current = true;
+    const c = sp.get("crop"); const v = sp.get("variety"); const m = sp.get("market");
+    if (c) setCrop(c, v ?? undefined);
+    if (v) setVariety(v);
+    if (m) setMarket(m);
+  }, []);
+  const fromHome = sp.get("entrySource") === "home";
+  const pm = sp.get("priceMode");
   const crop = findCrop(cropId);
   const market = findMarket(marketId);
   const [cropOpen, setCropOpen] = useState(false);
   const [marketOpen, setMarketOpen] = useState(false);
   const [varietyOpen, setVarietyOpen] = useState(false);
   const [qtyOpen, setQtyOpen] = useState(false);
+  const pmLabel = pm === "perKg" ? "1kg" : pm === "per10kg" ? "10kg" : pm === "per20kg" ? "20kg" : pm === "per100kg" ? "100kg" : `${crop.defaultUnitKg}kg`;
 
   const unitWeight = crop.defaultUnitKg;
   const quantity = Math.max(1, Math.round(shipQtyKg / unitWeight));
