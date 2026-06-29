@@ -219,7 +219,7 @@ const AddCrop = () => {
         <MobileStatusBar />
         <div className="relative flex items-center justify-center h-14 px-4">
           <button
-            onClick={() => (step === 2 ? setStep(1) : nav(-1))}
+            onClick={() => (step === 2 ? setStep(1) : (rawReturnTo ? nav(returnTo, { replace: true }) : nav(-1)))}
             className="absolute left-4 text-foreground"
             aria-label="뒤로"
           >
