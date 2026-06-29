@@ -2,6 +2,10 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { resolveRepresentativeId } from "@/data/catalog";
 
+// 내 작물 등록 최대 개수 (앱 전역 정책)
+export const MAX_MY_CROPS = 30;
+
+
 
 export type Plan = "Free" | "Basic" | "Pro" | "Premium";
 export type Unit = "kg" | "box" | "ton";
