@@ -162,10 +162,9 @@ const HomePage = () => {
     mainPrice: displayPrice,
     mainUnit: unitLabel,
     subPrice: subInfoFarmer,
-    graphTitle: "최근 7일 시세 흐름",
-    graphBadge: "최근 하락 후 반등",
-    graphBadgeCls: "bg-[hsl(0_72%_50%/0.08)] price-up",
+    priceChangeBadge: { text: "전일 대비 +2.7%", cls: "bg-[hsl(0_72%_50%/0.10)] price-up" },
     graphColor: "hsl(0 72% 50%)",
+
     kpis: [
       { label: "전일", value: "+2.7%", cls: "price-up" },
       { label: "전주", value: "+8.1%", cls: "price-up" },
