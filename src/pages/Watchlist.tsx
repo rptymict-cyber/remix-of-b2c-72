@@ -966,6 +966,7 @@ const Watchlist = () => {
   const [showMyCropsBanner, setShowMyCropsBanner] = useState(true);
   const [showInterestBanner, setShowInterestBanner] = useState(true);
   const [showMarketBanner, setShowMarketBanner] = useState(true);
+  const [marketAddOpen, setMarketAddOpen] = useState(false);
 
   const changeTab = (t: WatchTab) => {
     setIsEditing(false);
@@ -974,7 +975,21 @@ const Watchlist = () => {
 
   return (
     <div className="h-full bg-background">
-      <AppHeader title="관심" />
+      <AppHeader
+        title="관심"
+        rightAction={
+          activeTab === "markets" ? (
+            <button
+              onClick={() => setMarketAddOpen(true)}
+              aria-label="시장 추가"
+              className="w-9 h-9 rounded-lg flex items-center justify-center"
+              style={{ color: PRIMARY }}
+            >
+              <Plus className="w-5 h-5" />
+            </button>
+          ) : undefined
+        }
+      />
 
       <main className="h-full overflow-y-auto px-4 pt-[calc(var(--app-header-height)+0.75rem)] pb-28 safe-bottom space-y-3">
         <TabBar activeTab={activeTab} onTabChange={changeTab} />
@@ -1002,11 +1017,13 @@ const Watchlist = () => {
               isEditing={isEditing}
               onEdit={() => setIsEditing(true)}
               onDone={() => setIsEditing(false)}
+              onOpenAdd={() => setMarketAddOpen(true)}
             />
           )}
         </div>
       </main>
 
+      <AddMarketSheet open={marketAddOpen} onOpenChange={setMarketAddOpen} />
       <BottomNav />
     </div>
   );
