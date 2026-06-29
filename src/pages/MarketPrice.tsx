@@ -2,8 +2,9 @@ import { useMemo, useState, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   ChevronDown, ArrowUpRight, ArrowDownRight, Minus, Clock, Calendar,
-  Layers, Building2, ChevronRight, X, MapPin, Sparkles, ArrowUpDown,
+  Layers, Building2, ChevronRight, X, MapPin, Sparkles,
 } from "lucide-react";
+import DropdownButton from "@/components/common/DropdownButton";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   ReferenceLine, ReferenceDot,
@@ -418,9 +419,12 @@ const MarketPricePage = () => {
             </div>
 
             {/* 경매내역 표 */}
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-bold text-foreground">경매내역 <span className="text-[11px] font-medium text-muted-foreground">({sortLabel[sortKey]})</span></span>
-              <span className="text-[11px] text-muted-foreground">총 245건 · 평균가 38,000원</span>
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0">
+                <p className="text-sm font-bold text-foreground">경매내역</p>
+                <p className="text-[11px] text-muted-foreground mt-0.5">총 245건 · 평균가 38,000원</p>
+              </div>
+              <DropdownButton label={sortLabel[sortKey]} onClick={() => setSortOpen(true)} />
             </div>
             <div className="bg-card rounded-xl border border-border overflow-hidden">
               <div className="grid grid-cols-[1.2fr_2.4fr_1.4fr_1.6fr] px-3 py-2 text-[10px] text-muted-foreground border-b border-border">
@@ -487,13 +491,7 @@ const MarketPricePage = () => {
               <div className="bg-card rounded-2xl border border-border p-4">
                 <div className="flex items-center justify-between gap-2 mb-1">
                   <span className="text-[13px] font-bold text-foreground">{marketCardTitle[marketMetric]}</span>
-                  <button
-                    onClick={() => setMarketMetricOpen(true)}
-                    className="h-9 px-3 inline-flex items-center gap-1 rounded-full border border-border bg-card text-[12px] font-bold text-primary active:scale-[0.98] shrink-0"
-                  >
-                    {marketMetricLabel[marketMetric]}
-                    <ChevronDown className="w-3.5 h-3.5" />
-                  </button>
+                  <DropdownButton label={marketMetricLabel[marketMetric]} onClick={() => setMarketMetricOpen(true)} />
                 </div>
                 <p className="text-[10px] text-muted-foreground mb-3">{marketCardDesc[marketMetric]}</p>
                 <div className="space-y-3">
@@ -559,13 +557,7 @@ const MarketPricePage = () => {
               <div className="bg-card rounded-2xl border border-border p-4">
                 <div className="flex items-center justify-between gap-2 mb-1">
                   <span className="text-[13px] font-bold text-foreground">{corpCardTitle[corpMetric]}</span>
-                  <button
-                    onClick={() => setCorpMetricOpen(true)}
-                    className="h-9 px-3 inline-flex items-center gap-1 rounded-full border border-border bg-card text-[12px] font-bold text-primary active:scale-[0.98] shrink-0"
-                  >
-                    {corpMetricLabel[corpMetric]}
-                    <ChevronDown className="w-3.5 h-3.5" />
-                  </button>
+                  <DropdownButton label={corpMetricLabel[corpMetric]} onClick={() => setCorpMetricOpen(true)} />
                 </div>
                 <p className="text-[10px] text-muted-foreground mb-3">{market.name} 기준</p>
                 <div className="space-y-3">
@@ -749,18 +741,6 @@ const MarketPricePage = () => {
           <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
         </button>
       </main>
-
-      {/* 정렬 floating button (경매내역에서만 표시) */}
-      {tab === "경매내역" && (
-        <button
-          onClick={() => setSortOpen(true)}
-          className="fixed z-[90] right-4 bg-primary text-primary-foreground rounded-full shadow-lg px-4 py-3 flex items-center gap-1.5 text-[12px] font-bold active:opacity-90"
-          style={{ bottom: "calc(72px + env(safe-area-inset-bottom, 0px) + 16px)" }}
-        >
-          <ArrowUpDown className="w-4 h-4" />
-          {sortLabel[sortKey]}
-        </button>
-      )}
 
       <BottomNav />
 
