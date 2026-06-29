@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useMemo, useState, useEffect, useRef } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   ChevronDown, ArrowUpRight, ArrowDownRight, Minus, Clock, Calendar,
   Layers, Building2, ChevronRight, X, MapPin, Sparkles, ArrowUpDown,
