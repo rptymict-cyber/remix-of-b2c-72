@@ -1,23 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search as SearchIcon, X, Clock, ChevronRight, Store, TrendingUp } from "lucide-react";
+import { Search as SearchIcon, X, Clock, ChevronRight, TrendingUp } from "lucide-react";
 import { CROPS, MARKETS, findCrop, findMarket, seedPrice } from "@/data/catalog";
 import { useApp } from "@/store/appStore";
 import BottomNav from "@/components/BottomNav";
 
 const RECENT_KEY = "recentSearches";
 
-const RECOMMEND_KEYWORDS = [
-  { label: "배추 시세", emoji: "🥬" },
-  { label: "양파 가격", emoji: "🧅" },
-  { label: "토마토 도매가", emoji: "🍅" },
-  { label: "사과 시장 비교", emoji: "🍎" },
-  { label: "대파 평균가", emoji: "🌱" },
-  { label: "고구마 거래량", emoji: "🍠" },
-];
-
-  const POPULAR_CROPS = ["cabbage", "onion", "tomato", "apple", "sweet_potato", "green_onion"];
-  const RANK_CROPS = ["cabbage", "onion", "tomato", "apple", "green_onion"];
+const POPULAR_CROPS = ["cabbage", "onion", "tomato", "apple", "sweet_potato", "green_onion"];
+const RANK_CROPS = ["cabbage", "onion", "tomato", "apple", "green_onion"];
 
 const SAMPLE_RECENT: string[] = [
   "배추 · 서울가락시장",
@@ -143,7 +134,7 @@ const SearchPage = () => {
   const showMarket = activeTab === "all" || activeTab === "market";
 
   return (
-    <div className="min-h-full bg-background flex flex-col">
+    <div className="h-[100dvh] bg-background flex flex-col">
       {/* Header */}
       <header
         className="sticky top-0 z-20 bg-white border-b border-border flex items-center gap-2"
@@ -198,7 +189,7 @@ const SearchPage = () => {
         </div>
       </header>
 
-      <main className="flex-1 px-4 py-4 space-y-7 safe-bottom pb-24">
+      <main className="flex-1 overflow-y-auto px-4 py-4 space-y-7 safe-bottom pb-24">
         {isInitial && (
           <>
             {/* 최근 검색 */}
@@ -247,32 +238,6 @@ const SearchPage = () => {
               )}
             </section>
 
-            {/* 추천 키워드 */}
-            <section>
-              <h2 className="text-[14px] font-bold text-foreground mb-3">추천 키워드</h2>
-              <div className="flex flex-wrap gap-1.5">
-                {RECOMMEND_KEYWORDS.map((k) => (
-                  <button
-                    key={k.label}
-                    onClick={() => setQuery(k.label.split(" ")[0])}
-                    className="flex items-center gap-1 bg-white"
-                    style={{
-                      border: "1px solid hsl(150 30% 88%)",
-                      borderRadius: 18,
-                      padding: "6px 12px",
-                      height: 32,
-                      fontSize: 12.5,
-                      fontWeight: 600,
-                      color: "hsl(150 55% 22%)",
-                    }}
-                  >
-                    <span style={{ fontSize: 13 }}>{k.emoji}</span>
-                    <span>{k.label}</span>
-                  </button>
-                ))}
-              </div>
-            </section>
-
             {/* 인기 검색 품목 */}
             <section>
               <h2 className="text-[14px] font-bold text-foreground mb-3">인기 검색 품목</h2>
@@ -305,42 +270,6 @@ const SearchPage = () => {
                         {c.emoji}
                       </div>
                       <p className="text-[13px] font-bold text-foreground">{c.name}</p>
-                    </button>
-                  );
-                })}
-              </div>
-            </section>
-
-            {/* 자주 찾는 시장 */}
-            <section>
-              <h2 className="text-[14px] font-bold text-foreground mb-3">자주 찾는 시장</h2>
-              <div className="flex gap-2 overflow-x-auto -mx-4 px-4 pb-1 scrollbar-hide">
-                {FAV_MARKETS.map((id) => {
-                  const m = findMarket(id);
-                  return (
-                    <button
-                      key={id}
-                      onClick={() => goMarket(id)}
-                      className="shrink-0 flex items-center gap-1.5 bg-white"
-                      style={{
-                        border: "1px solid hsl(150 25% 90%)",
-                        borderRadius: 22,
-                        padding: "8px 14px",
-                        height: 38,
-                      }}
-                    >
-                      <span
-                        className="flex items-center justify-center"
-                        style={{
-                          width: 22,
-                          height: 22,
-                          borderRadius: 11,
-                          background: "hsl(150 40% 94%)",
-                        }}
-                      >
-                        <Store style={{ width: 12, height: 12 }} className="text-primary" />
-                      </span>
-                      <span className="text-[13px] font-semibold text-foreground">{m.name}</span>
                     </button>
                   );
                 })}
