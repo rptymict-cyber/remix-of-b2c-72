@@ -589,7 +589,7 @@ const HomePage = () => {
 
             <div className="px-5 pt-3">
               <button
-                onClick={() => navigate(config.ctaSecondary.route)}
+                onClick={() => runCta(config.ctaSecondary, config)}
                 className={`w-full ${config.insightBg} rounded-[14px] px-3.5 py-3 flex items-center gap-3 text-left active:scale-[0.99] transition-transform`}
               >
                 <span className="w-9 h-9 rounded-full bg-white flex items-center justify-center shrink-0">
@@ -606,13 +606,13 @@ const HomePage = () => {
 
             <div className="px-5 py-3 grid grid-cols-2 gap-2">
               <button
-                onClick={() => navigate(config.ctaPrimary.route)}
+                onClick={() => runCta(config.ctaPrimary, config)}
                 className="min-h-12 rounded-2xl border-2 border-primary bg-white text-primary text-[13px] font-bold"
               >
                 {config.ctaPrimary.label}
               </button>
               <button
-                onClick={() => navigate(config.ctaSecondary.route)}
+                onClick={() => runCta(config.ctaSecondary, config)}
                 className="min-h-12 rounded-2xl bg-[#1A3A1F] text-white text-[13px] font-bold"
               >
                 {config.ctaSecondary.label}
@@ -629,7 +629,7 @@ const HomePage = () => {
               <p className="text-[11px] text-muted-foreground mt-0.5">{config.movementDesc}</p>
             </div>
             <button
-              onClick={() => navigate(config.ctaPrimary.route)}
+              onClick={() => runCta(config.ctaPrimary, config)}
               className="text-[11px] font-semibold text-primary flex items-center gap-0.5 shrink-0"
             >
               전체 보기 <ChevronRight className="w-3 h-3" />
@@ -643,7 +643,7 @@ const HomePage = () => {
               return (
                 <button
                   key={`${r.name}-${idx}`}
-                  onClick={() => navigate(config.ctaPrimary.route)}
+                  onClick={() => runCta(config.ctaPrimary, config)}
                   className="w-full bg-white rounded-[14px] border border-[#EFEFEF] shadow-[0_1px_2px_rgba(0,0,0,0.03)] px-3 py-2.5 flex items-center gap-3 text-left active:scale-[0.99] transition-transform min-h-[76px]"
                 >
                   <div className="flex items-center gap-2.5 min-w-0 w-[44%]">
