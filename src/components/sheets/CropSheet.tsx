@@ -16,6 +16,7 @@ interface Props {
   onOpenChange: (o: boolean) => void;
 }
 const CropSheet = ({ open, onOpenChange }: Props) => {
+  const navigate = useNavigate();
   const { cropId, setCrop, profile } = useApp();
   const [tab, setTab] = useState<"my" | "all">("my");
   const [q, setQ] = useState("");
