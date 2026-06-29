@@ -13,6 +13,7 @@ import {
   CROPS,
   MARKETS,
 } from "@/data/catalog";
+import { CATEGORIES, REPRESENTATIVE_CROPS, searchCrops, filterByCategory, type CropCategory } from "@/data/cropCatalog";
 import { useToast } from "@/hooks/use-toast";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 
