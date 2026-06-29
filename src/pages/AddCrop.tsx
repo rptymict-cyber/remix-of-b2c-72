@@ -280,6 +280,8 @@ const AddCrop = () => {
       priceDisplayMode: priceMode,
       alertEnabled,
       alertRules: alertEnabled ? alertRules : [],
+      unitKg: selectedUnitKg ?? cropDefaultUnitKg,
+      unitLabel: selectedUnitLabel || `${cropDefaultUnitKg}kg`,
     });
     if (already) {
       toast("이미 등록된 작물이에요. 선택 작물로 이동했어요.");
