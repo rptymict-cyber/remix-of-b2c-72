@@ -579,10 +579,145 @@ const InterestsTab = ({
   );
 };
 
+// ====== Add Market Sheet ======
+const REGION_FILTER_CHIPS = ["전체", "서울/경기", "영남", "호남", "충청"] as const;
+type RegionFilter = (typeof REGION_FILTER_CHIPS)[number];
+
+const MARKET_STATUS_STYLE = (status: string) => {
+  if (status === "경매 진행중") return { background: "hsl(150 55% 94%)", color: "hsl(150 55% 38%)" };
+  if (status === "일부 완료") return { background: "hsl(40 80% 90%)", color: "hsl(40 80% 35%)" };
+  return { background: "hsl(var(--secondary))", color: "hsl(var(--muted-foreground))" };
+};
+
+const AddMarketSheet = ({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) => {
+  const { profile, toggleFavMarket } = useApp();
+  const { toast } = useToast();
+  const [search, setSearch] = useState("");
+  const [region, setRegion] = useState<RegionFilter>("전체");
+
+  const favIds = profile.favMarkets ?? [];
+  const q = search.trim().toLowerCase();
+  const filtered = MARKETS.filter((m) => {
+    if (region !== "전체" && m.regionGroup !== region) return false;
+    if (q && !(m.name.toLowerCase().includes(q) || m.region.toLowerCase().includes(q))) return false;
+    return true;
+  });
+
+  return (
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent side="bottom" className="rounded-t-3xl p-5 max-h-[85vh] overflow-y-auto">
+        <SheetHeader>
+          <SheetTitle className="text-[16px] font-extrabold text-left">시장 추가</SheetTitle>
+        </SheetHeader>
+
+        {/* Search */}
+        <div className="mt-4 mb-3 flex items-center gap-2 bg-secondary rounded-xl px-3 py-2.5">
+          <Search className="w-4 h-4 text-muted-foreground shrink-0" />
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="시장명 또는 지역 검색"
+            className="flex-1 bg-transparent border-0 outline-none text-sm placeholder:text-muted-foreground"
+          />
+          {search && (
+            <button onClick={() => setSearch("")} aria-label="검색어 지우기">
+              <X className="w-4 h-4 text-muted-foreground" />
+            </button>
+          )}
+        </div>
+
+        {/* Region chips */}
+        <div className="flex gap-1.5 mb-3 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
+          {REGION_FILTER_CHIPS.map((r) => {
+            const active = region === r;
+            return (
+              <button
+                key={r}
+                onClick={() => setRegion(r)}
+                className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold ${
+                  active ? "text-white" : "bg-secondary text-muted-foreground"
+                }`}
+                style={active ? { background: PRIMARY } : undefined}
+              >
+                {r}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Market list */}
+        {filtered.length === 0 ? (
+          <div className="py-10 text-center">
+            <div className="text-3xl mb-2">🔍</div>
+            <p className="text-sm font-semibold text-foreground">검색 결과가 없어요</p>
+            <p className="text-xs text-muted-foreground mt-1">다른 시장명이나 지역으로 검색해보세요</p>
+          </div>
+        ) : (
+          <div>
+            {filtered.map((market, i) => {
+              const isFav = favIds.includes(market.id);
+              const status = MARKET_STATUS[market.id] ?? "경매 진행중";
+              const statusStyle = MARKET_STATUS_STYLE(status);
+              return (
+                <div
+                  key={market.id}
+                  className={`flex items-center gap-3 px-1 py-3 min-h-16 ${
+                    i < filtered.length - 1 ? "border-b border-border" : ""
+                  }`}
+                >
+                  <div className="shrink-0 w-10 h-10 rounded-xl bg-secondary flex items-center justify-center text-xl">🏪</div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[14px] font-bold text-foreground truncate">{market.name}</p>
+                    <p className="text-[11px] text-muted-foreground truncate">{market.region}</p>
+                    <span
+                      className="inline-flex items-center mt-[3px] px-2 py-0.5 rounded-full text-[10px] font-semibold"
+                      style={statusStyle}
+                    >
+                      {status}
+                    </span>
+                  </div>
+                  {isFav ? (
+                    <button
+                      onClick={() => {
+                        toggleFavMarket(market.id);
+                        toast({ description: "즐겨찾기에서 제거했어요" });
+                      }}
+                      aria-label="즐겨찾기 해제"
+                      className="shrink-0 w-9 h-9 flex items-center justify-center"
+                      style={{ color: "hsl(42 95% 55%)" }}
+                    >
+                      <Star className="w-5 h-5" fill="currentColor" />
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        toggleFavMarket(market.id);
+                        toast({ description: `${market.name}을(를) 즐겨찾기에 추가했어요` });
+                      }}
+                      className="shrink-0 px-3 py-1.5 rounded-full text-[12px] font-semibold"
+                      style={{ background: LIGHT_GREEN_BG, color: PRIMARY }}
+                    >
+                      + 추가
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        <p className="text-[11px] text-muted-foreground text-center mt-3">
+          탭하면 즐겨찾기에 추가돼요. 언제든 해제할 수 있어요.
+        </p>
+      </SheetContent>
+    </Sheet>
+  );
+};
+
 // ====== Markets Tab ======
 const MarketsTab = ({
-  showBanner, isEditing, onEdit, onDone,
-}: { showBanner: boolean; isEditing: boolean; onEdit: () => void; onDone: () => void }) => {
+  showBanner, isEditing, onEdit, onDone, onOpenAdd,
+}: { showBanner: boolean; isEditing: boolean; onEdit: () => void; onDone: () => void; onOpenAdd: () => void }) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { profile, setProfile, marketId, setMarket, toggleFavMarket } = useApp();
