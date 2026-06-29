@@ -18,6 +18,7 @@ import VarietySheet from "@/components/sheets/VarietySheet";
 import FilterPill from "@/components/common/FilterPill";
 import SortSheet, { SortOption } from "@/components/sheets/SortSheet";
 import { Drawer, DrawerContent } from "@/components/ui/drawer";
+import PeriodSheet, { PeriodValue, buildPeriodValue } from "@/components/sheets/PeriodSheet";
 
 /* ---------- mock data ---------- */
 const auctionFlow = [
@@ -147,7 +148,7 @@ const MarketPricePage = () => {
   const basePrice = seedPrice(cropId, marketId, variety);
 
   const [tab, setTab] = useState<Tab>("경매내역");
-  const [date, setDate] = useState<typeof DATE_OPTIONS[number]>("오늘");
+  const [period, setPeriod] = useState<PeriodValue>(() => buildPeriodValue("today"));
   const [cropOpen, setCropOpen] = useState(false);
   const [marketOpen, setMarketOpen] = useState(false);
   const [varietyOpen, setVarietyOpen] = useState(false);
@@ -316,7 +317,7 @@ const MarketPricePage = () => {
           <FilterPill onClick={() => setCropOpen(true)} icon={<span className="text-base leading-none">{crop.emoji}</span>} label={crop.name} />
           <FilterPill onClick={() => setVarietyOpen(true)} icon={<Layers className="w-4 h-4" />} label={variety} />
           <FilterPill onClick={() => setMarketOpen(true)} icon={<Building2 className="w-4 h-4" />} label={market.name} />
-          <FilterPill onClick={() => setDateOpen(true)} icon={<Calendar className="w-4 h-4" />} label={date} />
+          <FilterPill onClick={() => setDateOpen(true)} icon={<Calendar className="w-4 h-4" />} label={period.label} />
         </div>
 
         {/* 요약 카드 + 미니 차트 */}
@@ -768,13 +769,11 @@ const MarketPricePage = () => {
       <MarketSheet open={marketOpen} onOpenChange={setMarketOpen} />
       <VarietySheet open={varietyOpen} onOpenChange={setVarietyOpen} />
 
-      <SortSheet<typeof DATE_OPTIONS[number]>
+      <PeriodSheet
         open={dateOpen}
         onOpenChange={setDateOpen}
-        title="기간 선택"
-        selected={date}
-        onSelect={setDate}
-        options={DATE_OPTIONS.map((d) => ({ key: d, label: d })) as SortOption<typeof DATE_OPTIONS[number]>[]}
+        selected={period.key}
+        onSelect={setPeriod}
       />
 
       <SortSheet<SortKey>
