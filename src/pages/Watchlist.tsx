@@ -1122,7 +1122,7 @@ const Watchlist = () => {
               isEditing={isEditing}
               onEdit={() => setIsEditing(true)}
               onDone={() => setIsEditing(false)}
-              onOpenAdd={() => setInterestAddOpen(true)}
+              onOpenAdd={() => navigate("/crop/add?mode=interest", { state: { returnTo: "/crop?tab=interest" } })}
             />
           )}
           {activeTab === "markets" && (
