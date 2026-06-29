@@ -486,7 +486,6 @@ const HomePage = () => {
           <div className="flex items-center min-w-0 gap-2">
             <span className={`w-2 h-2 rounded-full shrink-0 ${typeMeta.dot}`} />
             <span className={`text-[15px] font-bold whitespace-nowrap ${typeMeta.color}`}>{typeMeta.name}</span>
-            <span className="w-px h-4 bg-[#E5E7EB] mx-1 shrink-0" />
             <span className="text-[12px] font-normal text-[#6B7280] whitespace-nowrap overflow-hidden text-ellipsis">
               {typeMeta.desc}
             </span>
