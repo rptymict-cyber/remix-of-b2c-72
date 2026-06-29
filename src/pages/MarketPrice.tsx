@@ -742,18 +742,6 @@ const MarketPricePage = () => {
         </button>
       </main>
 
-      {/* 정렬 floating button (경매내역에서만 표시) */}
-      {tab === "경매내역" && (
-        <button
-          onClick={() => setSortOpen(true)}
-          className="fixed z-[90] right-4 bg-primary text-primary-foreground rounded-full shadow-lg px-4 py-3 flex items-center gap-1.5 text-[12px] font-bold active:opacity-90"
-          style={{ bottom: "calc(72px + env(safe-area-inset-bottom, 0px) + 16px)" }}
-        >
-          <ArrowUpDown className="w-4 h-4" />
-          {sortLabel[sortKey]}
-        </button>
-      )}
-
       <BottomNav />
 
       {/* 필터 시트 */}
