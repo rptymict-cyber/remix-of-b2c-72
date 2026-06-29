@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Drawer, DrawerContent } from "@/components/ui/drawer";
 import { CROPS } from "@/data/catalog";
 import { useApp } from "@/store/appStore";
-import { Check, Search } from "lucide-react";
+import { Check, Search, Plus } from "lucide-react";
 
 // 작물 추가 화면 대표 작물 순서 (전체 탭 노출 기준)
 const REPRESENTATIVE_ORDER = [
@@ -15,6 +16,7 @@ interface Props {
   onOpenChange: (o: boolean) => void;
 }
 const CropSheet = ({ open, onOpenChange }: Props) => {
+  const navigate = useNavigate();
   const { cropId, setCrop, profile } = useApp();
   const [tab, setTab] = useState<"my" | "all">("my");
   const [q, setQ] = useState("");
@@ -88,7 +90,25 @@ const CropSheet = ({ open, onOpenChange }: Props) => {
               );
             })}
             {list.length === 0 && (
-              <p className="col-span-3 text-center text-xs text-muted-foreground py-6">검색 결과가 없습니다</p>
+              <div className="col-span-3 flex flex-col items-center justify-center gap-4 py-10">
+                {tab === "my" ? (
+                  <>
+                    <p className="text-sm text-muted-foreground">등록된 내 작물이 없습니다</p>
+                    <button
+                      onClick={() => {
+                        onOpenChange(false);
+                        navigate("/crop/add");
+                      }}
+                      className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-primary text-white text-sm font-bold"
+                    >
+                      <Plus className="w-4 h-4" />
+                      작물 추가
+                    </button>
+                  </>
+                ) : (
+                  <p className="text-sm text-muted-foreground">검색 결과가 없습니다</p>
+                )}
+              </div>
             )}
           </div>
 
