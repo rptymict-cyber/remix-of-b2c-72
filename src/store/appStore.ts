@@ -81,6 +81,7 @@ interface AppState {
   removeMyCrop: (id: string) => void;
   toggleFavMarket: (id: string) => void;
   toggleInterestCrop: (id: string) => void;
+  addInterestCrop: (id: string) => void;
   ensureSelectedCrop: () => void;
   completeOnboarding: () => void;
 }
@@ -200,6 +201,12 @@ export const useApp = create<AppState>()(
           const cur = s.profile.interestCrops ?? [];
           const next = cur.includes(id) ? cur.filter((c) => c !== id) : [...cur, id];
           return { profile: { ...s.profile, interestCrops: next } };
+        }),
+      addInterestCrop: (id) =>
+        set((s) => {
+          const cur = s.profile.interestCrops ?? [];
+          if (cur.includes(id)) return {};
+          return { profile: { ...s.profile, interestCrops: [...cur, id] } };
         }),
 
       ensureSelectedCrop: () =>

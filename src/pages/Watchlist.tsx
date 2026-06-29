@@ -1,5 +1,5 @@
-import { useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useRef, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Plus, Bell, Bookmark, ChevronRight, Store, GripVertical, Info, Scale, Star, Trash2, Search, X } from "lucide-react";
 import AppHeader from "@/components/AppHeader";
 import BottomNav from "@/components/BottomNav";
@@ -1064,13 +1064,25 @@ const AddInterestSheet = ({ open, onOpenChange }: { open: boolean; onOpenChange:
 // ====== Page ======
 const Watchlist = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<WatchTab>("myCrops");
+  const [searchParams] = useSearchParams();
+  const tabParam = searchParams.get("tab");
+  const initialTab: WatchTab =
+    tabParam === "interest" ? "interests" :
+    tabParam === "mine" ? "myCrops" :
+    tabParam === "markets" ? "markets" : "myCrops";
+  const [activeTab, setActiveTab] = useState<WatchTab>(initialTab);
   const [isEditing, setIsEditing] = useState(false);
   const [showMyCropsBanner, setShowMyCropsBanner] = useState(true);
   const [showInterestBanner, setShowInterestBanner] = useState(true);
   const [showMarketBanner, setShowMarketBanner] = useState(true);
   const [marketAddOpen, setMarketAddOpen] = useState(false);
   const [interestAddOpen, setInterestAddOpen] = useState(false);
+
+  useEffect(() => {
+    if (tabParam === "interest") setActiveTab("interests");
+    else if (tabParam === "mine") setActiveTab("myCrops");
+    else if (tabParam === "markets") setActiveTab("markets");
+  }, [tabParam]);
 
   const changeTab = (t: WatchTab) => {
     setIsEditing(false);
@@ -1093,7 +1105,7 @@ const Watchlist = () => {
             </button>
           ) : activeTab === "interests" ? (
             <button
-              onClick={() => setInterestAddOpen(true)}
+              onClick={() => navigate("/crop/add?mode=interest", { state: { returnTo: "/crop?tab=interest" } })}
               aria-label="관심 품목 추가"
               className="w-9 h-9 rounded-lg flex items-center justify-center"
               style={{ color: PRIMARY }}
@@ -1122,7 +1134,7 @@ const Watchlist = () => {
               isEditing={isEditing}
               onEdit={() => setIsEditing(true)}
               onDone={() => setIsEditing(false)}
-              onOpenAdd={() => setInterestAddOpen(true)}
+              onOpenAdd={() => navigate("/crop/add?mode=interest", { state: { returnTo: "/crop?tab=interest" } })}
             />
           )}
           {activeTab === "markets" && (

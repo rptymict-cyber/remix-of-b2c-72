@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from "react";
 import { ChevronLeft, Search, Check, MapPin, Store, Pencil, Scale, Bell } from "lucide-react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import { useApp, MAX_MY_CROPS, type PriceDisplayMode } from "@/store/appStore";
 import { MARKETS, findMarket, resolveRepresentativeId, findCrop } from "@/data/catalog";
@@ -112,9 +112,12 @@ const ALERT_RULES = [
 const AddCrop = () => {
   const nav = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const isInterest = searchParams.get("mode") === "interest";
   const rawReturnTo = (location.state as { returnTo?: string } | null)?.returnTo;
-  const returnTo = rawReturnTo && !rawReturnTo.startsWith("/crop/add") ? rawReturnTo : "/crop";
-  const { profile, marketId, setMarket, addMyCrop, setCrop, setCropSetting } = useApp();
+  const defaultReturn = isInterest ? "/crop?tab=interest" : "/crop";
+  const returnTo = rawReturnTo && !rawReturnTo.startsWith("/crop/add") ? rawReturnTo : defaultReturn;
+  const { profile, marketId, setMarket, addMyCrop, addInterestCrop, setCrop, setCropSetting } = useApp();
 
   const [step, setStep] = useState<1 | 2>(1);
   const [q, setQ] = useState("");
@@ -122,7 +125,7 @@ const AddCrop = () => {
   const [selectedCropId, setSelectedCropId] = useState<string>("");
   const [varieties, setVarieties] = useState<string[]>([ALL_LABEL]);
   const [varOpen, setVarOpen] = useState(false);
-  const [regType, setRegType] = useState<RegType>("growing");
+  const [regType, setRegType] = useState<RegType>(isInterest ? "interest" : "growing");
   const [marketSel, setMarketSel] = useState<string>(marketId || "gwangju");
   const [marketOpen, setMarketOpen] = useState(false);
   const [priceMode, setPriceMode] = useState<PriceDisplayMode>("20kg");
@@ -147,7 +150,8 @@ const AddCrop = () => {
       setVarieties([ALL_LABEL]);
     }
     setSelectedCropId(c.id);
-    setVarOpen(true);
+    // 관심 품목 모드는 품종 Drawer 자동 오픈 X (가벼운 즐겨찾기 등록)
+    if (!isInterest) setVarOpen(true);
   };
 
   const toggleVariety = (v: string) => {
@@ -181,10 +185,38 @@ const AddCrop = () => {
 
   const submit = () => {
     if (!crop) return;
-    // 확장 카탈로그 id를 앱 전체가 인식하는 안정적인 id로 변환 (예: 무 → "radish")
-    // 대표 매핑이 없는 작물은 확장 id를 그대로 사용 (findCrop이 합성해 표시).
     const stableId = resolveRepresentativeId(crop.id) ?? crop.id;
     const displayName = findCrop(stableId).name;
+
+    if (isInterest) {
+      // 이미 내 작물로 등록된 경우 안내
+      if (profile.myCrops.includes(stableId)) {
+        toast("이미 내 작물로 등록된 품목이에요. 내 작물에서 확인할 수 있어요.");
+        nav("/crop?tab=mine", { replace: true });
+        return;
+      }
+      // 이미 관심 품목으로 등록된 경우 중복 방지
+      if ((profile.interestCrops ?? []).includes(stableId)) {
+        toast("이미 관심 품목에 등록된 품목이에요.");
+        nav("/crop?tab=interest", { replace: true });
+        return;
+      }
+      addInterestCrop(stableId);
+      const finalVarieties = varieties.length === 0 ? [ALL_LABEL] : varieties;
+      setCropSetting(stableId, {
+        regType: "interest",
+        region: profile.region,
+        marketId: marketSel,
+        selectedVarieties: finalVarieties,
+        priceDisplayMode: priceMode,
+        alertEnabled,
+        alertRules: alertEnabled ? alertRules : [],
+      });
+      toast.success("관심 품목에 추가했어요.");
+      nav("/crop?tab=interest", { replace: true });
+      return;
+    }
+
     const already = profile.myCrops.includes(stableId);
     if (!already && profile.myCrops.length >= MAX_MY_CROPS) {
       toast.error(`내 작물은 최대 ${MAX_MY_CROPS}개까지 등록할 수 있어요.`);
@@ -225,7 +257,7 @@ const AddCrop = () => {
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
-          <h1 className="text-[15px] font-semibold text-foreground">작물 추가</h1>
+          <h1 className="text-[15px] font-semibold text-foreground">{isInterest ? "관심 품목 추가" : "작물 추가"}</h1>
         </div>
         {/* progress */}
         <div className="px-4 pb-3 flex items-center gap-2">
@@ -236,7 +268,7 @@ const AddCrop = () => {
             />
           </div>
           <span className="text-[11px] font-semibold text-muted-foreground">
-            {step}/2 {step === 1 ? "작물 선택" : "조회 기준 설정"}
+            {step}/2 {step === 1 ? "품목 선택" : "조회 기준 설정"}
           </span>
         </div>
       </header>
@@ -245,10 +277,16 @@ const AddCrop = () => {
         <main className="h-full overflow-y-auto px-4 pt-[calc(var(--app-header-progress-height)+1.25rem)] pb-32 space-y-4">
           <div>
             <h2 className="text-[18px] font-extrabold text-foreground leading-tight">
-              <span className="text-primary">작물</span>을 선택해 주세요
+              {isInterest ? (
+                <><span className="text-primary">관심 품목</span>을 선택해 주세요</>
+              ) : (
+                <><span className="text-primary">작물</span>을 선택해 주세요</>
+              )}
             </h2>
             <p className="text-[12px] text-muted-foreground mt-1.5 leading-relaxed">
-              시세와 예측을 확인할 작물을 선택하면<br />품종/품목을 함께 설정할 수 있습니다.
+              {isInterest
+                ? "자주 확인할 품목을 선택하면 시세 흐름을 빠르게 볼 수 있어요."
+                : <>시세와 예측을 확인할 작물을 선택하면<br />품종/품목을 함께 설정할 수 있습니다.</>}
             </p>
           </div>
 
@@ -289,7 +327,7 @@ const AddCrop = () => {
               <div className="flex items-center gap-2.5">
                 <span className="text-2xl">{crop.icon}</span>
                 <div>
-                  <p className="text-[11px] text-muted-foreground">선택한 작물</p>
+                  <p className="text-[11px] text-muted-foreground">{isInterest ? "선택한 품목" : "선택한 작물"}</p>
                   <p className="text-sm font-bold text-foreground truncate max-w-[200px]">
                     {crop.name} · {varietyLabel}
                   </p>
@@ -300,7 +338,7 @@ const AddCrop = () => {
                 className="text-xs font-semibold text-primary flex items-center gap-1"
               >
                 <Pencil className="w-3 h-3" />
-                변경
+                품종 변경
               </button>
             </div>
           )}
@@ -334,7 +372,7 @@ const AddCrop = () => {
               <div className="flex items-center gap-2.5">
                 <span className="text-2xl">{crop.icon}</span>
                 <div>
-                  <p className="text-[11px] text-muted-foreground">선택한 작물</p>
+                  <p className="text-[11px] text-muted-foreground">{isInterest ? "선택한 품목" : "선택한 작물"}</p>
                   <p className="text-sm font-bold text-foreground truncate max-w-[200px]">
                     {crop.name} · {varietyLabel}
                   </p>
@@ -350,44 +388,48 @@ const AddCrop = () => {
             </div>
           )}
 
-          <Section title="등록 유형" desc="이 작물을 어떤 목적으로 등록할지 선택해 주세요.">
-            <div className="space-y-2">
-              <TypeOption
-                active={regType === "growing"}
-                onClick={() => setRegType("growing")}
-                title="재배 중인 작물"
-                desc="시세 예측과 출하 추천에 활용됩니다."
-              />
-              <TypeOption
-                active={regType === "interest"}
-                onClick={() => setRegType("interest")}
-                title="관심 작물"
-                desc="시세 흐름을 확인하는 데 활용됩니다."
-              />
-            </div>
-          </Section>
-
-          <Section title="재배 지역" desc="이 지역의 기상 정보가 AI 예측에 반영됩니다.">
-            <div className="bg-card border border-border rounded-2xl px-4 py-3.5 flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
-                  <MapPin className="w-4 h-4 text-primary" />
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-foreground">{profile.region}</p>
-                  <p className="text-[11px] text-muted-foreground mt-0.5">
-                    향후 10일 기상이 이 지역 기준으로 반영됩니다.
-                  </p>
-                </div>
+          {!isInterest && (
+            <Section title="등록 유형" desc="이 작물을 어떤 목적으로 등록할지 선택해 주세요.">
+              <div className="space-y-2">
+                <TypeOption
+                  active={regType === "growing"}
+                  onClick={() => setRegType("growing")}
+                  title="재배 중인 작물"
+                  desc="시세 예측과 출하 추천에 활용됩니다."
+                />
+                <TypeOption
+                  active={regType === "interest"}
+                  onClick={() => setRegType("interest")}
+                  title="관심 작물"
+                  desc="시세 흐름을 확인하는 데 활용됩니다."
+                />
               </div>
-              <button
-                onClick={() => nav("/mypage")}
-                className="text-xs font-semibold text-primary"
-              >
-                지역 변경
-              </button>
-            </div>
-          </Section>
+            </Section>
+          )}
+
+          {!isInterest && (
+            <Section title="재배 지역" desc="이 지역의 기상 정보가 AI 예측에 반영됩니다.">
+              <div className="bg-card border border-border rounded-2xl px-4 py-3.5 flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
+                    <MapPin className="w-4 h-4 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-foreground">{profile.region}</p>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">
+                      향후 10일 기상이 이 지역 기준으로 반영됩니다.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => nav("/mypage")}
+                  className="text-xs font-semibold text-primary"
+                >
+                  지역 변경
+                </button>
+              </div>
+            </Section>
+          )}
 
           <Section
             title="기준 시장"
@@ -507,7 +549,7 @@ const AddCrop = () => {
             onClick={submit}
             className="w-full py-3.5 rounded-2xl bg-primary text-white text-[15px] font-bold"
           >
-            작물 추가하기
+            {isInterest ? "관심 품목 추가하기" : "작물 추가하기"}
           </button>
         )}
       </div>
