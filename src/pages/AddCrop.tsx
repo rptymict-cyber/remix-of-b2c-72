@@ -78,9 +78,40 @@ const DragScroller = ({
   );
 };
 
+// 가격 환산 예시(고정 샘플): 32,000원 / 40kg
+const SAMPLE_PRICE = 32000;
+const SAMPLE_KG = 40;
+const PRICE_MODES: { id: PriceDisplayMode; label: string; targetKg: number | null }[] = [
+  { id: "actual", label: "실거래 단위", targetKg: null },
+  { id: "1kg", label: "1kg 기준", targetKg: 1 },
+  { id: "10kg", label: "10kg 기준", targetKg: 10 },
+  { id: "20kg", label: "20kg 기준", targetKg: 20 },
+  { id: "100kg", label: "100kg 기준", targetKg: 100 },
+  { id: "default", label: "작물 기본 단위", targetKg: null },
+];
+const won = (n: number) => `${Math.round(n).toLocaleString()}원`;
+const convertLabel = (mode: PriceDisplayMode, cropDefaultKg = SAMPLE_KG) => {
+  if (mode === "actual") return `${won(SAMPLE_PRICE)} / ${SAMPLE_KG}kg`;
+  if (mode === "default") return `${won(SAMPLE_PRICE)} / ${cropDefaultKg}kg`;
+  const target = PRICE_MODES.find((m) => m.id === mode)?.targetKg ?? 1;
+  return `${won((SAMPLE_PRICE / SAMPLE_KG) * target)} / ${target === 1 ? "kg" : `${target}kg`}`;
+};
+const modeShort = (mode: PriceDisplayMode) => {
+  if (mode === "actual") return "실거래 단위";
+  if (mode === "default") return "작물 기본 단위";
+  const m = PRICE_MODES.find((m) => m.id === mode);
+  return `${m?.targetKg ?? ""}kg 기준`;
+};
+
+const ALERT_RULES = [
+  "가격이 전일 대비 ±5% 이상 변동",
+  "거래량이 평소 대비 30% 이상 변동",
+  "목표 가격 도달 시",
+];
+
 const AddCrop = () => {
   const nav = useNavigate();
-  const { profile, marketId, setMarket, addMyCrop, setCrop } = useApp();
+  const { profile, marketId, setMarket, addMyCrop, setCrop, setCropSetting } = useApp();
 
   const [step, setStep] = useState<1 | 2>(1);
   const [q, setQ] = useState("");
@@ -91,6 +122,10 @@ const AddCrop = () => {
   const [regType, setRegType] = useState<RegType>("growing");
   const [marketSel, setMarketSel] = useState<string>(marketId || "gwangju");
   const [marketOpen, setMarketOpen] = useState(false);
+  const [priceMode, setPriceMode] = useState<PriceDisplayMode>("20kg");
+  const [priceModeOpen, setPriceModeOpen] = useState(false);
+  const [alertEnabled, setAlertEnabled] = useState(true);
+  const [alertRules, setAlertRules] = useState<string[]>([ALERT_RULES[0]]);
 
   const crop = selectedCropId ? findCropById(selectedCropId) : null;
   const market = findMarket(marketSel);
@@ -123,6 +158,12 @@ const AddCrop = () => {
     });
   };
 
+  const toggleAlertRule = (r: string) => {
+    setAlertRules((prev) =>
+      prev.includes(r) ? prev.filter((x) => x !== r) : [...prev, r]
+    );
+  };
+
   const varietyLabel = (() => {
     if (varieties.length === 0 || varieties[0] === ALL_LABEL) return ALL_LABEL;
     if (varieties.length === 1) return varieties[0];
@@ -137,11 +178,29 @@ const AddCrop = () => {
 
   const submit = () => {
     if (!crop) return;
+    const already = profile.myCrops.includes(crop.id);
+    if (!already && profile.myCrops.length >= 3) {
+      toast.error("내 작물은 최대 3개까지 등록할 수 있어요.");
+      return;
+    }
     addMyCrop(crop.id);
     const firstVar = varieties[0] === ALL_LABEL ? (crop.varieties?.[0] ?? ALL_LABEL) : varieties[0];
     setCrop(crop.id, firstVar);
     setMarket(marketSel);
-    toast.success(`${crop.name}이(가) 내 작물에 추가됐어요`);
+    setCropSetting(crop.id, {
+      regType,
+      region: profile.region,
+      marketId: marketSel,
+      selectedVarieties: varieties,
+      priceDisplayMode: priceMode,
+      alertEnabled,
+      alertRules: alertEnabled ? alertRules : [],
+    });
+    if (already) {
+      toast("이미 등록된 작물이에요. 선택 작물로 이동했어요.");
+    } else {
+      toast.success(`${crop.name}이(가) 내 작물에 추가됐어요`);
+    }
     nav("/crop");
   };
 
