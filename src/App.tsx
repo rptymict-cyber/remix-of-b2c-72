@@ -33,7 +33,6 @@ const Gate = ({ children }: { children: JSX.Element }) => {
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
       <Sonner />
       <BrowserRouter>
         <div className="mx-auto max-w-[430px] h-[100dvh] bg-background shadow-sm relative overflow-hidden">
