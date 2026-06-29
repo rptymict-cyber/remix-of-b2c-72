@@ -966,6 +966,7 @@ const Watchlist = () => {
   const [showInterestBanner, setShowInterestBanner] = useState(true);
   const [showMarketBanner, setShowMarketBanner] = useState(true);
   const [marketAddOpen, setMarketAddOpen] = useState(false);
+  const [interestAddOpen, setInterestAddOpen] = useState(false);
 
   const changeTab = (t: WatchTab) => {
     setIsEditing(false);
