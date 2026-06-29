@@ -373,13 +373,14 @@ const HomePage = () => {
 
   const enterpriseConfig: HomeConfig = {
     searchPlaceholder: "조달 품목, 산지, 시장 검색",
-    chipsTitle: "조달 품목",
+    chipsTitle: "관심 작물",
+    chipsSubtitle: "주요 조달 작물의 수급 흐름을 확인하세요.",
     chips: [
       { id: "onion", name: "양파", emoji: "🧅" },
       { id: "cabbage", name: "배추", emoji: "🥬" },
       { id: "potato", name: "감자", emoji: "🥔" },
     ],
-    addChipLabel: "품목 추가",
+    addChipLabel: "작물 추가",
     heroSubtitle: "🧅 양파 · 전국 주요 시장",
     unitChipLabel: "가격 기준 15kg",
     mainPrice: 18400,
