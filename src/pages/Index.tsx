@@ -73,6 +73,7 @@ type Cta = { label: string; target: CtaTarget; params?: CtaParams };
 type HomeConfig = {
   searchPlaceholder: string;
   chipsTitle: string;
+  chipsSubtitle: string;
   chips: { id: string; name: string; emoji: string }[];
   addChipLabel: string;
   heroSubtitle: string;
