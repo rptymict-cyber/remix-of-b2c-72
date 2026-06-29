@@ -549,7 +549,7 @@ const AddCrop = () => {
             onClick={submit}
             className="w-full py-3.5 rounded-2xl bg-primary text-white text-[15px] font-bold"
           >
-            작물 추가하기
+            {isInterest ? "관심 품목 추가하기" : "작물 추가하기"}
           </button>
         )}
       </div>
