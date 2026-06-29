@@ -60,6 +60,16 @@ type MovementRow = {
   up: boolean;
 };
 
+type CtaTarget = "market" | "prediction" | "notification";
+type CtaParams = {
+  tab?: string;
+  metric?: string;
+  sort?: string;
+  view?: string;
+  type?: string; // for notification settings
+};
+type Cta = { label: string; target: CtaTarget; params?: CtaParams };
+
 type HomeConfig = {
   searchPlaceholder: string;
   chipsTitle: string;
@@ -78,8 +88,13 @@ type HomeConfig = {
   insightLine2: React.ReactNode;
   insightBg: string;
   insightIconColor: string;
-  ctaPrimary: { label: string; route: string };
-  ctaSecondary: { label: string; route: string };
+  ctaPrimary: Cta;
+  ctaSecondary: Cta;
+  // 컨텍스트(상세 화면 진입 시 함께 전달)
+  ctaCrop: string;
+  ctaVariety: string;
+  ctaMarket: string;
+  ctaPriceMode: PriceMode;
   movementTitle: string;
   movementDesc: string;
   movementRows: MovementRow[];
@@ -147,6 +162,27 @@ const HomePage = () => {
     setTypeSheetOpen(false);
   };
 
+  const buildCtaUrl = (cta: Cta, cfg: { ctaCrop: string; ctaVariety: string; ctaMarket: string; ctaPriceMode: PriceMode }) => {
+    const base =
+      cta.target === "prediction" ? "/prediction" :
+      cta.target === "notification" ? "/notification-settings" :
+      "/market";
+    const sp = new URLSearchParams();
+    if (cta.params?.tab) sp.set("tab", cta.params.tab);
+    sp.set("mode", userType);
+    sp.set("crop", cfg.ctaCrop);
+    sp.set("variety", cfg.ctaVariety);
+    sp.set("market", cfg.ctaMarket);
+    sp.set("priceMode", cfg.ctaPriceMode);
+    if (cta.params?.metric) sp.set("metric", cta.params.metric);
+    if (cta.params?.sort) sp.set("sort", cta.params.sort);
+    if (cta.params?.view) sp.set("view", cta.params.view);
+    if (cta.params?.type) sp.set("type", cta.params.type);
+    sp.set("entrySource", "home");
+    return `${base}?${sp.toString()}`;
+  };
+  const runCta = (cta: Cta, cfg: HomeConfig) => navigate(buildCtaUrl(cta, cfg));
+
   // ------- Build configs per user type -------
   const aiUpliftPct = 6.3;
   const aiExtraPerBox = Math.round((basePrice * aiUpliftPct) / 100);
@@ -180,8 +216,12 @@ const HomePage = () => {
     ),
     insightBg: "bg-[#EAF7EA]",
     insightIconColor: "text-[#1A3A1F]",
-    ctaPrimary: { label: "이 작물 경락가 조회", route: "/market?tab=auction" },
-    ctaSecondary: { label: "AI 예측 보기", route: "/prediction" },
+    ctaPrimary: { label: "이 작물 경락가 조회", target: "market", params: { tab: "auction", sort: "latest" } },
+    ctaSecondary: { label: "AI 예측 보기", target: "prediction" },
+    ctaCrop: cropId || "pepper",
+    ctaVariety: variety,
+    ctaMarket: marketId,
+    ctaPriceMode: priceMode,
     movementTitle: "오늘 급변 작물",
     movementDesc: "가격이나 거래량 변동이 큰 품목이에요.",
     movementRows: [
@@ -219,8 +259,12 @@ const HomePage = () => {
     insightLine2: <>서울청과 거래 비중이 가장 높습니다.</>,
     insightBg: "bg-[#E8F0FE]",
     insightIconColor: "text-[#1F6FE8]",
-    ctaPrimary: { label: "경매내역 보기", route: "/market?tab=auction" },
-    ctaSecondary: { label: "법인 비교", route: "/market?tab=corporation" },
+    ctaPrimary: { label: "경매내역 보기", target: "market", params: { tab: "auction", sort: "volume" } },
+    ctaSecondary: { label: "법인 비교", target: "market", params: { tab: "corporation", metric: "avgPrice" } },
+    ctaCrop: "cabbage",
+    ctaVariety: "가을배추",
+    ctaMarket: "garak",
+    ctaPriceMode: "per10kg",
     movementTitle: "거래량 급변 품목",
     movementDesc: "오늘 반입량과 거래량 변동이 큰 품목이에요.",
     movementRows: [
@@ -290,8 +334,12 @@ const HomePage = () => {
     insightLine2: <>오늘은 분할 매입을 권장합니다.</>,
     insightBg: "bg-[#FDECE0]",
     insightIconColor: "text-[#C45000]",
-    ctaPrimary: { label: "매입가 비교", route: "/market?tab=market" },
-    ctaSecondary: { label: "가격 알림 설정", route: "/notification-settings" },
+    ctaPrimary: { label: "매입가 비교", target: "market", params: { tab: "market", metric: "lowPrice", sort: "lowPrice" } },
+    ctaSecondary: { label: "가격 알림 설정", target: "notification", params: { type: "price-alert" } },
+    ctaCrop: "onion",
+    ctaVariety: "황양파",
+    ctaMarket: "daegu",
+    ctaPriceMode: "cropDefault",
     movementTitle: "오늘 매입 주의 품목",
     movementDesc: "매입가 변동이 큰 품목이에요.",
     movementRows: [
@@ -347,8 +395,12 @@ const HomePage = () => {
     insightLine2: <>다음 주 조달 단가 상승 가능성이 있습니다.</>,
     insightBg: "bg-[#F1ECFB]",
     insightIconColor: "text-[#7C3AED]",
-    ctaPrimary: { label: "산지 분석 보기", route: "/market?tab=origin" },
-    ctaSecondary: { label: "수급 전망 보기", route: "/prediction" },
+    ctaPrimary: { label: "산지 분석 보기", target: "market", params: { tab: "origin", metric: "supplyRisk", view: "supply" } },
+    ctaSecondary: { label: "수급 전망 보기", target: "market", params: { tab: "origin", view: "supplyForecast" } },
+    ctaCrop: "onion",
+    ctaVariety: "황양파",
+    ctaMarket: "garak",
+    ctaPriceMode: "cropDefault",
     movementTitle: "공급 변동 품목",
     movementDesc: "공급량이나 산지 변동이 있는 품목이에요.",
     movementRows: [
@@ -537,7 +589,7 @@ const HomePage = () => {
 
             <div className="px-5 pt-3">
               <button
-                onClick={() => navigate(config.ctaSecondary.route)}
+                onClick={() => runCta(config.ctaSecondary, config)}
                 className={`w-full ${config.insightBg} rounded-[14px] px-3.5 py-3 flex items-center gap-3 text-left active:scale-[0.99] transition-transform`}
               >
                 <span className="w-9 h-9 rounded-full bg-white flex items-center justify-center shrink-0">
@@ -554,13 +606,13 @@ const HomePage = () => {
 
             <div className="px-5 py-3 grid grid-cols-2 gap-2">
               <button
-                onClick={() => navigate(config.ctaPrimary.route)}
+                onClick={() => runCta(config.ctaPrimary, config)}
                 className="min-h-12 rounded-2xl border-2 border-primary bg-white text-primary text-[13px] font-bold"
               >
                 {config.ctaPrimary.label}
               </button>
               <button
-                onClick={() => navigate(config.ctaSecondary.route)}
+                onClick={() => runCta(config.ctaSecondary, config)}
                 className="min-h-12 rounded-2xl bg-[#1A3A1F] text-white text-[13px] font-bold"
               >
                 {config.ctaSecondary.label}
@@ -577,7 +629,7 @@ const HomePage = () => {
               <p className="text-[11px] text-muted-foreground mt-0.5">{config.movementDesc}</p>
             </div>
             <button
-              onClick={() => navigate(config.ctaPrimary.route)}
+              onClick={() => runCta(config.ctaPrimary, config)}
               className="text-[11px] font-semibold text-primary flex items-center gap-0.5 shrink-0"
             >
               전체 보기 <ChevronRight className="w-3 h-3" />
@@ -591,7 +643,7 @@ const HomePage = () => {
               return (
                 <button
                   key={`${r.name}-${idx}`}
-                  onClick={() => navigate(config.ctaPrimary.route)}
+                  onClick={() => runCta(config.ctaPrimary, config)}
                   className="w-full bg-white rounded-[14px] border border-[#EFEFEF] shadow-[0_1px_2px_rgba(0,0,0,0.03)] px-3 py-2.5 flex items-center gap-3 text-left active:scale-[0.99] transition-transform min-h-[76px]"
                 >
                   <div className="flex items-center gap-2.5 min-w-0 w-[44%]">

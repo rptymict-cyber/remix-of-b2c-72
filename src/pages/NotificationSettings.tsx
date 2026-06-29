@@ -2,6 +2,9 @@ import AppHeader from "@/components/AppHeader";
 import BottomNav from "@/components/BottomNav";
 import { useApp } from "@/store/appStore";
 import { Switch } from "@/components/ui/switch";
+import { useSearchParams } from "react-router-dom";
+import { findCrop, findMarket } from "@/data/catalog";
+import { Bell } from "lucide-react";
 
 const Row = ({ label, desc, children }: { label: string; desc?: string; children: React.ReactNode }) => (
   <div className="flex items-center justify-between py-3.5">
@@ -22,11 +25,32 @@ const Section = ({ title, children }: { title: string; children: React.ReactNode
 
 const NotificationSettings = () => {
   const { notif, setNotif } = useApp();
+  const [sp] = useSearchParams();
+  const fromHome = sp.get("entrySource") === "home";
+  const mode = sp.get("mode");
+  const type = sp.get("type");
+  const cropP = sp.get("crop");
+  const mktP = sp.get("market");
+  const pm = sp.get("priceMode");
+  const crop = cropP ? findCrop(cropP) : null;
+  const market = mktP ? findMarket(mktP) : null;
+  const pmLabel = pm === "perKg" ? "1kg" : pm === "per10kg" ? "10kg" : pm === "per20kg" ? "20kg" : pm === "per100kg" ? "100kg" : crop ? `${crop.defaultUnitKg}kg` : "";
+
   return (
     <div className="h-full bg-background">
       <AppHeader title="알림 설정" variant="back" />
       <main className="h-full overflow-y-auto px-4 pt-[calc(var(--app-header-height)+1rem)] safe-bottom space-y-3">
+        {fromHome && type === "price-alert" && crop && market && (
+          <div className="bg-[#FDECE0] rounded-2xl p-4 flex items-center gap-3">
+            <Bell className="w-4 h-4 text-[#C45000] shrink-0" />
+            <div>
+              <p className="text-[13px] font-extrabold text-[#C45000]">가격 알림 설정</p>
+              <p className="text-[11px] text-muted-foreground mt-0.5">{crop.name} · {market.name}{pmLabel ? ` · ${pmLabel} 기준` : ""}</p>
+            </div>
+          </div>
+        )}
         <Section title="가격 알림">
+
           <Row label="가격 급등락 알림" desc={`±${notif.priceThreshold}% 변동 시 푸시`}>
             <Switch checked={notif.priceAlert} onCheckedChange={(v) => setNotif({ priceAlert: v })} />
           </Row>

@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useMemo, useState, useEffect, useRef } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   ChevronDown, ArrowUpRight, ArrowDownRight, Minus, Clock, Calendar,
   Layers, Building2, ChevronRight, X, MapPin, Sparkles, ArrowUpDown,
@@ -140,10 +140,11 @@ const KV = ({ k, v }: { k: string; v: React.ReactNode }) => (
 
 const MarketPricePage = () => {
   const nav = useNavigate();
-  const { cropId, variety, marketId } = useApp();
+  const [searchParams] = useSearchParams();
+  const { cropId, variety, marketId, setCrop, setMarket, setVariety } = useApp();
   const crop = findCrop(cropId);
   const market = findMarket(marketId);
-  const price = seedPrice(cropId, marketId, variety);
+  const basePrice = seedPrice(cropId, marketId, variety);
 
   const [tab, setTab] = useState<Tab>("경매내역");
   const [date, setDate] = useState<typeof DATE_OPTIONS[number]>("오늘");
@@ -153,6 +154,10 @@ const MarketPricePage = () => {
   const [dateOpen, setDateOpen] = useState(false);
   const [sortOpen, setSortOpen] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [originView, setOriginView] = useState<"supply" | "supplyForecast">("supply");
+  const [priceMode, setPriceModeState] = useState<"actual" | "perKg" | "per10kg" | "per20kg" | "per100kg" | "cropDefault">("cropDefault");
+  const [entryMode, setEntryMode] = useState<"farmer" | "wholesaler" | "retailer" | "enterprise" | null>(null);
+  const [entrySource, setEntrySource] = useState<string | null>(null);
 
   // market-compare metric
   type MarketMetric = "price" | "share" | "dayChange" | "volume" | "inbound";
@@ -223,7 +228,72 @@ const MarketPricePage = () => {
   const maxAuction = Math.max(...auctionFlow.map((x) => x.price));
   const minAuction = Math.min(...auctionFlow.map((x) => x.price));
 
-  
+  // URL 파라미터 1회 반영
+  const initRef = useRef(false);
+  useEffect(() => {
+    if (initRef.current) return;
+    initRef.current = true;
+    const tabParam = searchParams.get("tab");
+    const tabMap: Record<string, Tab> = { auction: "경매내역", market: "시장비교", corporation: "법인", origin: "산지", variety: "품종" };
+    if (tabParam && tabMap[tabParam]) setTab(tabMap[tabParam]);
+
+    const metric = searchParams.get("metric");
+    if (tabParam === "corporation" && metric) {
+      const m: Record<string, CorpMetric> = { avgPrice: "avgPrice", share: "share", count: "count", volume: "volume" };
+      if (m[metric]) setCorpMetric(m[metric]);
+    }
+    if (tabParam === "market" && metric) {
+      const m: Record<string, MarketMetric> = {
+        highPrice: "price", lowPrice: "price", price: "price",
+        dayChange: "dayChange", volume: "volume", share: "share", inbound: "inbound",
+      };
+      if (m[metric]) setMarketMetric(m[metric]);
+    }
+
+    const sortP = searchParams.get("sort");
+    const sm: Record<string, SortKey> = { latest: "latest", highPrice: "priceDesc", lowPrice: "priceAsc", volume: "volume" };
+    if (sortP && sm[sortP]) setSortKey(sm[sortP]);
+
+    const cropP = searchParams.get("crop");
+    const varP = searchParams.get("variety");
+    const mktP = searchParams.get("market");
+    if (cropP) setCrop(cropP, varP ?? undefined);
+    if (varP) setVariety(varP);
+    if (mktP) setMarket(mktP);
+
+    const pm = searchParams.get("priceMode");
+    if (pm && ["actual", "perKg", "per10kg", "per20kg", "per100kg", "cropDefault"].includes(pm)) {
+      setPriceModeState(pm as typeof priceMode);
+    }
+
+    const v = searchParams.get("view");
+    if (v === "supplyForecast" || v === "supply") setOriginView(v);
+
+    const mode = searchParams.get("mode");
+    if (mode === "farmer" || mode === "wholesaler" || mode === "retailer" || mode === "enterprise") setEntryMode(mode);
+    setEntrySource(searchParams.get("entrySource"));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const purposeBanner = entrySource === "home" && entryMode ? (() => {
+    const map = {
+      farmer: { title: "내 작물 경락가 조회", desc: "선택한 작물의 최근 경매 거래를 보여드려요.", bg: "bg-[#EAF7EA]", color: "text-[#1A3A1F]" },
+      wholesaler: { title: "도매 거래 흐름", desc: "반입량, 법인, 산지 기준으로 시장 흐름을 확인하세요.", bg: "bg-[#E8F0FE]", color: "text-[#1F6FE8]" },
+      retailer: { title: "매입가 비교", desc: "시장별 현재가를 낮은 가격순으로 비교하세요.", bg: "bg-[#FDECE0]", color: "text-[#C45000]" },
+      enterprise: { title: "산지 공급 분석", desc: "주요 산지 반입량과 공급 리스크를 확인하세요.", bg: "bg-[#F1ECFB]", color: "text-[#7C3AED]" },
+    } as const;
+    const b = map[entryMode];
+    return (
+      <div className={`${b.bg} rounded-2xl px-4 py-3 flex items-center gap-2.5`}>
+        <Sparkles className={`w-4 h-4 shrink-0 ${b.color}`} />
+        <div className="min-w-0">
+          <p className={`text-[13px] font-bold ${b.color}`}>{b.title}</p>
+          <p className="text-[11px] text-muted-foreground mt-0.5">{b.desc}</p>
+        </div>
+      </div>
+    );
+  })() : null;
+
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -240,6 +310,7 @@ const MarketPricePage = () => {
       />
 
       <main className="h-full overflow-y-auto px-4 pt-[calc(var(--app-header-height)+1rem)] pb-32 safe-bottom space-y-4">
+        {purposeBanner}
         {/* 필터 칩 */}
         <div className="grid grid-cols-2 gap-2">
           <FilterPill onClick={() => setCropOpen(true)} icon={<span className="text-base leading-none">{crop.emoji}</span>} label={crop.name} />
@@ -258,10 +329,25 @@ const MarketPricePage = () => {
           </div>
           <div className="px-5 pb-3 flex items-end justify-between gap-3">
             <div>
-              <div className="flex items-baseline gap-1.5">
-                <span className="text-[30px] font-extrabold text-foreground leading-none tracking-tight">{price.toLocaleString()}</span>
-                <span className="text-sm font-medium text-muted-foreground">원/{crop.defaultUnitKg}kg</span>
-              </div>
+              {(() => {
+                const kg = basePrice / crop.defaultUnitKg;
+                const r100 = (n: number) => Math.round(n / 100) * 100;
+                const dp =
+                  priceMode === "perKg" ? { p: Math.round(kg), u: "kg" } :
+                  priceMode === "per10kg" ? { p: r100(kg * 10), u: "10kg" } :
+                  priceMode === "per20kg" ? { p: r100(kg * 20), u: "20kg" } :
+                  priceMode === "per100kg" ? { p: r100(kg * 100), u: "100kg" } :
+                  { p: basePrice, u: `${crop.defaultUnitKg}kg` };
+                return (
+                  <>
+                    <div className="flex items-baseline gap-1.5">
+                      <span className="text-[30px] font-extrabold text-foreground leading-none tracking-tight">{dp.p.toLocaleString()}</span>
+                      <span className="text-sm font-medium text-muted-foreground">원/{dp.u}</span>
+                    </div>
+                    <p className="text-[11px] text-muted-foreground mt-1">실거래가 {basePrice.toLocaleString()}원 / {crop.defaultUnitKg}kg</p>
+                  </>
+                );
+              })()}
               <div className="mt-1.5 flex items-center gap-1">
                 <Change v={2.3} big />
                 <span className="text-[11px] text-muted-foreground">전일 대비</span>
@@ -524,6 +610,58 @@ const MarketPricePage = () => {
         {/* ===== 산지 ===== */}
         {tab === "산지" && (
           <div className="space-y-3 animate-fade-in">
+            {/* 모드별 보조 패널 토글 */}
+            {(entryMode === "enterprise" || originView === "supplyForecast") && (
+              <div className="flex gap-1.5 bg-secondary/60 p-1 rounded-full text-[12px] font-bold">
+                <button
+                  onClick={() => setOriginView("supply")}
+                  className={`flex-1 h-9 rounded-full ${originView === "supply" ? "bg-white text-foreground shadow-sm" : "text-muted-foreground"}`}
+                >산지 분석</button>
+                <button
+                  onClick={() => setOriginView("supplyForecast")}
+                  className={`flex-1 h-9 rounded-full ${originView === "supplyForecast" ? "bg-white text-foreground shadow-sm" : "text-muted-foreground"}`}
+                >수급 전망</button>
+              </div>
+            )}
+
+            {originView === "supplyForecast" && (
+              <div className="bg-[#F1ECFB] rounded-2xl border border-[#E0D5F5] p-4 space-y-3">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-[#7C3AED]" />
+                  <p className="text-[13px] font-extrabold text-[#7C3AED]">수급 전망</p>
+                </div>
+                <p className="text-[12px] text-muted-foreground">{crop.name} · 전국 주요 시장 · 향후 2주</p>
+                <div className="grid grid-cols-3 gap-2">
+                  <div className="bg-white rounded-xl px-2 py-2 text-center">
+                    <p className="text-[10px] text-muted-foreground">공급 안정도</p>
+                    <p className="text-[13px] font-extrabold text-[#C45000] mt-0.5">주의</p>
+                  </div>
+                  <div className="bg-white rounded-xl px-2 py-2 text-center">
+                    <p className="text-[10px] text-muted-foreground">반입량</p>
+                    <p className="text-[13px] font-extrabold price-down mt-0.5">-5~8%</p>
+                  </div>
+                  <div className="bg-white rounded-xl px-2 py-2 text-center">
+                    <p className="text-[10px] text-muted-foreground">가격 전망</p>
+                    <p className="text-[13px] font-extrabold price-up mt-0.5">↑ 19,200</p>
+                  </div>
+                </div>
+                <div className="bg-white rounded-xl p-3 space-y-1.5">
+                  <p className="text-[11px] font-bold text-foreground">주요 원인</p>
+                  <p className="text-[11.5px] text-muted-foreground">· 전남 무안 반입량 감소</p>
+                  <p className="text-[11.5px] text-muted-foreground">· 저장 물량 감소</p>
+                  <p className="text-[11.5px] text-muted-foreground">· 일부 시장 거래 집중</p>
+                </div>
+                <div className="bg-white rounded-xl p-3 space-y-1.5">
+                  <p className="text-[11px] font-bold text-foreground">대응 제안</p>
+                  <p className="text-[11.5px] text-muted-foreground">· 조달 단가 상승에 대비해 선매입 검토</p>
+                  <p className="text-[11.5px] text-muted-foreground">· 대체 산지 확인</p>
+                  <p className="text-[11.5px] text-muted-foreground">· 가격 알림 설정</p>
+                </div>
+              </div>
+            )}
+
+            {originView === "supply" && (
+            <>
             <div className="bg-card rounded-2xl border border-border p-4">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-[13px] font-bold text-foreground">산지별 출하 비중</span>
@@ -548,6 +686,8 @@ const MarketPricePage = () => {
                 </button>
               ))}
             </div>
+            </>
+            )}
           </div>
         )}
 
