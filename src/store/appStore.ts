@@ -24,6 +24,8 @@ export interface CropSetting {
   priceDisplayMode?: PriceDisplayMode;
   alertEnabled?: boolean;
   alertRules?: string[];
+  unitKg?: number;
+  unitLabel?: string;
 }
 
 export interface UserProfile {
