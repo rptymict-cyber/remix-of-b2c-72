@@ -191,6 +191,10 @@ const AddCrop = () => {
   const showRepresentative = !q.trim() && category === "전체";
 
   const handlePickCrop = (c: CropItem) => {
+    if (profile.myCrops.includes(c.id)) {
+      toast.error("이미 추가된 작물이에요");
+      return;
+    }
     if (c.id !== selectedCropId) {
       setVarieties([ALL_LABEL]);
     }
@@ -393,7 +397,7 @@ const AddCrop = () => {
           {showRepresentative ? (
             <div>
               <p className="text-[13px] font-bold text-foreground mb-3">대표 작물</p>
-              <CropGrid items={REPRESENTATIVE_CROPS} selectedId={selectedCropId} onPick={handlePickCrop} />
+              <CropGrid items={REPRESENTATIVE_CROPS} selectedId={selectedCropId} myCrops={profile.myCrops} onPick={handlePickCrop} />
             </div>
           ) : listed.length === 0 ? (
             <div className="text-center py-10">
@@ -407,7 +411,7 @@ const AddCrop = () => {
               <p className="text-[13px] font-bold text-foreground mb-3">
                 {q.trim() ? `검색 결과 (${listed.length})` : `${category} (${listed.length})`}
               </p>
-              <CropGrid items={listed} selectedId={selectedCropId} onPick={handlePickCrop} />
+              <CropGrid items={listed} selectedId={selectedCropId} myCrops={profile.myCrops} onPick={handlePickCrop} />
             </div>
           )}
         </main>
@@ -761,29 +765,41 @@ const AddCrop = () => {
 const CropGrid = ({
   items,
   selectedId,
+  myCrops,
   onPick,
 }: {
   items: CropItem[];
   selectedId: string;
+  myCrops: string[];
   onPick: (c: CropItem) => void;
 }) => (
   <div className="grid grid-cols-3 gap-x-3 gap-y-5">
     {items.map((c) => {
       const sel = selectedId === c.id;
+      const added = myCrops.includes(c.id);
       return (
         <button
           key={c.id}
           onClick={() => onPick(c)}
-          className="flex flex-col items-center gap-2"
+          className={`flex flex-col items-center gap-2 relative ${added ? "opacity-60" : ""}`}
         >
-          <div
-            className={`w-[72px] h-[72px] rounded-full flex items-center justify-center text-[32px] border-2 transition-all ${
-              sel
-                ? "border-primary bg-primary/10 shadow-[0_4px_14px_-4px_hsl(var(--primary)/0.4)]"
-                : "border-border bg-card"
-            }`}
-          >
-            {c.icon}
+          <div className="relative">
+            <div
+              className={`w-[72px] h-[72px] rounded-full flex items-center justify-center text-[32px] border-2 transition-all ${
+                sel
+                  ? "border-primary bg-primary/10 shadow-[0_4px_14px_-4px_hsl(var(--primary)/0.4)]"
+                  : added
+                    ? "border-primary/30 bg-card"
+                    : "border-border bg-card"
+              }`}
+            >
+              {c.icon}
+            </div>
+            {added && (
+              <span className="absolute -top-0.5 -right-0.5 bg-primary/10 text-primary text-[9px] font-bold rounded-full px-1.5 py-0.5">
+                추가됨
+              </span>
+            )}
           </div>
           <span
             className={`text-[12px] font-semibold text-center leading-tight ${
