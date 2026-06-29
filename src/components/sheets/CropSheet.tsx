@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Drawer, DrawerContent } from "@/components/ui/drawer";
-import { CROPS } from "@/data/catalog";
+import { CROPS, findCrop } from "@/data/catalog";
 import { useApp } from "@/store/appStore";
 import { Check, Search, Plus } from "lucide-react";
 
