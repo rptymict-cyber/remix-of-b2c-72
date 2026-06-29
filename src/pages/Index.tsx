@@ -235,13 +235,14 @@ const HomePage = () => {
 
   const wholesalerConfig: HomeConfig = {
     searchPlaceholder: "품목, 산지, 법인, 시장 검색",
-    chipsTitle: "취급 품목",
+    chipsTitle: "관심 작물",
+    chipsSubtitle: "자주 거래하는 작물의 반입량과 낙찰가를 확인하세요.",
     chips: [
       { id: "cabbage", name: "배추", emoji: "🥬" },
       { id: "onion", name: "양파", emoji: "🧅" },
       { id: "tomato", name: "토마토", emoji: "🍅" },
     ],
-    addChipLabel: "품목 추가",
+    addChipLabel: "작물 추가",
     heroSubtitle: "🥬 배추 · 서울 가락시장",
     unitChipLabel: "가격 기준 10kg",
     mainPrice: 12800,
