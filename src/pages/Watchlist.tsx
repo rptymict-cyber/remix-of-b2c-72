@@ -541,7 +541,7 @@ const InterestsTab = ({
       {!isEditing && (
         <>
           <button
-            onClick={() => navigate("/search")}
+            onClick={onOpenAdd}
             className="w-full min-h-12 rounded-2xl border border-dashed text-[13px] font-bold flex items-center justify-center gap-1.5"
             style={{ borderColor: "hsl(150 55% 70%)", color: PRIMARY }}
           >
