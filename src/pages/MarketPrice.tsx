@@ -310,6 +310,7 @@ const MarketPricePage = () => {
       />
 
       <main className="h-full overflow-y-auto px-4 pt-[calc(var(--app-header-height)+1rem)] pb-32 safe-bottom space-y-4">
+        {purposeBanner}
         {/* 필터 칩 */}
         <div className="grid grid-cols-2 gap-2">
           <FilterPill onClick={() => setCropOpen(true)} icon={<span className="text-base leading-none">{crop.emoji}</span>} label={crop.name} />
