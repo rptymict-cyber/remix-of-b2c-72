@@ -317,7 +317,7 @@ const MarketPricePage = () => {
           <FilterPill onClick={() => setCropOpen(true)} icon={<span className="text-base leading-none">{crop.emoji}</span>} label={crop.name} />
           <FilterPill onClick={() => setVarietyOpen(true)} icon={<Layers className="w-4 h-4" />} label={variety} />
           <FilterPill onClick={() => setMarketOpen(true)} icon={<Building2 className="w-4 h-4" />} label={market.name} />
-          <FilterPill onClick={() => setDateOpen(true)} icon={<Calendar className="w-4 h-4" />} label={date} />
+          <FilterPill onClick={() => setDateOpen(true)} icon={<Calendar className="w-4 h-4" />} label={period.label} />
         </div>
 
         {/* 요약 카드 + 미니 차트 */}
