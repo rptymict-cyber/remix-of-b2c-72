@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronDown, MapPin, Search, Check, X, Plus, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import MobileStatusBar from "@/components/MobileStatusBar";
-import { useApp } from "@/store/appStore";
+import { useApp, MAX_MY_CROPS } from "@/store/appStore";
 import { CROPS, REGIONS_KR, findCrop, findMarket } from "@/data/catalog";
 import {
   Dialog,
