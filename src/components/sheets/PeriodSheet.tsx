@@ -1,12 +1,10 @@
-import { useState } from "react";
-import { Check, X, Clock, Calendar as CalendarIcon, ChevronRight, Info, ChevronLeft } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { X, Calendar as CalendarIcon, Info, ChevronLeft, ChevronRight } from "lucide-react";
 import { Drawer, DrawerContent } from "@/components/ui/drawer";
-import { Calendar } from "@/components/ui/calendar";
-import type { DateRange } from "react-day-picker";
 import { format } from "date-fns";
 import { ko } from "date-fns/locale";
 
-export type PeriodKey = "today" | "yesterday" | "7d" | "1m" | "custom";
+export type PeriodKey = "today" | "yesterday" | "7d" | "1m" | "custom" | "manual";
 
 export interface PeriodValue {
   key: PeriodKey;
@@ -21,209 +19,284 @@ interface Props {
   onSelect: (v: PeriodValue) => void;
 }
 
-const today = () => {
-  const d = new Date();
-  d.setHours(0, 0, 0, 0);
-  return d;
-};
-const addDays = (d: Date, n: number) => {
-  const x = new Date(d);
-  x.setDate(x.getDate() + n);
-  return x;
-};
-const fmtDay = (d: Date) => format(d, "yyyy.MM.dd (E)", { locale: ko });
+/* ---------- date utils ---------- */
+const today = () => { const d = new Date(); d.setHours(0,0,0,0); return d; };
+const addDays = (d: Date, n: number) => { const x = new Date(d); x.setDate(x.getDate()+n); return x; };
+const addMonths = (d: Date, n: number) => { const x = new Date(d); x.setMonth(x.getMonth()+n); return x; };
+const sameDay = (a: Date, b: Date) => a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate();
 const fmtShort = (d: Date) => format(d, "yyyy.MM.dd");
 const fmtMD = (d: Date) => format(d, "MM.dd");
+const fmtInput = (d: Date) => format(d, "yyyy.MM.dd");
 
-export const buildPeriodValue = (key: Exclude<PeriodKey, "custom">): PeriodValue => {
+export const buildPeriodValue = (key: Exclude<PeriodKey, "custom" | "manual">): PeriodValue => {
   const t = today();
   if (key === "today") return { key, label: "오늘", range: { from: t, to: t } };
-  if (key === "yesterday") {
-    const y = addDays(t, -1);
-    return { key, label: "어제", range: { from: y, to: y } };
-  }
-  if (key === "7d") return { key, label: "최근 7일", range: { from: addDays(t, -6), to: t } };
-  return { key, label: "최근 1개월", range: { from: addDays(t, -29), to: t } };
+  if (key === "yesterday") { const y = addDays(t,-1); return { key, label: "어제", range: { from: y, to: y } }; }
+  if (key === "7d") return { key, label: "최근 7일", range: { from: addDays(t,-6), to: t } };
+  return { key, label: "최근 1개월", range: { from: addMonths(t,-1), to: t } };
 };
 
 export const formatCustomLabel = (from: Date, to: Date) => {
-  if (from.getFullYear() === to.getFullYear() && from.getMonth() === to.getMonth() && from.getDate() === to.getDate()) {
-    return fmtShort(from);
-  }
-  if (from.getFullYear() === to.getFullYear()) {
-    return `${fmtShort(from)} ~ ${fmtMD(to)}`;
-  }
+  if (sameDay(from, to)) return fmtShort(from);
+  if (from.getFullYear() === to.getFullYear()) return `${fmtShort(from)} ~ ${fmtMD(to)}`;
   return `${fmtShort(from)} ~ ${fmtShort(to)}`;
 };
 
-const QuickCard = ({
-  icon, label, sub, selected, onClick,
-}: { icon: React.ReactNode; label: string; sub: string; selected: boolean; onClick: () => void }) => (
+/* ---------- quick chips ---------- */
+type ChipKey = "today" | "yesterday" | "7d" | "1m" | "manual";
+const CHIPS: { key: ChipKey; label: string }[] = [
+  { key: "today", label: "오늘" },
+  { key: "yesterday", label: "어제" },
+  { key: "7d", label: "최근 7일" },
+  { key: "1m", label: "최근 1개월" },
+  { key: "manual", label: "직접 입력" },
+];
+
+const Chip = ({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) => (
   <button
     onClick={onClick}
-    className={`relative w-full min-h-[84px] rounded-2xl border-2 px-3.5 py-3 flex items-center gap-3 text-left transition-all ${
-      selected ? "border-primary bg-primary/5" : "border-border bg-card"
+    className={`shrink-0 h-8 px-3 rounded-full text-[12px] font-bold border transition-colors ${
+      active ? "bg-primary text-primary-foreground border-primary" : "bg-card text-foreground border-border"
     }`}
   >
-    <span className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${selected ? "bg-primary/15 text-primary" : "bg-muted text-muted-foreground"}`}>
-      {icon}
-    </span>
-    <div className="flex-1 min-w-0">
-      <p className={`text-[14px] font-extrabold ${selected ? "text-primary" : "text-foreground"}`}>{label}</p>
-      <p className="text-[11px] text-muted-foreground mt-0.5 truncate">{sub}</p>
-    </div>
-    <span className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${selected ? "border-primary bg-primary" : "border-muted-foreground/30"}`}>
-      {selected && <Check className="w-3 h-3 text-white" strokeWidth={3} />}
-    </span>
+    {children}
   </button>
 );
 
-const PeriodSheet = ({ open, onOpenChange, selected, onSelect }: Props) => {
-  const [calOpen, setCalOpen] = useState(false);
-  const [range, setRange] = useState<DateRange | undefined>();
+/* ---------- calendar grid ---------- */
+const WEEK = ["일", "월", "화", "수", "목", "금", "토"];
 
+const CalendarGrid = ({
+  month, setMonth, range, onPick,
+}: {
+  month: Date;
+  setMonth: (d: Date) => void;
+  range: { from?: Date; to?: Date };
+  onPick: (d: Date) => void;
+}) => {
   const t = today();
-  const quicks: Array<{ key: Exclude<PeriodKey, "custom">; icon: React.ReactNode; sub: string }> = [
-    { key: "today", icon: <Clock className="w-4 h-4" />, sub: fmtDay(t) },
-    { key: "yesterday", icon: <Clock className="w-4 h-4" />, sub: fmtDay(addDays(t, -1)) },
-    { key: "7d", icon: <CalendarIcon className="w-4 h-4" />, sub: `${fmtShort(addDays(t, -6))} ~ ${fmtMD(t)}` },
-    { key: "1m", icon: <CalendarIcon className="w-4 h-4" />, sub: `${fmtShort(addDays(t, -29))} ~ ${fmtMD(t)}` },
-  ];
+  const first = new Date(month.getFullYear(), month.getMonth(), 1);
+  const startOffset = first.getDay();
+  const gridStart = addDays(first, -startOffset);
+  const cells = Array.from({ length: 42 }, (_, i) => addDays(gridStart, i));
 
-  const pick = (k: Exclude<PeriodKey, "custom">) => {
-    onSelect(buildPeriodValue(k));
-    onOpenChange(false);
+  const isInRange = (d: Date) => {
+    if (!range.from || !range.to) return false;
+    const t0 = range.from.getTime(), t1 = range.to.getTime();
+    const x = d.getTime();
+    return x > Math.min(t0,t1) && x < Math.max(t0,t1);
+  };
+  const isEdge = (d: Date) => (range.from && sameDay(d, range.from)) || (range.to && sameDay(d, range.to));
+
+  return (
+    <div>
+      <div className="flex items-center justify-center gap-6 mb-1.5">
+        <button onClick={() => setMonth(addMonths(month, -1))} aria-label="이전 달" className="p-1 text-foreground/70">
+          <ChevronLeft className="w-4 h-4" />
+        </button>
+        <span className="text-[14px] font-extrabold text-foreground tabular-nums">{format(month, "yyyy.MM")}</span>
+        <button onClick={() => setMonth(addMonths(month, 1))} aria-label="다음 달" className="p-1 text-foreground/70">
+          <ChevronRight className="w-4 h-4" />
+        </button>
+      </div>
+      <div className="grid grid-cols-7 text-center text-[11px] text-muted-foreground mb-0.5">
+        {WEEK.map((w) => <div key={w} className="py-0.5">{w}</div>)}
+      </div>
+      <div className="grid grid-cols-7 gap-y-0.5">
+        {cells.map((d, i) => {
+          const inMonth = d.getMonth() === month.getMonth();
+          const isToday = sameDay(d, t);
+          const edge = isEdge(d);
+          const mid = isInRange(d);
+          const future = d.getTime() > t.getTime();
+          return (
+            <div key={i} className="relative flex items-center justify-center h-7">
+              {mid && <span className="absolute inset-y-0.5 inset-x-0 bg-primary/10" />}
+              <button
+                disabled={future}
+                onClick={() => onPick(d)}
+                className={`relative z-10 w-7 h-7 rounded-full text-[12px] tabular-nums flex items-center justify-center transition-colors
+                  ${edge ? "bg-primary text-primary-foreground font-extrabold" : ""}
+                  ${!edge && isToday ? "ring-1 ring-primary text-primary font-bold" : ""}
+                  ${!edge && !isToday && inMonth ? "text-foreground" : ""}
+                  ${!inMonth ? "text-muted-foreground/40" : ""}
+                  ${future ? "opacity-30" : ""}
+                `}
+              >
+                {d.getDate()}
+              </button>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+/* ---------- main sheet ---------- */
+const parseInput = (s: string): Date | null => {
+  const m = s.trim().match(/^(\d{4})[.\-/](\d{1,2})[.\-/](\d{1,2})$/);
+  if (!m) return null;
+  const d = new Date(+m[1], +m[2] - 1, +m[3]);
+  if (isNaN(d.getTime()) || d.getMonth() !== +m[2]-1) return null;
+  d.setHours(0,0,0,0);
+  return d;
+};
+
+const PeriodSheet = ({ open, onOpenChange, selected, onSelect }: Props) => {
+  const [mode, setMode] = useState<"calendar" | "manual">("calendar");
+  const [month, setMonth] = useState<Date>(today());
+  const [from, setFrom] = useState<Date | undefined>(today());
+  const [to, setTo] = useState<Date | undefined>(today());
+  const [fromStr, setFromStr] = useState(fmtInput(today()));
+  const [toStr, setToStr] = useState(fmtInput(today()));
+  const [activeChip, setActiveChip] = useState<ChipKey | null>("today");
+
+  // sync when opened
+  useEffect(() => {
+    if (!open) return;
+    if (selected === "manual") setMode("manual");
+    else setMode("calendar");
+    if (selected !== "custom" && selected !== "manual") {
+      const v = buildPeriodValue(selected);
+      setFrom(v.range!.from); setTo(v.range!.to);
+      setFromStr(fmtInput(v.range!.from)); setToStr(fmtInput(v.range!.to));
+      setActiveChip(selected as ChipKey);
+      setMonth(v.range!.to);
+    }
+  }, [open, selected]);
+
+  const pickDate = (d: Date) => {
+    // if already a range or new start, reset
+    if (!from || (from && to && !sameDay(from, to))) {
+      setFrom(d); setTo(d); setActiveChip(null);
+      return;
+    }
+    if (from && sameDay(from, to!)) {
+      // extend to range (or same)
+      if (d.getTime() < from.getTime()) { setFrom(d); setTo(from); }
+      else { setTo(d); }
+      setActiveChip(null);
+      return;
+    }
   };
 
-  const applyRange = () => {
-    if (!range?.from) return;
-    const to = range.to ?? range.from;
-    onSelect({
-      key: "custom",
-      label: formatCustomLabel(range.from, to),
-      range: { from: range.from, to },
-    });
-    setCalOpen(false);
+  const pickChip = (k: ChipKey) => {
+    if (k === "manual") {
+      setMode("manual"); setActiveChip("manual");
+      if (from) setFromStr(fmtInput(from));
+      if (to) setToStr(fmtInput(to));
+      return;
+    }
+    const v = buildPeriodValue(k);
+    setFrom(v.range!.from); setTo(v.range!.to);
+    setFromStr(fmtInput(v.range!.from)); setToStr(fmtInput(v.range!.to));
+    setActiveChip(k);
+    setMode("calendar");
+    setMonth(v.range!.to);
+  };
+
+  const manualParsed = useMemo(() => {
+    const f = parseInput(fromStr); const tt = parseInput(toStr);
+    if (!f || !tt) return { ok: false, err: "날짜 형식을 확인해 주세요." };
+    if (f.getTime() > tt.getTime()) return { ok: false, err: "시작일은 종료일보다 늦을 수 없어요." };
+    return { ok: true as const, from: f, to: tt };
+  }, [fromStr, toStr]);
+
+  const canApply = mode === "calendar" ? !!(from && to) : manualParsed.ok;
+
+  const apply = () => {
+    if (mode === "manual") {
+      if (!manualParsed.ok) return;
+      onSelect({
+        key: "manual",
+        label: formatCustomLabel(manualParsed.from, manualParsed.to),
+        range: { from: manualParsed.from, to: manualParsed.to },
+      });
+      onOpenChange(false);
+      return;
+    }
+    if (!from || !to) return;
+    if (activeChip && activeChip !== "manual") {
+      onSelect(buildPeriodValue(activeChip as Exclude<ChipKey, "manual">));
+    } else {
+      onSelect({ key: "custom", label: formatCustomLabel(from, to), range: { from, to } });
+    }
     onOpenChange(false);
   };
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent>
-        <div className="px-5 pt-2 pb-[max(env(safe-area-inset-bottom),20px)] max-h-[88dvh] overflow-y-auto">
-          {!calOpen ? (
-            <>
-              <div className="flex items-center justify-between mb-1 pt-1">
-                <h3 className="text-[16px] font-extrabold text-foreground">기간 선택</h3>
-                <button onClick={() => onOpenChange(false)} aria-label="닫기" className="text-muted-foreground p-1 -m-1">
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-              <p className="text-[12px] text-muted-foreground mb-4 leading-relaxed">
-                원하는 기간을 선택하면 해당 기간의 경매내역과 시세 흐름을 확인할 수 있어요.
-              </p>
+        <div className="flex flex-col h-full px-4 pt-1 pb-[max(env(safe-area-inset-bottom),12px)]">
+          {/* header */}
+          <div className="flex items-center justify-center relative py-1.5">
+            <h3 className="text-[15px] font-extrabold text-foreground">기간 선택</h3>
+            <button onClick={() => onOpenChange(false)} aria-label="닫기" className="absolute right-0 text-muted-foreground p-1">
+              <X className="w-5 h-5" />
+            </button>
+          </div>
 
-              {/* 빠른 조회 */}
-              <div className="flex items-center gap-1.5 mb-2.5">
-                <Clock className="w-4 h-4 text-primary" />
-                <h4 className="text-[13px] font-extrabold text-foreground">빠른 조회</h4>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                {quicks.map((q) => (
-                  <QuickCard
-                    key={q.key}
-                    icon={q.icon}
-                    label={buildPeriodValue(q.key).label}
-                    sub={q.sub}
-                    selected={selected === q.key}
-                    onClick={() => pick(q.key)}
-                  />
-                ))}
-              </div>
-
-              <div className="h-px bg-border my-4" />
-
-              {/* 직접 선택 */}
-              <div className="flex items-center gap-1.5 mb-2.5">
-                <CalendarIcon className="w-4 h-4 text-primary" />
-                <h4 className="text-[13px] font-extrabold text-foreground">직접 선택</h4>
-              </div>
-              <button
-                onClick={() => setCalOpen(true)}
-                className={`w-full rounded-2xl border-2 px-4 py-3.5 flex items-center gap-3 text-left transition-all ${
-                  selected === "custom" ? "border-primary bg-primary/5" : "border-border bg-card"
-                }`}
-              >
-                <span className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${selected === "custom" ? "bg-primary/15 text-primary" : "bg-muted text-muted-foreground"}`}>
-                  <CalendarIcon className="w-4 h-4" />
-                </span>
-                <div className="flex-1 min-w-0">
-                  <p className={`text-[14px] font-extrabold ${selected === "custom" ? "text-primary" : "text-foreground"}`}>캘린더에서 날짜 선택</p>
-                  <p className="text-[11px] text-muted-foreground mt-0.5">원하는 시작일과 종료일을 직접 선택할 수 있어요.</p>
+          {/* body */}
+          <div className="flex-1 min-h-0 overflow-y-auto">
+            {mode === "calendar" ? (
+              <CalendarGrid
+                month={month}
+                setMonth={setMonth}
+                range={{ from, to }}
+                onPick={pickDate}
+              />
+            ) : (
+              <div className="pt-1 space-y-3">
+                <div>
+                  <label className="text-[12px] font-bold text-foreground/80">시작일</label>
+                  <div className="mt-1 relative">
+                    <input
+                      value={fromStr}
+                      onChange={(e) => { setFromStr(e.target.value); setActiveChip("manual"); }}
+                      placeholder="YYYY.MM.DD"
+                      className="w-full h-10 rounded-xl border border-border bg-card px-3 pr-9 text-[13px] tabular-nums text-foreground focus:outline-none focus:border-primary"
+                    />
+                    <CalendarIcon className="w-4 h-4 text-muted-foreground absolute right-3 top-1/2 -translate-y-1/2" />
+                  </div>
                 </div>
-                <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
-              </button>
+                <div>
+                  <label className="text-[12px] font-bold text-foreground/80">종료일</label>
+                  <div className="mt-1 relative">
+                    <input
+                      value={toStr}
+                      onChange={(e) => { setToStr(e.target.value); setActiveChip("manual"); }}
+                      placeholder="YYYY.MM.DD"
+                      className="w-full h-10 rounded-xl border border-border bg-card px-3 pr-9 text-[13px] tabular-nums text-foreground focus:outline-none focus:border-primary"
+                    />
+                    <CalendarIcon className="w-4 h-4 text-muted-foreground absolute right-3 top-1/2 -translate-y-1/2" />
+                  </div>
+                </div>
+                <div className="rounded-lg bg-primary/8 border border-primary/15 px-2.5 py-2 flex items-start gap-1.5" style={{ backgroundColor: "hsl(var(--primary) / 0.06)" }}>
+                  <Info className="w-3.5 h-3.5 text-primary shrink-0 mt-px" />
+                  <p className="text-[11px] text-foreground/80 leading-relaxed">
+                    {manualParsed.ok ? "직접 날짜를 입력하여 조회할 수 있어요." : manualParsed.err}
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
 
-              {/* 안내 */}
-              <div className="mt-4 rounded-xl bg-primary/8 border border-primary/15 px-3 py-2.5 flex items-start gap-2" style={{ backgroundColor: "hsl(var(--primary) / 0.06)" }}>
-                <Info className="w-4 h-4 text-primary shrink-0 mt-px" />
-                <p className="text-[11.5px] text-foreground/80 leading-relaxed">
-                  선택한 기간은 모든 시장과 품목의 시세 및 경매내역 조회에 적용됩니다.
-                </p>
-              </div>
-            </>
-          ) : (
-            <>
-              <div className="flex items-center justify-between mb-2 pt-1">
-                <button onClick={() => setCalOpen(false)} aria-label="뒤로" className="text-muted-foreground p-1 -m-1">
-                  <ChevronLeft className="w-5 h-5" />
-                </button>
-                <h3 className="text-[16px] font-extrabold text-foreground">날짜 선택</h3>
-                <button onClick={() => onOpenChange(false)} aria-label="닫기" className="text-muted-foreground p-1 -m-1">
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-              <p className="text-[12px] text-muted-foreground mb-3 leading-relaxed">
-                시작일과 종료일을 차례로 선택해 주세요.
-              </p>
+          {/* chips */}
+          <div className="flex gap-1.5 overflow-x-auto py-2 -mx-1 px-1 no-scrollbar">
+            {CHIPS.map((c) => (
+              <Chip key={c.key} active={activeChip === c.key} onClick={() => pickChip(c.key)}>{c.label}</Chip>
+            ))}
+          </div>
 
-              <div className="flex justify-center">
-                <Calendar
-                  mode="range"
-                  selected={range}
-                  onSelect={setRange}
-                  numberOfMonths={1}
-                  locale={ko}
-                  disabled={{ after: t }}
-                  className="p-2 pointer-events-auto"
-                />
-              </div>
-
-              <div className="mt-2 rounded-xl bg-muted/60 px-3 py-2.5 text-[12px] text-foreground/80">
-                {range?.from
-                  ? range.to
-                    ? `${fmtShort(range.from)} ~ ${fmtShort(range.to)}`
-                    : `${fmtShort(range.from)} ~ 종료일 선택`
-                  : "시작일을 선택해 주세요."}
-              </div>
-
-              <div className="mt-3 flex gap-2">
-                <button
-                  onClick={() => setRange(undefined)}
-                  className="flex-1 h-12 rounded-2xl border-2 border-border bg-card text-[14px] font-bold text-foreground"
-                >
-                  초기화
-                </button>
-                <button
-                  onClick={applyRange}
-                  disabled={!range?.from}
-                  className="flex-1 h-12 rounded-2xl bg-primary text-primary-foreground text-[14px] font-extrabold disabled:opacity-40"
-                >
-                  적용
-                </button>
-              </div>
-            </>
-          )}
+          {/* apply */}
+          <button
+            onClick={apply}
+            disabled={!canApply}
+            className="w-full h-11 rounded-xl bg-primary text-primary-foreground text-[14px] font-extrabold disabled:opacity-40"
+          >
+            적용하기
+          </button>
         </div>
       </DrawerContent>
     </Drawer>
