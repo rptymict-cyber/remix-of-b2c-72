@@ -137,7 +137,7 @@ export const useApp = create<AppState>()(
           const has = s.profile.myCrops.includes(id);
           const next = has
             ? s.profile.myCrops.filter((c) => c !== id)
-            : s.profile.myCrops.length >= 3
+            : s.profile.myCrops.length >= 30
               ? s.profile.myCrops
               : [...s.profile.myCrops, id];
           let cropId = s.cropId;
@@ -148,7 +148,7 @@ export const useApp = create<AppState>()(
       addMyCrop: (id) =>
         set((s) => {
           if (s.profile.myCrops.includes(id)) return { cropId: id };
-          if (s.profile.myCrops.length >= 3) return {};
+          if (s.profile.myCrops.length >= 30) return {};
           const next = [...s.profile.myCrops, id];
           return { profile: { ...s.profile, myCrops: next }, cropId: id };
         }),
