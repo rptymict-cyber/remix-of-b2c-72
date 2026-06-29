@@ -115,7 +115,7 @@ const AddCrop = () => {
   const [searchParams] = useSearchParams();
   const isInterest = searchParams.get("mode") === "interest";
   const rawReturnTo = (location.state as { returnTo?: string } | null)?.returnTo;
-  const defaultReturn = isInterest ? "/crop?tab=interest" : "/crop";
+  const defaultReturn = isInterest ? "/watchlist?tab=interest" : "/watchlist?tab=mine";
   const returnTo = rawReturnTo && !rawReturnTo.startsWith("/crop/add") ? rawReturnTo : defaultReturn;
   const { profile, marketId, setMarket, addMyCrop, addInterestCrop, setCrop, setCropSetting } = useApp();
 
