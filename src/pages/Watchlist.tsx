@@ -809,6 +809,20 @@ const MarketsTab = ({
       )}
 
       {!isEditing && addableMarkets.length > 0 && (
+        <button
+          onClick={() => {
+            const el = document.getElementById("market-add-list");
+            el?.scrollIntoView({ behavior: "smooth", block: "start" });
+          }}
+          className="w-full min-h-12 rounded-2xl border border-dashed text-[13px] font-bold flex items-center justify-center gap-1.5"
+          style={{ borderColor: "hsl(150 55% 70%)", color: PRIMARY }}
+        >
+          <Plus className="w-4 h-4" /> 시장 추가
+        </button>
+      )}
+
+
+      {!isEditing && addableMarkets.length > 0 && (
         <div id="market-add-list" className="space-y-2 pt-1">
           <h3 className="text-[13px] font-bold text-foreground px-1">시장 추가</h3>
           <div className="bg-white border border-border rounded-2xl overflow-hidden">
