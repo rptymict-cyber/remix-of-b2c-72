@@ -228,7 +228,72 @@ const MarketPricePage = () => {
   const maxAuction = Math.max(...auctionFlow.map((x) => x.price));
   const minAuction = Math.min(...auctionFlow.map((x) => x.price));
 
-  
+  // URL 파라미터 1회 반영
+  const initRef = useRef(false);
+  useEffect(() => {
+    if (initRef.current) return;
+    initRef.current = true;
+    const tabParam = searchParams.get("tab");
+    const tabMap: Record<string, Tab> = { auction: "경매내역", market: "시장비교", corporation: "법인", origin: "산지", variety: "품종" };
+    if (tabParam && tabMap[tabParam]) setTab(tabMap[tabParam]);
+
+    const metric = searchParams.get("metric");
+    if (tabParam === "corporation" && metric) {
+      const m: Record<string, CorpMetric> = { avgPrice: "avgPrice", share: "share", count: "count", volume: "volume" };
+      if (m[metric]) setCorpMetric(m[metric]);
+    }
+    if (tabParam === "market" && metric) {
+      const m: Record<string, MarketMetric> = {
+        highPrice: "price", lowPrice: "price", price: "price",
+        dayChange: "dayChange", volume: "volume", share: "share", inbound: "inbound",
+      };
+      if (m[metric]) setMarketMetric(m[metric]);
+    }
+
+    const sortP = searchParams.get("sort");
+    const sm: Record<string, SortKey> = { latest: "latest", highPrice: "priceDesc", lowPrice: "priceAsc", volume: "volume" };
+    if (sortP && sm[sortP]) setSortKey(sm[sortP]);
+
+    const cropP = searchParams.get("crop");
+    const varP = searchParams.get("variety");
+    const mktP = searchParams.get("market");
+    if (cropP) setCrop(cropP, varP ?? undefined);
+    if (varP) setVariety(varP);
+    if (mktP) setMarket(mktP);
+
+    const pm = searchParams.get("priceMode");
+    if (pm && ["actual", "perKg", "per10kg", "per20kg", "per100kg", "cropDefault"].includes(pm)) {
+      setPriceModeState(pm as typeof priceMode);
+    }
+
+    const v = searchParams.get("view");
+    if (v === "supplyForecast" || v === "supply") setOriginView(v);
+
+    const mode = searchParams.get("mode");
+    if (mode === "farmer" || mode === "wholesaler" || mode === "retailer" || mode === "enterprise") setEntryMode(mode);
+    setEntrySource(searchParams.get("entrySource"));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const purposeBanner = entrySource === "home" && entryMode ? (() => {
+    const map = {
+      farmer: { title: "내 작물 경락가 조회", desc: "선택한 작물의 최근 경매 거래를 보여드려요.", bg: "bg-[#EAF7EA]", color: "text-[#1A3A1F]" },
+      wholesaler: { title: "도매 거래 흐름", desc: "반입량, 법인, 산지 기준으로 시장 흐름을 확인하세요.", bg: "bg-[#E8F0FE]", color: "text-[#1F6FE8]" },
+      retailer: { title: "매입가 비교", desc: "시장별 현재가를 낮은 가격순으로 비교하세요.", bg: "bg-[#FDECE0]", color: "text-[#C45000]" },
+      enterprise: { title: "산지 공급 분석", desc: "주요 산지 반입량과 공급 리스크를 확인하세요.", bg: "bg-[#F1ECFB]", color: "text-[#7C3AED]" },
+    } as const;
+    const b = map[entryMode];
+    return (
+      <div className={`${b.bg} rounded-2xl px-4 py-3 flex items-center gap-2.5`}>
+        <Sparkles className={`w-4 h-4 shrink-0 ${b.color}`} />
+        <div className="min-w-0">
+          <p className={`text-[13px] font-bold ${b.color}`}>{b.title}</p>
+          <p className="text-[11px] text-muted-foreground mt-0.5">{b.desc}</p>
+        </div>
+      </div>
+    );
+  })() : null;
+
 
   const onRefresh = () => {
     setRefreshing(true);
