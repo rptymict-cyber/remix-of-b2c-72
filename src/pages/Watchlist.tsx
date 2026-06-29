@@ -957,6 +957,122 @@ const MarketsTab = ({
   );
 };
 
+// ====== Add Interest Sheet ======
+const AddInterestSheet = ({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) => {
+  const { profile, toggleInterestCrop } = useApp();
+  const [q, setQ] = useState("");
+  const [cat, setCat] = useState<CropCategory | "전체">("전체");
+
+  const list = (() => {
+    const trimmed = q.trim();
+    if (trimmed) {
+      const base = searchCrops(trimmed);
+      return cat === "전체" ? base : base.filter((c) => c.category === cat);
+    }
+    if (cat === "전체") return REPRESENTATIVE_CROPS;
+    return filterByCategory(cat);
+  })();
+
+  const interestIds = profile.interestCrops ?? [];
+
+  return (
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent side="bottom" className="rounded-t-3xl p-5 max-h-[85vh] overflow-y-auto">
+        <SheetHeader>
+          <SheetTitle className="text-[16px] font-extrabold text-left">관심 품목 추가</SheetTitle>
+        </SheetHeader>
+        <p className="text-[12px] text-muted-foreground mt-1 mb-4 text-left">
+          자주 보는 품목을 추가하면 시세를 빠르게 확인할 수 있어요
+        </p>
+
+        {/* Search */}
+        <div className="flex items-center gap-2 bg-secondary rounded-xl px-3 py-2.5 mb-3">
+          <Search className="w-4 h-4 text-muted-foreground shrink-0" />
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="작물명 검색"
+            className="flex-1 text-sm bg-transparent outline-none border-none placeholder:text-muted-foreground"
+          />
+          {q && (
+            <button onClick={() => setQ("")} aria-label="검색어 지우기">
+              <X className="w-4 h-4 text-muted-foreground" />
+            </button>
+          )}
+        </div>
+
+        {/* Category chips */}
+        <div className="flex gap-1.5 mb-3 overflow-x-auto pb-1 -mx-1 px-1" style={{ scrollbarWidth: "none" }}>
+          {(["전체", ...CATEGORIES] as const).map((c) => {
+            const active = cat === c;
+            return (
+              <button
+                key={c}
+                onClick={() => setCat(c)}
+                className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold ${
+                  active ? "text-white" : "text-muted-foreground bg-secondary"
+                }`}
+                style={active ? { background: PRIMARY } : undefined}
+              >
+                {c}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Grid */}
+        {list.length === 0 ? (
+          <div className="py-10 text-center">
+            <div className="text-2xl mb-2">🔍</div>
+            <p className="text-sm font-semibold text-foreground">검색 결과가 없어요</p>
+            <p className="text-xs text-muted-foreground mt-1">다른 작물명으로 검색해보세요</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-3 gap-2">
+            {list.slice(0, 60).map((crop) => {
+              const added = interestIds.includes(crop.id);
+              return (
+                <button
+                  key={crop.id}
+                  onClick={() => toggleInterestCrop(crop.id)}
+                  className="relative bg-white rounded-2xl py-3 px-2 text-center shadow-sm transition-colors"
+                  style={{
+                    border: `2px solid ${added ? PRIMARY : "transparent"}`,
+                    background: added ? "hsl(150 55% 97%)" : "#fff",
+                  }}
+                >
+                  {added && (
+                    <Bookmark
+                      className="w-3.5 h-3.5 absolute top-1.5 right-1.5"
+                      fill="currentColor"
+                      style={{ color: PRIMARY }}
+                    />
+                  )}
+                  <span className="block text-[28px] mb-1.5 leading-none">{crop.icon}</span>
+                  <span className="block text-[13px] font-bold text-foreground truncate">{crop.name}</span>
+                  {added && (
+                    <span className="block text-[10px] font-semibold mt-[3px]" style={{ color: PRIMARY }}>
+                      추가됨
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        <button
+          onClick={() => onOpenChange(false)}
+          className="w-full min-h-12 rounded-2xl text-white text-[15px] font-bold mt-3"
+          style={{ background: PRIMARY }}
+        >
+          완료
+        </button>
+      </SheetContent>
+    </Sheet>
+  );
+};
+
 // ====== Page ======
 const Watchlist = () => {
   const navigate = useNavigate();
