@@ -53,6 +53,7 @@ const App = () => (
           <Route path="/notification-settings" element={<Gate><NotificationSettings /></Gate>} />
           <Route path="/mypage" element={<Gate><MyPage /></Gate>} />
           <Route path="/search" element={<Gate><SearchPage /></Gate>} />
+          <Route path="/interest/:id" element={<Gate><InterestCropDetail /></Gate>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         </div>
