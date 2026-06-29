@@ -90,7 +90,25 @@ const CropSheet = ({ open, onOpenChange }: Props) => {
               );
             })}
             {list.length === 0 && (
-              <p className="col-span-3 text-center text-xs text-muted-foreground py-6">검색 결과가 없습니다</p>
+              <div className="col-span-3 flex flex-col items-center justify-center gap-4 py-10">
+                {tab === "my" ? (
+                  <>
+                    <p className="text-sm text-muted-foreground">등록된 내 작물이 없습니다</p>
+                    <button
+                      onClick={() => {
+                        onOpenChange(false);
+                        navigate("/crop/add");
+                      }}
+                      className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-primary text-white text-sm font-bold"
+                    >
+                      <Plus className="w-4 h-4" />
+                      작물 추가
+                    </button>
+                  </>
+                ) : (
+                  <p className="text-sm text-muted-foreground">검색 결과가 없습니다</p>
+                )}
+              </div>
             )}
           </div>
 
