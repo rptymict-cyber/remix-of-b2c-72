@@ -311,13 +311,14 @@ const HomePage = () => {
 
   const retailerConfig: HomeConfig = {
     searchPlaceholder: "매입 품목, 시장, 가격 검색",
-    chipsTitle: "매입 품목",
+    chipsTitle: "관심 작물",
+    chipsSubtitle: "자주 매입하는 작물의 가격 변동을 확인하세요.",
     chips: [
       { id: "onion", name: "양파", emoji: "🧅" },
       { id: "green_onion", name: "대파", emoji: "🌱" },
       { id: "tomato", name: "토마토", emoji: "🍅" },
     ],
-    addChipLabel: "품목 추가",
+    addChipLabel: "작물 추가",
     heroSubtitle: "🧅 양파 · 대구북부시장",
     unitChipLabel: "가격 기준 15kg",
     mainPrice: 18400,
