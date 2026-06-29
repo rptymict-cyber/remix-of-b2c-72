@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from "react";
 import { ChevronLeft, Search, Check, MapPin, Store, Pencil, Scale, Bell } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "sonner";
 import { useApp, MAX_MY_CROPS, type PriceDisplayMode } from "@/store/appStore";
 import { MARKETS, findMarket, resolveRepresentativeId, findCrop } from "@/data/catalog";
