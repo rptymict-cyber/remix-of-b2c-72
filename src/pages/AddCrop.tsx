@@ -192,13 +192,13 @@ const AddCrop = () => {
       // 이미 내 작물로 등록된 경우 안내
       if (profile.myCrops.includes(stableId)) {
         toast("이미 내 작물로 등록된 품목이에요. 내 작물에서 확인할 수 있어요.");
-        nav("/crop?tab=mine", { replace: true });
+        nav("/watchlist?tab=mine", { replace: true });
         return;
       }
       // 이미 관심 품목으로 등록된 경우 중복 방지
       if ((profile.interestCrops ?? []).includes(stableId)) {
         toast("이미 관심 품목에 등록된 품목이에요.");
-        nav("/crop?tab=interest", { replace: true });
+        nav("/watchlist?tab=interest", { replace: true });
         return;
       }
       addInterestCrop(stableId);
@@ -213,7 +213,7 @@ const AddCrop = () => {
         alertRules: alertEnabled ? alertRules : [],
       });
       toast.success("관심 품목에 추가했어요.");
-      nav("/crop?tab=interest", { replace: true });
+      nav("/watchlist?tab=interest", { replace: true });
       return;
     }
 
