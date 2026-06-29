@@ -780,16 +780,27 @@ const MarketsTab = ({
                 </div>
                 <div className="h-px bg-border my-3" />
                 <div className="grid grid-cols-3 gap-2">
-                  {mainCrops.map(({ crop, price, pct, isUp }) => (
-                    <div key={crop.id} className="text-left">
-                      <p className="text-[11px] text-muted-foreground flex items-center gap-0.5 truncate">
-                        <span className="text-sm leading-none">{crop.emoji}</span>
-                        <span className="truncate">{crop.name}</span>
-                      </p>
-                      <p className="text-[13px] font-extrabold text-foreground mt-1">{price.toLocaleString()}원</p>
-                      <p className={`text-[10.5px] font-bold mt-0.5 ${isUp ? "price-up" : "price-down"}`}>{isUp ? "+" : ""}{pct.toFixed(1)}%</p>
-                    </div>
-                  ))}
+                  {mainCrops.map(({ crop, price, pct, isUp }) => {
+                    const unitKg = crop.defaultUnitKg;
+                    const perKg = Math.round(price / unitKg);
+                    return (
+                      <div key={crop.id} className="text-left">
+                        <p className="text-[11px] text-muted-foreground flex items-center gap-0.5 truncate">
+                          <span className="text-sm leading-none">{crop.emoji}</span>
+                          <span className="truncate">{crop.name}</span>
+                        </p>
+                        <p className="text-[13px] font-extrabold text-foreground mt-1">
+                          {price.toLocaleString()}원<span className="text-[10px] font-medium text-muted-foreground">/{unitKg}kg</span>
+                        </p>
+                        <p className={`text-[10px] font-bold mt-0.5 ${isUp ? "price-up" : "price-down"}`}>
+                          {isUp ? "+" : ""}{pct.toFixed(1)}%
+                        </p>
+                        <p className="text-[9px] text-muted-foreground mt-0.5">
+                          ≒ {perKg.toLocaleString()}원/kg
+                        </p>
+                      </div>
+                    );
+                  })}
                 </div>
                 <button
                   onClick={() => { setMarket(market.id); navigate("/market"); }}
