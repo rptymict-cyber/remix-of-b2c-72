@@ -769,13 +769,11 @@ const MarketPricePage = () => {
       <MarketSheet open={marketOpen} onOpenChange={setMarketOpen} />
       <VarietySheet open={varietyOpen} onOpenChange={setVarietyOpen} />
 
-      <SortSheet<typeof DATE_OPTIONS[number]>
+      <PeriodSheet
         open={dateOpen}
         onOpenChange={setDateOpen}
-        title="기간 선택"
-        selected={date}
-        onSelect={setDate}
-        options={DATE_OPTIONS.map((d) => ({ key: d, label: d })) as SortOption<typeof DATE_OPTIONS[number]>[]}
+        selected={period.key}
+        onSelect={setPeriod}
       />
 
       <SortSheet<SortKey>
