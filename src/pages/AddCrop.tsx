@@ -172,6 +172,14 @@ const AddCrop = () => {
 
   const crop = selectedCropId ? findCropById(selectedCropId) : null;
   const market = findMarket(marketSel);
+  const cropStableId = crop ? (resolveRepresentativeId(crop.id) ?? crop.id) : "";
+  const cropMeta = cropStableId ? findCrop(cropStableId) : null;
+  const cropDefaultUnitKg = cropMeta?.defaultUnitKg ?? 10;
+  const cropBasePrice = PRICE_PER_KG * cropDefaultUnitKg;
+  const unitOptions = useMemo(
+    () => (cropStableId ? getUnitOptions(cropStableId, cropDefaultUnitKg) : []),
+    [cropStableId, cropDefaultUnitKg]
+  );
 
   // 검색어가 있으면 카테고리 필터 무시하고 전체 작물 기준 검색
   const listed = useMemo(() => {
