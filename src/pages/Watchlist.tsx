@@ -1134,7 +1134,7 @@ const Watchlist = () => {
               isEditing={isEditing}
               onEdit={() => setIsEditing(true)}
               onDone={() => setIsEditing(false)}
-              onOpenAdd={() => navigate("/crop/add?mode=interest", { state: { returnTo: "/crop?tab=interest" } })}
+              onOpenAdd={() => navigate("/crop/add?mode=interest", { state: { returnTo: "/watchlist?tab=interest" } })}
             />
           )}
           {activeTab === "markets" && (
