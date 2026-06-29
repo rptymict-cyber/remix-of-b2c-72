@@ -196,6 +196,9 @@ html, body, #root {
     font-size: 13px;
     line-height: 1.45;
     margin-top: 2px;
+  }
+
+
 
   /* Prediction hero card */
   .prediction-hero {
