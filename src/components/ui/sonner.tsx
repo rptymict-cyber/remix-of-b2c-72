@@ -1,8 +1,23 @@
 import { useTheme } from "next-themes";
 import { Toaster as Sonner, toast } from "sonner";
-import { CheckCircle2, XCircle, AlertTriangle, Info, Loader2 } from "lucide-react";
+import { Check, Info, AlertTriangle, XCircle, Loader2 } from "lucide-react";
 
 type ToasterProps = React.ComponentProps<typeof Sonner>;
+
+const IconBubble = ({
+  bg,
+  children,
+}: {
+  bg: string;
+  children: React.ReactNode;
+}) => (
+  <span
+    className="flex items-center justify-center rounded-full shrink-0"
+    style={{ width: 32, height: 32, background: bg }}
+  >
+    {children}
+  </span>
+);
 
 const Toaster = ({ ...props }: ToasterProps) => {
   const { theme = "system" } = useTheme();
@@ -16,20 +31,39 @@ const Toaster = ({ ...props }: ToasterProps) => {
       visibleToasts={1}
       offset={`calc(var(--app-header-height, 84px) + 8px)`}
       icons={{
-        success: <CheckCircle2 className="h-5 w-5 text-emerald-500 fill-emerald-50" strokeWidth={2.5} />,
-        error: <XCircle className="h-5 w-5 text-red-500" strokeWidth={2.5} />,
-        warning: <AlertTriangle className="h-5 w-5 text-amber-500" strokeWidth={2.5} />,
-        info: <Info className="h-5 w-5 text-sky-500" strokeWidth={2.5} />,
-        loading: <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />,
+        success: (
+          <IconBubble bg="hsl(142 60% 45%)">
+            <Check className="h-[18px] w-[18px] text-white" strokeWidth={3} />
+          </IconBubble>
+        ),
+        error: (
+          <IconBubble bg="hsl(0 72% 55%)">
+            <XCircle className="h-[18px] w-[18px] text-white" strokeWidth={2.5} />
+          </IconBubble>
+        ),
+        warning: (
+          <IconBubble bg="hsl(38 92% 55%)">
+            <AlertTriangle className="h-[18px] w-[18px] text-white" strokeWidth={2.5} />
+          </IconBubble>
+        ),
+        info: (
+          <IconBubble bg="hsl(210 80% 55%)">
+            <Info className="h-[18px] w-[18px] text-white" strokeWidth={2.5} />
+          </IconBubble>
+        ),
+        loading: (
+          <IconBubble bg="hsl(215 10% 55%)">
+            <Loader2 className="h-[18px] w-[18px] animate-spin text-white" />
+          </IconBubble>
+        ),
       }}
       toastOptions={{
         unstyled: true,
         classNames: {
-          toast:
-            "mx-auto inline-flex items-center gap-2 rounded-full bg-white pl-2 pr-4 py-2 shadow-[0_4px_16px_rgba(0,0,0,0.12)] border border-black/5 text-[14px] font-medium text-foreground w-auto max-w-[90vw]",
-          title: "text-[14px] font-medium leading-none",
-          description: "text-[12px] text-muted-foreground",
-          icon: "flex items-center justify-center shrink-0",
+          toast: "app-toast",
+          title: "app-toast-title",
+          description: "app-toast-description",
+          icon: "app-toast-icon",
         },
       }}
       {...props}
