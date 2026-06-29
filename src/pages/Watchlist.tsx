@@ -890,22 +890,26 @@ const MarketsTab = ({
                     </svg>
                   </button>
                 </div>
-                <div className="h-px bg-border my-3" />
+                <div className="flex items-center justify-between mt-3 mb-2">
+                  <p className="text-[11.5px] font-bold text-foreground">오늘 거래량 TOP 3</p>
+                  <span className="text-[10px] text-muted-foreground">전일 대비</span>
+                </div>
                 <div className="grid grid-cols-3 gap-2">
-                  {mainCrops.map(({ crop, price, pct, isUp }) => {
-                    const unitKg = crop.defaultUnitKg;
+                  {topCrops.map(({ crop, price, unitKg, changePct, isUp, volumeTon }, i) => {
                     const perKg = Math.round(price / unitKg);
                     return (
-                      <div key={crop.id} className="text-left">
-                        <p className="text-[11px] text-muted-foreground flex items-center gap-0.5 truncate">
+                      <div key={crop.id} className="text-left rounded-xl bg-secondary/40 p-2">
+                        <p className="text-[10px] font-bold" style={{ color: PRIMARY }}>{i + 1}위 · {volumeTon}t</p>
+                        <p className="text-[11.5px] text-foreground flex items-center gap-0.5 truncate mt-0.5">
                           <span className="text-sm leading-none">{crop.emoji}</span>
-                          <span className="truncate">{crop.name}</span>
+                          <span className="truncate font-semibold">{crop.name}</span>
                         </p>
-                        <p className="text-[13px] font-extrabold text-foreground mt-1">
-                          {price.toLocaleString()}원<span className="text-[10px] font-medium text-muted-foreground">/{unitKg}kg</span>
+                        <p className="text-[13px] font-extrabold text-foreground mt-1 leading-tight">
+                          {price.toLocaleString()}원
+                          <span className="text-[10px] font-medium text-muted-foreground">/{unitKg}kg</span>
                         </p>
-                        <p className={`text-[10px] font-bold mt-0.5 ${isUp ? "price-up" : "price-down"}`}>
-                          {isUp ? "+" : ""}{pct.toFixed(1)}%
+                        <p className={`text-[10.5px] font-bold mt-0.5 ${isUp ? "price-up" : "price-down"}`}>
+                          {isUp ? "▲" : "▼"} {Math.abs(changePct).toFixed(1)}%
                         </p>
                         <p className="text-[9px] text-muted-foreground mt-0.5">
                           ≒ {perKg.toLocaleString()}원/kg
