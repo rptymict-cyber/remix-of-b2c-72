@@ -481,12 +481,23 @@ const HomePage = () => {
           </button>
         </section>
 
-        {/* 유형 배지 */}
-        <div className="flex items-center gap-1.5 pt-1.5 pb-0.5">
-          <span className={`w-[7px] h-[7px] rounded-full ${typeMeta.dot}`} />
-          <span className={`text-[11.5px] font-bold ${typeMeta.color}`}>{typeMeta.name}</span>
-          <span className="text-[10.5px] text-muted-foreground">{typeMeta.desc}</span>
-          <button onClick={openTypeSheet} className="ml-auto text-[11px] font-semibold text-primary underline">변경</button>
+        {/* 모드 카드 */}
+        <div className="w-full min-h-[64px] flex items-center justify-between gap-3 px-4 py-3.5 rounded-[20px] bg-white border border-[#D8EEDC] shadow-[0_4px_12px_rgba(22,101,52,0.06)]">
+          <div className="flex items-center min-w-0 gap-2">
+            <span className={`w-2 h-2 rounded-full shrink-0 ${typeMeta.dot}`} />
+            <span className={`text-[15px] font-bold whitespace-nowrap ${typeMeta.color}`}>{typeMeta.name}</span>
+            <span className="w-px h-4 bg-[#E5E7EB] mx-1 shrink-0" />
+            <span className="text-[12px] font-normal text-[#6B7280] whitespace-nowrap overflow-hidden text-ellipsis">
+              {typeMeta.desc}
+            </span>
+          </div>
+          <button
+            onClick={openTypeSheet}
+            className={`h-9 px-3 rounded-[14px] flex items-center gap-1.5 text-[13px] font-bold shrink-0 border ${btnMeta.bg} ${btnMeta.border} ${btnMeta.text}`}
+          >
+            모드 변경
+            <ChevronRight className="w-4 h-4" />
+          </button>
         </div>
 
         {/* 검색창 */}
