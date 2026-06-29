@@ -249,7 +249,10 @@ const MyCropsTab = ({
                     <Scale className="w-3.5 h-3.5" /> 기준 변경
                   </button>
                   <button
-                    onClick={() => setConfirmId(crop.id)}
+                    onClick={() => {
+                      removeMyCrop(crop.id);
+                      toast({ description: `${crop.name}을(를) 삭제했어요` });
+                    }}
                     className="ml-auto min-h-9 px-2 text-[12.5px] font-bold"
                     style={{ color: DANGER }}
                   >
