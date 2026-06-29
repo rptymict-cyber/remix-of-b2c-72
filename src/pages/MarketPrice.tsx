@@ -610,6 +610,57 @@ const MarketPricePage = () => {
         {/* ===== 산지 ===== */}
         {tab === "산지" && (
           <div className="space-y-3 animate-fade-in">
+            {/* 모드별 보조 패널 토글 */}
+            {(entryMode === "enterprise" || originView === "supplyForecast") && (
+              <div className="flex gap-1.5 bg-secondary/60 p-1 rounded-full text-[12px] font-bold">
+                <button
+                  onClick={() => setOriginView("supply")}
+                  className={`flex-1 h-9 rounded-full ${originView === "supply" ? "bg-white text-foreground shadow-sm" : "text-muted-foreground"}`}
+                >산지 분석</button>
+                <button
+                  onClick={() => setOriginView("supplyForecast")}
+                  className={`flex-1 h-9 rounded-full ${originView === "supplyForecast" ? "bg-white text-foreground shadow-sm" : "text-muted-foreground"}`}
+                >수급 전망</button>
+              </div>
+            )}
+
+            {originView === "supplyForecast" && (
+              <div className="bg-[#F1ECFB] rounded-2xl border border-[#E0D5F5] p-4 space-y-3">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-[#7C3AED]" />
+                  <p className="text-[13px] font-extrabold text-[#7C3AED]">수급 전망</p>
+                </div>
+                <p className="text-[12px] text-muted-foreground">{crop.name} · 전국 주요 시장 · 향후 2주</p>
+                <div className="grid grid-cols-3 gap-2">
+                  <div className="bg-white rounded-xl px-2 py-2 text-center">
+                    <p className="text-[10px] text-muted-foreground">공급 안정도</p>
+                    <p className="text-[13px] font-extrabold text-[#C45000] mt-0.5">주의</p>
+                  </div>
+                  <div className="bg-white rounded-xl px-2 py-2 text-center">
+                    <p className="text-[10px] text-muted-foreground">반입량</p>
+                    <p className="text-[13px] font-extrabold price-down mt-0.5">-5~8%</p>
+                  </div>
+                  <div className="bg-white rounded-xl px-2 py-2 text-center">
+                    <p className="text-[10px] text-muted-foreground">가격 전망</p>
+                    <p className="text-[13px] font-extrabold price-up mt-0.5">↑ 19,200</p>
+                  </div>
+                </div>
+                <div className="bg-white rounded-xl p-3 space-y-1.5">
+                  <p className="text-[11px] font-bold text-foreground">주요 원인</p>
+                  <p className="text-[11.5px] text-muted-foreground">· 전남 무안 반입량 감소</p>
+                  <p className="text-[11.5px] text-muted-foreground">· 저장 물량 감소</p>
+                  <p className="text-[11.5px] text-muted-foreground">· 일부 시장 거래 집중</p>
+                </div>
+                <div className="bg-white rounded-xl p-3 space-y-1.5">
+                  <p className="text-[11px] font-bold text-foreground">대응 제안</p>
+                  <p className="text-[11.5px] text-muted-foreground">· 조달 단가 상승에 대비해 선매입 검토</p>
+                  <p className="text-[11.5px] text-muted-foreground">· 대체 산지 확인</p>
+                  <p className="text-[11.5px] text-muted-foreground">· 가격 알림 설정</p>
+                </div>
+              </div>
+            )}
+
+            {originView === "supply" && (
             <div className="bg-card rounded-2xl border border-border p-4">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-[13px] font-bold text-foreground">산지별 출하 비중</span>
