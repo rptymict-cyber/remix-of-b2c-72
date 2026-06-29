@@ -191,6 +191,10 @@ const AddCrop = () => {
   const showRepresentative = !q.trim() && category === "전체";
 
   const handlePickCrop = (c: CropItem) => {
+    if (profile.myCrops.includes(c.id)) {
+      toast.error("이미 추가된 작물이에요");
+      return;
+    }
     if (c.id !== selectedCropId) {
       setVarieties([ALL_LABEL]);
     }
