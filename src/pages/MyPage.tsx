@@ -149,7 +149,13 @@ const MyPage = () => {
   const nav = useNavigate();
   const { profile, setProfile, marketId, unitKg, setUnitKg, notif } = useApp();
   const initials = profile.name.slice(0, 1) || "농";
-  const myCropsLabel = profile.myCrops.map((id) => `${findCrop(id).emoji}${findCrop(id).name}`).join(", ") || "선택 없음";
+  const myCropsLabel = (() => {
+    if (profile.myCrops.length === 0) return "선택 없음";
+    const items = profile.myCrops.map((id) => `${findCrop(id).emoji}${findCrop(id).name}`);
+    if (items.length <= 3) return items.join(", ");
+    return `${items.slice(0, 3).join(", ")} 외 ${items.length - 3}개`;
+  })();
+
 
   const userTypeKey = profile.userType ?? "none";
   const userTypeInfo = USER_TYPE_DISPLAY[userTypeKey as keyof typeof USER_TYPE_DISPLAY];

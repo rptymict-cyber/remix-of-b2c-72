@@ -2,7 +2,7 @@ import { useMemo, useRef, useState } from "react";
 import { ChevronLeft, Search, Check, MapPin, Store, Pencil, Scale, Bell } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { useApp, type PriceDisplayMode } from "@/store/appStore";
+import { useApp, MAX_MY_CROPS, type PriceDisplayMode } from "@/store/appStore";
 import { MARKETS, findMarket, resolveRepresentativeId, findCrop } from "@/data/catalog";
 import {
   ALL_CROPS,
@@ -183,10 +183,11 @@ const AddCrop = () => {
     const stableId = resolveRepresentativeId(crop.id) ?? crop.id;
     const displayName = findCrop(stableId).name;
     const already = profile.myCrops.includes(stableId);
-    if (!already && profile.myCrops.length >= 30) {
-      toast.error("내 작물은 최대 30개까지 등록할 수 있어요.");
+    if (!already && profile.myCrops.length >= MAX_MY_CROPS) {
+      toast.error(`내 작물은 최대 ${MAX_MY_CROPS}개까지 등록할 수 있어요.`);
       return;
     }
+
     addMyCrop(stableId);
     const firstVar = varieties[0] === ALL_LABEL ? (crop.varieties?.[0] ?? ALL_LABEL) : varieties[0];
     setCrop(stableId, firstVar);

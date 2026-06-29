@@ -2,6 +2,10 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { resolveRepresentativeId } from "@/data/catalog";
 
+// 내 작물 등록 최대 개수 (앱 전역 정책)
+export const MAX_MY_CROPS = 30;
+
+
 
 export type Plan = "Free" | "Basic" | "Pro" | "Premium";
 export type Unit = "kg" | "box" | "ton";
@@ -139,7 +143,7 @@ export const useApp = create<AppState>()(
           const has = s.profile.myCrops.includes(id);
           const next = has
             ? s.profile.myCrops.filter((c) => c !== id)
-            : s.profile.myCrops.length >= 30
+            : s.profile.myCrops.length >= MAX_MY_CROPS
               ? s.profile.myCrops
               : [...s.profile.myCrops, id];
           let cropId = s.cropId;
@@ -150,7 +154,7 @@ export const useApp = create<AppState>()(
       addMyCrop: (id) =>
         set((s) => {
           if (s.profile.myCrops.includes(id)) return { cropId: id };
-          if (s.profile.myCrops.length >= 30) return {};
+          if (s.profile.myCrops.length >= MAX_MY_CROPS) return {};
           const next = [...s.profile.myCrops, id];
           return { profile: { ...s.profile, myCrops: next }, cropId: id };
         }),

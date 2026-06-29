@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, MapPin, Recycle, Search, Check, X, ChevronDown } from "lucide-react";
-import { useApp } from "@/store/appStore";
+import { useApp, MAX_MY_CROPS } from "@/store/appStore";
 import { CROPS, REGIONS_KR } from "@/data/catalog";
 import { useToast } from "@/hooks/use-toast";
 import MobileStatusBar from "@/components/MobileStatusBar";
@@ -539,10 +539,11 @@ const Onboarding = () => {
     const toggle = (id: string) => {
       setSelectedCrops((prev) => {
         if (prev.includes(id)) return prev.filter((x) => x !== id);
-        if (prev.length >= 3) {
-          toast({ description: "최대 3개까지 선택 가능합니다." });
+        if (prev.length >= MAX_MY_CROPS) {
+          toast({ description: `최대 ${MAX_MY_CROPS}개까지 선택 가능합니다.` });
           return prev;
         }
+
         return [...prev, id];
       });
     };
@@ -555,7 +556,7 @@ const Onboarding = () => {
           <h2 className="text-[20px] font-extrabold leading-snug text-foreground">
             현재 재배 중인 작물을<br />모두 선택해주세요.
           </h2>
-          <p className="mt-2 text-[13px] text-muted-foreground">최대 3개까지 선택 가능합니다.</p>
+          <p className="mt-2 text-[13px] text-muted-foreground">최대 {MAX_MY_CROPS}개까지 선택 가능합니다.</p>
 
           <div className="mt-5 relative">
             <Search className="w-4 h-4 text-muted-foreground absolute left-3.5 top-1/2 -translate-y-1/2" />
