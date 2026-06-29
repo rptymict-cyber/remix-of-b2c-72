@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from "react";
 import { ChevronLeft, Search, Check, MapPin, Store, Pencil, Scale, Bell } from "lucide-react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import { useApp, MAX_MY_CROPS, type PriceDisplayMode } from "@/store/appStore";
 import { MARKETS, findMarket, resolveRepresentativeId, findCrop } from "@/data/catalog";
@@ -112,9 +112,12 @@ const ALERT_RULES = [
 const AddCrop = () => {
   const nav = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const isInterest = searchParams.get("mode") === "interest";
   const rawReturnTo = (location.state as { returnTo?: string } | null)?.returnTo;
-  const returnTo = rawReturnTo && !rawReturnTo.startsWith("/crop/add") ? rawReturnTo : "/crop";
-  const { profile, marketId, setMarket, addMyCrop, setCrop, setCropSetting } = useApp();
+  const defaultReturn = isInterest ? "/crop?tab=interest" : "/crop";
+  const returnTo = rawReturnTo && !rawReturnTo.startsWith("/crop/add") ? rawReturnTo : defaultReturn;
+  const { profile, marketId, setMarket, addMyCrop, addInterestCrop, setCrop, setCropSetting } = useApp();
 
   const [step, setStep] = useState<1 | 2>(1);
   const [q, setQ] = useState("");
@@ -122,7 +125,7 @@ const AddCrop = () => {
   const [selectedCropId, setSelectedCropId] = useState<string>("");
   const [varieties, setVarieties] = useState<string[]>([ALL_LABEL]);
   const [varOpen, setVarOpen] = useState(false);
-  const [regType, setRegType] = useState<RegType>("growing");
+  const [regType, setRegType] = useState<RegType>(isInterest ? "interest" : "growing");
   const [marketSel, setMarketSel] = useState<string>(marketId || "gwangju");
   const [marketOpen, setMarketOpen] = useState(false);
   const [priceMode, setPriceMode] = useState<PriceDisplayMode>("20kg");
@@ -147,7 +150,8 @@ const AddCrop = () => {
       setVarieties([ALL_LABEL]);
     }
     setSelectedCropId(c.id);
-    setVarOpen(true);
+    // 관심 품목 모드는 품종 Drawer 자동 오픈 X (가벼운 즐겨찾기 등록)
+    if (!isInterest) setVarOpen(true);
   };
 
   const toggleVariety = (v: string) => {
@@ -181,10 +185,38 @@ const AddCrop = () => {
 
   const submit = () => {
     if (!crop) return;
-    // 확장 카탈로그 id를 앱 전체가 인식하는 안정적인 id로 변환 (예: 무 → "radish")
-    // 대표 매핑이 없는 작물은 확장 id를 그대로 사용 (findCrop이 합성해 표시).
     const stableId = resolveRepresentativeId(crop.id) ?? crop.id;
     const displayName = findCrop(stableId).name;
+
+    if (isInterest) {
+      // 이미 내 작물로 등록된 경우 안내
+      if (profile.myCrops.includes(stableId)) {
+        toast("이미 내 작물로 등록된 품목이에요. 내 작물에서 확인할 수 있어요.");
+        nav("/crop?tab=mine", { replace: true });
+        return;
+      }
+      // 이미 관심 품목으로 등록된 경우 중복 방지
+      if ((profile.interestCrops ?? []).includes(stableId)) {
+        toast("이미 관심 품목에 등록된 품목이에요.");
+        nav("/crop?tab=interest", { replace: true });
+        return;
+      }
+      addInterestCrop(stableId);
+      const finalVarieties = varieties.length === 0 ? [ALL_LABEL] : varieties;
+      setCropSetting(stableId, {
+        regType: "interest",
+        region: profile.region,
+        marketId: marketSel,
+        selectedVarieties: finalVarieties,
+        priceDisplayMode: priceMode,
+        alertEnabled,
+        alertRules: alertEnabled ? alertRules : [],
+      });
+      toast.success("관심 품목에 추가했어요.");
+      nav("/crop?tab=interest", { replace: true });
+      return;
+    }
+
     const already = profile.myCrops.includes(stableId);
     if (!already && profile.myCrops.length >= MAX_MY_CROPS) {
       toast.error(`내 작물은 최대 ${MAX_MY_CROPS}개까지 등록할 수 있어요.`);
