@@ -179,8 +179,8 @@ const AddCrop = () => {
   const submit = () => {
     if (!crop) return;
     const already = profile.myCrops.includes(crop.id);
-    if (!already && profile.myCrops.length >= 3) {
-      toast.error("내 작물은 최대 3개까지 등록할 수 있어요.");
+    if (!already && profile.myCrops.length >= 30) {
+      toast.error("내 작물은 최대 30개까지 등록할 수 있어요.");
       return;
     }
     addMyCrop(crop.id);
