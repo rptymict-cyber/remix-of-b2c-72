@@ -162,6 +162,27 @@ const HomePage = () => {
     setTypeSheetOpen(false);
   };
 
+  const buildCtaUrl = (cta: Cta, cfg: { ctaCrop: string; ctaVariety: string; ctaMarket: string; ctaPriceMode: PriceMode }) => {
+    const base =
+      cta.target === "prediction" ? "/prediction" :
+      cta.target === "notification" ? "/notification-settings" :
+      "/market";
+    const sp = new URLSearchParams();
+    if (cta.params?.tab) sp.set("tab", cta.params.tab);
+    sp.set("mode", userType);
+    sp.set("crop", cfg.ctaCrop);
+    sp.set("variety", cfg.ctaVariety);
+    sp.set("market", cfg.ctaMarket);
+    sp.set("priceMode", cfg.ctaPriceMode);
+    if (cta.params?.metric) sp.set("metric", cta.params.metric);
+    if (cta.params?.sort) sp.set("sort", cta.params.sort);
+    if (cta.params?.view) sp.set("view", cta.params.view);
+    if (cta.params?.type) sp.set("type", cta.params.type);
+    sp.set("entrySource", "home");
+    return `${base}?${sp.toString()}`;
+  };
+  const runCta = (cta: Cta, cfg: HomeConfig) => navigate(buildCtaUrl(cta, cfg));
+
   // ------- Build configs per user type -------
   const aiUpliftPct = 6.3;
   const aiExtraPerBox = Math.round((basePrice * aiUpliftPct) / 100);
