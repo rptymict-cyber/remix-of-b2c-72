@@ -661,6 +661,7 @@ const MarketPricePage = () => {
             )}
 
             {originView === "supply" && (
+            <>
             <div className="bg-card rounded-2xl border border-border p-4">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-[13px] font-bold text-foreground">산지별 출하 비중</span>
@@ -685,6 +686,8 @@ const MarketPricePage = () => {
                 </button>
               ))}
             </div>
+            </>
+            )}
           </div>
         )}
 
