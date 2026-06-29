@@ -75,11 +75,22 @@ const PredictionPage = ({ defaultExpanded = false }: PredictionPageProps) => {
       <AppHeader title="AI 가격 예측" />
 
       <main className="h-full overflow-y-auto px-4 pt-[calc(var(--app-header-height)+1.25rem)] safe-bottom space-y-5">
+        {fromHome && (
+          <div className="bg-[#EAF7EA] rounded-2xl p-3.5 flex items-start gap-2.5">
+            <Sparkles className="w-4 h-4 text-[#1A3A1F] shrink-0 mt-0.5" />
+            <div className="min-w-0">
+              <p className="text-[12px] font-extrabold text-[#1A3A1F]">이 예측의 기준 데이터</p>
+              <p className="text-[11px] text-muted-foreground mt-0.5">{crop.emoji} {crop.name} · {variety} · {market.name}</p>
+              <p className="text-[11px] text-muted-foreground">현재가 {currentPrice.toLocaleString()}원 / {pmLabel} · 기준시각 오늘 14:30</p>
+            </div>
+          </div>
+        )}
         {/* 상단 안내 */}
         <div>
           <p className="text-xs text-muted-foreground">언제 출하할지 고민되시나요?</p>
           <p className="text-base font-bold text-foreground mt-0.5">AI가 최적 출하 시점을 분석합니다</p>
         </div>
+
 
         {/* 조건 설정 */}
         <div className="space-y-3">
