@@ -109,6 +109,41 @@ const ALERT_RULES = [
   "목표 가격 도달 시",
 ];
 
+// 작물별 거래 단위 옵션 (대표 케이스 + 동적 생성)
+type UnitOption = { kg: number; label: string; sublabel: string; price: number };
+const PRICE_PER_KG = 2000; // 예시 환산용 단가
+const getUnitOptions = (cropId: string, defaultUnitKg: number): UnitOption[] => {
+  const basePrice = PRICE_PER_KG * defaultUnitKg;
+  const perKg = PRICE_PER_KG;
+  // 작물별 특수 케이스
+  if (cropId === "pepper") {
+    return [
+      { kg: 0.6, label: "600g 봉지", sublabel: "소포장", price: Math.round(perKg * 0.6) },
+      { kg: 1, label: "1kg", sublabel: "kg 단가", price: perKg },
+      { kg: 10, label: "10kg 상자", sublabel: "대용량", price: perKg * 10 },
+    ];
+  }
+  if (cropId === "onion") {
+    return [
+      { kg: 15, label: "15kg 망", sublabel: "기본 단위", price: perKg * 15 },
+      { kg: 20, label: "20kg 망", sublabel: "대용량", price: perKg * 20 },
+      { kg: 1, label: "1kg", sublabel: "kg 단가", price: perKg },
+    ];
+  }
+  if (cropId === "cabbage") {
+    return [
+      { kg: 10, label: "10kg", sublabel: "기본 단위", price: perKg * 10 },
+      { kg: 2, label: "1포기(2kg)", sublabel: "낱개", price: perKg * 2 },
+      { kg: 1, label: "1kg", sublabel: "kg 단가", price: perKg },
+    ];
+  }
+  return [
+    { kg: defaultUnitKg, label: `${defaultUnitKg}kg`, sublabel: "기본 단위", price: basePrice },
+    { kg: 1, label: "1kg", sublabel: "kg 단가", price: perKg },
+    { kg: defaultUnitKg * 2, label: `${defaultUnitKg * 2}kg`, sublabel: "대용량", price: basePrice * 2 },
+  ];
+};
+
 const AddCrop = () => {
   const nav = useNavigate();
   const location = useLocation();
