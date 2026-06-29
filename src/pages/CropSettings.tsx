@@ -121,7 +121,6 @@ const CropSettings = () => {
           </div>
           <button
             onClick={handleSave}
-            disabled={!dirty}
             className={`w-12 h-10 text-[14px] font-bold ${
               dirty ? "text-[hsl(152_55%_42%)]" : "text-muted-foreground"
             }`}
