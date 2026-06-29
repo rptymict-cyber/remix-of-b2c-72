@@ -244,8 +244,7 @@ const CropSettings = () => {
       <div className="fixed bottom-0 left-0 right-0 z-[100] mx-auto w-full max-w-[430px] bg-white border-t border-border px-5 pt-3 pb-6">
         <button
           onClick={handleSave}
-          disabled={!dirty}
-          className="w-full h-[52px] rounded-2xl bg-[hsl(152_55%_42%)] text-white text-[15px] font-bold disabled:bg-muted disabled:text-muted-foreground transition active:scale-[0.99]"
+          className="w-full h-[52px] rounded-2xl bg-[hsl(152_55%_42%)] text-white text-[15px] font-bold transition active:scale-[0.99]"
         >
           저장하기
         </button>
