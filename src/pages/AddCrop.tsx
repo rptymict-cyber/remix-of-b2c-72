@@ -209,7 +209,7 @@ const AddCrop = () => {
     } else {
       toast.success(`${displayName}이(가) 내 작물에 추가됐어요`);
     }
-    nav("/");
+    nav(returnTo, { replace: true });
   };
 
 
