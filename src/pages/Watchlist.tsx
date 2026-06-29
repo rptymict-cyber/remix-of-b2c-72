@@ -756,11 +756,8 @@ const MarketsTab = ({
         <EmptyState
           message="즐겨찾기한 시장이 없어요."
           subMessage="자주 보는 도매시장을 저장해두면 시장별 시세를 빠르게 볼 수 있어요."
-          buttonLabel="아래 시장에서 추가"
-          onAction={() => {
-            const el = document.getElementById("market-add-list");
-            el?.scrollIntoView({ behavior: "smooth", block: "start" });
-          }}
+          buttonLabel="시장 추가하기"
+          onAction={onOpenAdd}
         />
       ) : isEditing ? (
         /* ===== EDIT MODE ===== */
