@@ -492,8 +492,9 @@ const HomePage = () => {
 
         {/* 품목 chip */}
         <section>
-          <div className="flex items-center justify-between mb-2.5">
+          <div className="mb-2.5">
             <h2 className="text-sm font-semibold text-foreground">{config.chipsTitle}</h2>
+            <p className="text-[11.5px] text-muted-foreground mt-0.5">{config.chipsSubtitle}</p>
           </div>
           {config.chips.length > 0 ? (
             <div className="flex gap-2 overflow-x-auto scrollbar-hide items-center -mx-4 px-4">
