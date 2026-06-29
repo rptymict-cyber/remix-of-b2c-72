@@ -95,7 +95,7 @@ const PredictionPage = ({ defaultExpanded = false }: PredictionPageProps) => {
         {/* 조건 설정 */}
         <div className="space-y-3">
           <p className="text-[13px] font-bold text-foreground">분석 조건</p>
-          <div className="space-y-2">
+          <div className="grid grid-cols-2 gap-2">
             <FilterPill onClick={() => setCropOpen(true)} icon={<span className="text-base leading-none">{crop.emoji}</span>} label={crop.name} />
             <FilterPill onClick={() => setVarietyOpen(true)} icon={<Layers className="w-4 h-4" />} label={variety} />
             <FilterPill onClick={() => setMarketOpen(true)} icon={<Building2 className="w-4 h-4" />} label={market.name} />
