@@ -864,30 +864,9 @@ const Watchlist = () => {
     setActiveTab(t);
   };
 
-  const handlePlusClick = () => {
-    if (activeTab === "myCrops") navigate("/crop/add");
-    else if (activeTab === "interests") navigate("/search");
-    else {
-      const el = document.getElementById("market-add-list");
-      el?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-  };
-
   return (
     <div className="h-full bg-background">
-      <AppHeader
-        title="관심"
-        rightAction={
-          <button
-            onClick={handlePlusClick}
-            aria-label="추가"
-            className="w-9 h-9 rounded-full flex items-center justify-center"
-            style={{ color: PRIMARY, background: LIGHT_GREEN_BG }}
-          >
-            <Plus className="w-5 h-5" />
-          </button>
-        }
-      />
+      <AppHeader title="관심" />
 
       <main className="h-full overflow-y-auto px-4 pt-[calc(var(--app-header-height)+0.75rem)] pb-28 safe-bottom space-y-3">
         <TabBar activeTab={activeTab} onTabChange={changeTab} />
