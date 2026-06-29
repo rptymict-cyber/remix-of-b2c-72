@@ -71,7 +71,10 @@ const CropSettings = () => {
   };
 
   const handleSave = () => {
-    if (!dirty) return;
+    if (!dirty) {
+      nav("/farm-edit");
+      return;
+    }
     setCropSetting(id, { regType, region, marketId: marketSel });
     toast.success(`${crop.name} 설정이 업데이트됐어요`);
     nav("/farm-edit");
