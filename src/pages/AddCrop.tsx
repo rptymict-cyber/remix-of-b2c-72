@@ -227,7 +227,7 @@ const AddCrop = () => {
             />
           </div>
           <span className="text-[11px] font-semibold text-muted-foreground">
-            {step}/2 {step === 1 ? "작물 선택" : "등록 정보 설정"}
+            {step}/2 {step === 1 ? "작물 선택" : "조회 기준 설정"}
           </span>
         </div>
       </header>
