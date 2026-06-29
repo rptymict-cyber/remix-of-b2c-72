@@ -853,15 +853,10 @@ const MarketsTab = ({
         /* ===== VIEW MODE ===== */
         <div className="space-y-3">
           {favMarkets.map((market) => {
-            const mainCropIds = MARKET_MAIN_CROPS[market.id] ?? ["cabbage", "onion", "tomato"];
-            const mainCrops = mainCropIds.map((cid) => {
-              const c = findCrop(cid);
-              const p = seedPrice(cid, market.id, c.varieties[0]);
-              const seed = (cid.charCodeAt(0) + market.id.charCodeAt(0)) % 11;
-              const u = seed % 2 === 0;
-              const pct = ((seed % 7) + 1) * (u ? 1 : -1);
-              return { crop: c, price: p, pct, isUp: u };
-            });
+            const topCrops = getMarketTopCrops(market.id, 3).map((t) => ({
+              ...t,
+              crop: findCrop(t.cropId),
+            }));
             return (
               <div key={market.id} className="bg-white border border-border rounded-2xl p-3.5" style={{ boxShadow: "0 1px 2px rgba(17,24,39,0.04)" }}>
                 <div className="flex items-start gap-3">
