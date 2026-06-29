@@ -23,15 +23,32 @@ const PRIMARY = "hsl(150 55% 38%)";
 const LIGHT_GREEN_BG = "hsl(150 55% 94%)";
 const DANGER = "hsl(0 72% 50%)";
 
-const MARKET_MAIN_CROPS: Record<string, string[]> = {
-  garak: ["cabbage", "onion", "tomato"],
-  daegu: ["onion", "radish", "green_onion"],
-  busan: ["tomato", "strawberry", "cucumber"],
-  anyang: ["cabbage", "apple", "radish"],
-  gwangju: ["cabbage", "green_onion", "garlic"],
-  gangseo: ["cabbage", "onion", "radish"],
-  suwon: ["lettuce", "cabbage", "tomato"],
-  cheongju: ["apple", "pear", "radish"],
+// 시장별 오늘 거래량 상위 3개 작물을 시뮬레이션으로 계산한다.
+// 실제 API 연동 시: GET /markets/:id/top-crops?metric=volume&limit=3 응답으로 대체.
+// 각 항목: { cropId, todayVolumeTon, currentPrice(기준단위), changePctVsYesterday }
+interface MarketTopCrop {
+  cropId: string;
+  volumeTon: number;
+  price: number;
+  unitKg: number;
+  changePct: number;
+  isUp: boolean;
+}
+
+const getMarketTopCrops = (marketId: string, limit = 3): MarketTopCrop[] => {
+  // 모든 작물에 대해 (작물,시장) 시드로 오늘 거래량(t) 점수를 만든다.
+  const scored = CROPS.map((c) => {
+    const seed = [...(c.id + marketId)].reduce((a, ch) => a + ch.charCodeAt(0), 0);
+    const volumeTon = 8 + (seed % 142); // 8 ~ 149t
+    const variety = c.varieties[0] ?? "";
+    const price = seedPrice(c.id, marketId, variety);
+    const dSeed = (seed * 7) % 199;
+    const isUp = dSeed % 2 === 0;
+    const changePct = ((dSeed % 13) + 1) * 0.6 * (isUp ? 1 : -1); // ±0.6 ~ ±7.8%
+    return { cropId: c.id, volumeTon, price, unitKg: c.defaultUnitKg, changePct, isUp };
+  });
+  scored.sort((a, b) => b.volumeTon - a.volumeTon);
+  return scored.slice(0, limit);
 };
 
 const MARKET_STATUS: Record<string, string> = {
