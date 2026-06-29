@@ -1,8 +1,8 @@
 import { useMemo, useRef, useState } from "react";
-import { ChevronLeft, Search, Check, MapPin, Store, Pencil } from "lucide-react";
+import { ChevronLeft, Search, Check, MapPin, Store, Pencil, Scale, Bell } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { useApp } from "@/store/appStore";
+import { useApp, type PriceDisplayMode } from "@/store/appStore";
 import { MARKETS, findMarket } from "@/data/catalog";
 import {
   ALL_CROPS,
@@ -15,6 +15,7 @@ import {
 } from "@/data/cropCatalog";
 import MobileStatusBar from "@/components/MobileStatusBar";
 import { Drawer, DrawerContent } from "@/components/ui/drawer";
+import { Switch } from "@/components/ui/switch";
 
 type RegType = "growing" | "interest";
 const ALL_LABEL = "전체 품종";
