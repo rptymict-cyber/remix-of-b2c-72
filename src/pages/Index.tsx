@@ -70,9 +70,7 @@ type HomeConfig = {
   mainPrice: number;
   mainUnit: string;
   subPrice: string;
-  graphTitle: string;
-  graphBadge: string;
-  graphBadgeCls: string;
+  priceChangeBadge: { text: string; cls: string };
   graphColor: string;
   kpis: KPI[];
   insightTitle: string;
@@ -87,6 +85,7 @@ type HomeConfig = {
   movementRows: MovementRow[];
   secondary?: React.ReactNode;
 };
+
 
 const HomePage = () => {
   const navigate = useNavigate();
