@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { ChevronDown, ChevronUp, BrainCircuit, TrendingUp, AlertTriangle, CloudRain, BarChart2, Calendar, Layers, Zap, Clock, Package, MapPin, Building2 } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
+import { ChevronDown, ChevronUp, BrainCircuit, TrendingUp, AlertTriangle, CloudRain, BarChart2, Calendar, Layers, Zap, Clock, Package, MapPin, Building2, Sparkles } from "lucide-react";
 import { ComposedChart, Line, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, ReferenceArea } from "recharts";
 import AppHeader from "@/components/AppHeader";
 import BottomNav from "@/components/BottomNav";
