@@ -109,6 +109,41 @@ const ALERT_RULES = [
   "목표 가격 도달 시",
 ];
 
+// 작물별 거래 단위 옵션 (대표 케이스 + 동적 생성)
+type UnitOption = { kg: number; label: string; sublabel: string; price: number };
+const PRICE_PER_KG = 2000; // 예시 환산용 단가
+const getUnitOptions = (cropId: string, defaultUnitKg: number): UnitOption[] => {
+  const basePrice = PRICE_PER_KG * defaultUnitKg;
+  const perKg = PRICE_PER_KG;
+  // 작물별 특수 케이스
+  if (cropId === "pepper") {
+    return [
+      { kg: 0.6, label: "600g 봉지", sublabel: "소포장", price: Math.round(perKg * 0.6) },
+      { kg: 1, label: "1kg", sublabel: "kg 단가", price: perKg },
+      { kg: 10, label: "10kg 상자", sublabel: "대용량", price: perKg * 10 },
+    ];
+  }
+  if (cropId === "onion") {
+    return [
+      { kg: 15, label: "15kg 망", sublabel: "기본 단위", price: perKg * 15 },
+      { kg: 20, label: "20kg 망", sublabel: "대용량", price: perKg * 20 },
+      { kg: 1, label: "1kg", sublabel: "kg 단가", price: perKg },
+    ];
+  }
+  if (cropId === "cabbage") {
+    return [
+      { kg: 10, label: "10kg", sublabel: "기본 단위", price: perKg * 10 },
+      { kg: 2, label: "1포기(2kg)", sublabel: "낱개", price: perKg * 2 },
+      { kg: 1, label: "1kg", sublabel: "kg 단가", price: perKg },
+    ];
+  }
+  return [
+    { kg: defaultUnitKg, label: `${defaultUnitKg}kg`, sublabel: "기본 단위", price: basePrice },
+    { kg: 1, label: "1kg", sublabel: "kg 단가", price: perKg },
+    { kg: defaultUnitKg * 2, label: `${defaultUnitKg * 2}kg`, sublabel: "대용량", price: basePrice * 2 },
+  ];
+};
+
 const AddCrop = () => {
   const nav = useNavigate();
   const location = useLocation();
@@ -132,9 +167,19 @@ const AddCrop = () => {
   const [priceModeOpen, setPriceModeOpen] = useState(false);
   const [alertEnabled, setAlertEnabled] = useState(true);
   const [alertRules, setAlertRules] = useState<string[]>([ALERT_RULES[0]]);
+  const [selectedUnitKg, setSelectedUnitKg] = useState<number | null>(null);
+  const [selectedUnitLabel, setSelectedUnitLabel] = useState<string>("");
 
   const crop = selectedCropId ? findCropById(selectedCropId) : null;
   const market = findMarket(marketSel);
+  const cropStableId = crop ? (resolveRepresentativeId(crop.id) ?? crop.id) : "";
+  const cropMeta = cropStableId ? findCrop(cropStableId) : null;
+  const cropDefaultUnitKg = cropMeta?.defaultUnitKg ?? 10;
+  const cropBasePrice = PRICE_PER_KG * cropDefaultUnitKg;
+  const unitOptions = useMemo(
+    () => (cropStableId ? getUnitOptions(cropStableId, cropDefaultUnitKg) : []),
+    [cropStableId, cropDefaultUnitKg]
+  );
 
   // 검색어가 있으면 카테고리 필터 무시하고 전체 작물 기준 검색
   const listed = useMemo(() => {
@@ -235,6 +280,8 @@ const AddCrop = () => {
       priceDisplayMode: priceMode,
       alertEnabled,
       alertRules: alertEnabled ? alertRules : [],
+      unitKg: selectedUnitKg ?? cropDefaultUnitKg,
+      unitLabel: selectedUnitLabel || `${cropDefaultUnitKg}kg`,
     });
     if (already) {
       toast("이미 등록된 작물이에요. 선택 작물로 이동했어요.");
@@ -407,6 +454,50 @@ const AddCrop = () => {
             </Section>
           )}
 
+          <Section
+            title="거래 단위"
+            desc="보통 어떤 단위로 거래하세요? 시세가 이 단위 기준으로 표시돼요."
+          >
+            <div className="grid grid-cols-3 gap-2">
+              {unitOptions.map((opt) => {
+                const sel = selectedUnitKg === opt.kg && selectedUnitLabel === opt.label;
+                return (
+                  <button
+                    key={`${opt.label}-${opt.kg}`}
+                    onClick={() => {
+                      setSelectedUnitKg(opt.kg);
+                      setSelectedUnitLabel(opt.label);
+                    }}
+                    className={`bg-card rounded-2xl py-3 px-2 text-center border-2 transition-all ${
+                      sel ? "border-primary bg-primary/5" : "border-border"
+                    }`}
+                  >
+                    <p className={`text-[15px] font-extrabold leading-tight ${sel ? "text-primary" : "text-foreground"}`}>
+                      {opt.label}
+                    </p>
+                    <p className="text-[10px] text-muted-foreground mb-1.5">{opt.sublabel}</p>
+                    <p className="text-[12px] font-bold text-destructive">
+                      {opt.price.toLocaleString()}원
+                    </p>
+                  </button>
+                );
+              })}
+            </div>
+            {selectedUnitKg !== null && (
+              <div className="bg-primary/5 border border-primary/20 rounded-xl px-3 py-2.5 flex items-center gap-2 mt-2">
+                <span className="text-[18px]">⚖️</span>
+                <span className="text-[12px] font-semibold text-primary">
+                  ≒ {Math.round(cropBasePrice / selectedUnitKg).toLocaleString()}원/kg으로 환산해서 보여드려요
+                </span>
+              </div>
+            )}
+            <p className="text-[11px] text-muted-foreground mt-1.5">
+              단위는 나중에 내 작물 설정에서 바꿀 수 있어요
+            </p>
+          </Section>
+
+
+
           {!isInterest && (
             <Section title="재배 지역" desc="이 지역의 기상 정보가 AI 예측에 반영됩니다.">
               <div className="bg-card border border-border rounded-2xl px-4 py-3.5 flex items-center justify-between">
@@ -549,7 +640,11 @@ const AddCrop = () => {
             onClick={submit}
             className="w-full py-3.5 rounded-2xl bg-primary text-white text-[15px] font-bold"
           >
-            {isInterest ? "관심 품목 추가하기" : "작물 추가하기"}
+            {isInterest
+              ? "관심 품목 추가하기"
+              : selectedUnitKg !== null
+                ? "작물 추가하기"
+                : "기본 단위로 추가하기"}
           </button>
         )}
       </div>
