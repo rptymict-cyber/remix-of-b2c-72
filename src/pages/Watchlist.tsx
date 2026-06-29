@@ -947,44 +947,12 @@ const MarketsTab = ({
 
       {!isEditing && addableMarkets.length > 0 && (
         <button
-          onClick={() => {
-            const el = document.getElementById("market-add-list");
-            el?.scrollIntoView({ behavior: "smooth", block: "start" });
-          }}
+          onClick={onOpenAdd}
           className="w-full min-h-12 rounded-2xl border border-dashed text-[13px] font-bold flex items-center justify-center gap-1.5"
           style={{ borderColor: "hsl(150 55% 70%)", color: PRIMARY }}
         >
-          <Plus className="w-4 h-4" /> 시장 추가
+          <Plus className="w-4 h-4" /> 시장 추가하기
         </button>
-      )}
-
-
-      {!isEditing && addableMarkets.length > 0 && (
-        <div id="market-add-list" className="space-y-2 pt-1">
-          <h3 className="text-[13px] font-bold text-foreground px-1">시장 추가</h3>
-          <div className="bg-white border border-border rounded-2xl overflow-hidden">
-            {addableMarkets.map((m, i) => (
-              <div key={m.id}>
-                {i > 0 && <div className="h-px bg-border mx-4" />}
-                <div className="flex items-center px-4 py-3 min-h-12">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[13px] font-bold text-foreground truncate">{m.name}</p>
-                    <p className="text-[11px] text-muted-foreground truncate">{m.region}</p>
-                  </div>
-                  <button
-                    onClick={() => { toggleFavMarket(m.id); toast({ description: "즐겨찾기에 추가했어요" }); }}
-                    aria-label="즐겨찾기 추가"
-                    className="shrink-0 w-9 h-9 rounded-lg flex items-center justify-center text-muted-foreground"
-                  >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round">
-                      <polygon points="12 2.7 14.9 9 21.6 9.7 16.5 14.3 18 21 12 17.5 6 21 7.5 14.3 2.4 9.7 9.1 9" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
       )}
     </div>
   );
