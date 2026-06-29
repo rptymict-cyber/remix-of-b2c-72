@@ -495,7 +495,7 @@ const HomePage = () => {
             className={`h-9 px-3 rounded-[14px] flex items-center gap-1.5 text-[13px] font-bold shrink-0 border ${btnMeta.bg} ${btnMeta.border} ${btnMeta.text}`}
           >
             모드 변경
-            <ChevronRight className="w-4 h-4" />
+            <ChevronDown className="w-4 h-4" />
           </button>
         </div>
 
