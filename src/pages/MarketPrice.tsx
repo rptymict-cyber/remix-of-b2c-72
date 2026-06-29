@@ -263,7 +263,6 @@ const MarketPricePage = () => {
           </div>
           <div className="px-5 pb-3 flex items-end justify-between gap-3">
             <div>
-              <div className="flex items-baseline gap-1.5">
               {(() => {
                 const kg = basePrice / crop.defaultUnitKg;
                 const r100 = (n: number) => Math.round(n / 100) * 100;
