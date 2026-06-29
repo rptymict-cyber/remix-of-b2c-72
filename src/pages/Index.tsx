@@ -73,6 +73,7 @@ type Cta = { label: string; target: CtaTarget; params?: CtaParams };
 type HomeConfig = {
   searchPlaceholder: string;
   chipsTitle: string;
+  chipsSubtitle: string;
   chips: { id: string; name: string; emoji: string }[];
   addChipLabel: string;
   heroSubtitle: string;
@@ -190,7 +191,8 @@ const HomePage = () => {
 
   const farmerConfig: HomeConfig = {
     searchPlaceholder: "품목, 품종, 시장 검색",
-    chipsTitle: "내 작물",
+    chipsTitle: "관심 작물",
+    chipsSubtitle: "재배 중인 작물의 시세와 출하 흐름을 확인하세요.",
     chips: myCropList.map((c) => ({ id: c.id, name: c.name, emoji: c.emoji })),
     addChipLabel: "작물 추가",
     heroSubtitle: `${crop.emoji} ${crop.name} · ${variety} · ${market.name}`,
@@ -233,13 +235,14 @@ const HomePage = () => {
 
   const wholesalerConfig: HomeConfig = {
     searchPlaceholder: "품목, 산지, 법인, 시장 검색",
-    chipsTitle: "취급 품목",
+    chipsTitle: "관심 작물",
+    chipsSubtitle: "자주 거래하는 작물의 반입량과 낙찰가를 확인하세요.",
     chips: [
       { id: "cabbage", name: "배추", emoji: "🥬" },
       { id: "onion", name: "양파", emoji: "🧅" },
       { id: "tomato", name: "토마토", emoji: "🍅" },
     ],
-    addChipLabel: "품목 추가",
+    addChipLabel: "작물 추가",
     heroSubtitle: "🥬 배추 · 서울 가락시장",
     unitChipLabel: "가격 기준 10kg",
     mainPrice: 12800,
@@ -308,13 +311,14 @@ const HomePage = () => {
 
   const retailerConfig: HomeConfig = {
     searchPlaceholder: "매입 품목, 시장, 가격 검색",
-    chipsTitle: "매입 품목",
+    chipsTitle: "관심 작물",
+    chipsSubtitle: "자주 매입하는 작물의 가격 변동을 확인하세요.",
     chips: [
       { id: "onion", name: "양파", emoji: "🧅" },
       { id: "green_onion", name: "대파", emoji: "🌱" },
       { id: "tomato", name: "토마토", emoji: "🍅" },
     ],
-    addChipLabel: "품목 추가",
+    addChipLabel: "작물 추가",
     heroSubtitle: "🧅 양파 · 대구북부시장",
     unitChipLabel: "가격 기준 15kg",
     mainPrice: 18400,
@@ -369,13 +373,14 @@ const HomePage = () => {
 
   const enterpriseConfig: HomeConfig = {
     searchPlaceholder: "조달 품목, 산지, 시장 검색",
-    chipsTitle: "조달 품목",
+    chipsTitle: "관심 작물",
+    chipsSubtitle: "주요 조달 작물의 수급 흐름을 확인하세요.",
     chips: [
       { id: "onion", name: "양파", emoji: "🧅" },
       { id: "cabbage", name: "배추", emoji: "🥬" },
       { id: "potato", name: "감자", emoji: "🥔" },
     ],
-    addChipLabel: "품목 추가",
+    addChipLabel: "작물 추가",
     heroSubtitle: "🧅 양파 · 전국 주요 시장",
     unitChipLabel: "가격 기준 15kg",
     mainPrice: 18400,
@@ -487,8 +492,9 @@ const HomePage = () => {
 
         {/* 품목 chip */}
         <section>
-          <div className="flex items-center justify-between mb-2.5">
+          <div className="mb-2.5">
             <h2 className="text-sm font-semibold text-foreground">{config.chipsTitle}</h2>
+            <p className="text-[11.5px] text-muted-foreground mt-0.5">{config.chipsSubtitle}</p>
           </div>
           {config.chips.length > 0 ? (
             <div className="flex gap-2 overflow-x-auto scrollbar-hide items-center -mx-4 px-4">
