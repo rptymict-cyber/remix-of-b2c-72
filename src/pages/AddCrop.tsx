@@ -201,7 +201,7 @@ const AddCrop = () => {
     } else {
       toast.success(`${crop.name}이(가) 내 작물에 추가됐어요`);
     }
-    nav("/crop");
+    nav("/");
   };
 
   return (
