@@ -276,10 +276,9 @@ const HomePage = () => {
     mainPrice: 18400,
     mainUnit: "15kg",
     subPrice: "실거래가 36,800원 / 30kg",
-    graphTitle: "최근 7일 매입가 흐름",
-    graphBadge: "상승세 지속",
-    graphBadgeCls: "bg-[#FDECE0] text-[#C45000]",
+    priceChangeBadge: { text: "전일 대비 +6.1%", cls: "bg-[#FDECE0] text-[#C45000]" },
     graphColor: "#F08A24",
+
     kpis: [
       { label: "전일", value: "+6.1%", cls: "price-up" },
       { label: "시장 최저가", value: "17,900원", cls: "text-foreground" },
