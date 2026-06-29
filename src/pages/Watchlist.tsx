@@ -385,8 +385,8 @@ const MyCropsTab = ({
 
 // ====== Interests Tab ======
 const InterestsTab = ({
-  showBanner, isEditing, onEdit, onDone,
-}: { showBanner: boolean; isEditing: boolean; onEdit: () => void; onDone: () => void }) => {
+  showBanner, isEditing, onEdit, onDone, onOpenAdd,
+}: { showBanner: boolean; isEditing: boolean; onEdit: () => void; onDone: () => void; onOpenAdd: () => void }) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { profile, setProfile, setCrop, setMarket, toggleInterestCrop } = useApp();
