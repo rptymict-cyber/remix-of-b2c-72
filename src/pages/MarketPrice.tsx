@@ -419,9 +419,12 @@ const MarketPricePage = () => {
             </div>
 
             {/* 경매내역 표 */}
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-bold text-foreground">경매내역 <span className="text-[11px] font-medium text-muted-foreground">({sortLabel[sortKey]})</span></span>
-              <span className="text-[11px] text-muted-foreground">총 245건 · 평균가 38,000원</span>
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0">
+                <p className="text-sm font-bold text-foreground">경매내역</p>
+                <p className="text-[11px] text-muted-foreground mt-0.5">총 245건 · 평균가 38,000원</p>
+              </div>
+              <DropdownButton label={sortLabel[sortKey]} onClick={() => setSortOpen(true)} />
             </div>
             <div className="bg-card rounded-xl border border-border overflow-hidden">
               <div className="grid grid-cols-[1.2fr_2.4fr_1.4fr_1.6fr] px-3 py-2 text-[10px] text-muted-foreground border-b border-border">
