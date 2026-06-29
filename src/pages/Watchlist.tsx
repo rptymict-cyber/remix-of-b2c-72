@@ -822,14 +822,11 @@ const MarketsTab = ({
           })}
 
           <button
-            onClick={() => {
-              const el = document.getElementById("market-add-list");
-              el?.scrollIntoView({ behavior: "smooth", block: "start" });
-            }}
+            onClick={onOpenAdd}
             className="w-full min-h-12 rounded-2xl border border-dashed text-[13px] font-bold flex items-center justify-center gap-1.5"
             style={{ borderColor: "hsl(150 55% 70%)", color: PRIMARY }}
           >
-            <Plus className="w-4 h-4" /> 시장 추가
+            <Plus className="w-4 h-4" /> 시장 추가하기
           </button>
 
           <EditHint>대표 시장은 홈과 시세 화면의 기본 시장으로 사용됩니다.</EditHint>
