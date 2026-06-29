@@ -3,7 +3,7 @@ import { ChevronLeft, Search, Check, MapPin, Store, Pencil, Scale, Bell } from "
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useApp, type PriceDisplayMode } from "@/store/appStore";
-import { MARKETS, findMarket } from "@/data/catalog";
+import { MARKETS, findMarket, resolveRepresentativeId, findCrop } from "@/data/catalog";
 import {
   ALL_CROPS,
   REPRESENTATIVE_CROPS,
@@ -178,16 +178,20 @@ const AddCrop = () => {
 
   const submit = () => {
     if (!crop) return;
-    const already = profile.myCrops.includes(crop.id);
+    // 확장 카탈로그 id를 앱 전체가 인식하는 안정적인 id로 변환 (예: 무 → "radish")
+    // 대표 매핑이 없는 작물은 확장 id를 그대로 사용 (findCrop이 합성해 표시).
+    const stableId = resolveRepresentativeId(crop.id) ?? crop.id;
+    const displayName = findCrop(stableId).name;
+    const already = profile.myCrops.includes(stableId);
     if (!already && profile.myCrops.length >= 30) {
       toast.error("내 작물은 최대 30개까지 등록할 수 있어요.");
       return;
     }
-    addMyCrop(crop.id);
+    addMyCrop(stableId);
     const firstVar = varieties[0] === ALL_LABEL ? (crop.varieties?.[0] ?? ALL_LABEL) : varieties[0];
-    setCrop(crop.id, firstVar);
+    setCrop(stableId, firstVar);
     setMarket(marketSel);
-    setCropSetting(crop.id, {
+    setCropSetting(stableId, {
       regType,
       region: profile.region,
       marketId: marketSel,
@@ -199,10 +203,11 @@ const AddCrop = () => {
     if (already) {
       toast("이미 등록된 작물이에요. 선택 작물로 이동했어요.");
     } else {
-      toast.success(`${crop.name}이(가) 내 작물에 추가됐어요`);
+      toast.success(`${displayName}이(가) 내 작물에 추가됐어요`);
     }
     nav("/");
   };
+
 
   return (
     <div className="h-full bg-background">

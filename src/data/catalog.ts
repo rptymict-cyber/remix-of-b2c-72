@@ -1,3 +1,5 @@
+import { ALL_CROPS as EXT_CROPS, findCropById as findExtCropById } from "./cropCatalog";
+
 export interface Crop {
   id: string;
   name: string;
@@ -7,6 +9,7 @@ export interface Crop {
   weatherSensitivity: "낮음" | "중간" | "높음";
   harvestSeason: string;
 }
+
 
 export interface Market {
   id: string;
@@ -54,8 +57,100 @@ export const MARKETS: Market[] = [
 
 export const REGION_GROUPS = ["전체", "서울/경기", "영남", "호남", "충청"] as const;
 
-export const findCrop = (id: string) => CROPS.find((c) => c.id === id) || CROPS[0];
+// 확장 카탈로그 작물명 → 대표 카탈로그 id 매핑
+// AddCrop에서 확장 카탈로그(c0-0 등)로 선택한 작물을 앱 전체가 인식하는 안정적인 id로 변환할 때 사용한다.
+const NAME_TO_REP_ID: Record<string, string> = {
+  벼: "rice",
+  쌀: "rice",
+  찰벼: "rice",
+  고추: "pepper",
+  풋고추: "pepper",
+  건고추: "pepper",
+  꽈리고추: "pepper",
+  홍고추: "pepper",
+  청양고추: "pepper",
+  사과: "apple",
+  배: "pear",
+  배추: "cabbage",
+  양파: "onion",
+  무: "radish",
+  토마토: "tomato",
+  방울토마토: "tomato",
+  딸기: "strawberry",
+  감자: "potato",
+  고구마: "sweet_potato",
+  마늘: "garlic",
+  콩: "soybean",
+  대파: "green_onion",
+  쪽파: "green_onion",
+  실파: "green_onion",
+  감귤: "mandarin",
+  복숭아: "peach",
+  수박: "watermelon",
+  상추: "lettuce",
+  옥수수: "corn",
+};
+
+/**
+ * 입력값이 대표 카탈로그 id이면 그대로 반환.
+ * 확장 카탈로그 id이면 같은 작물명의 대표 카탈로그 id로 매핑한다.
+ * 작물명 문자열이 들어와도 대표 id를 시도한다.
+ * 매칭 실패 시 undefined.
+ */
+export function resolveRepresentativeId(idOrName: string): string | undefined {
+  if (!idOrName) return undefined;
+  if (CROPS.some((c) => c.id === idOrName)) return idOrName;
+  const ext = findExtCropById(idOrName);
+  if (ext && NAME_TO_REP_ID[ext.name]) return NAME_TO_REP_ID[ext.name];
+  if (NAME_TO_REP_ID[idOrName]) return NAME_TO_REP_ID[idOrName];
+  return undefined;
+}
+
+const UNKNOWN_CROP: Crop = {
+  id: "__unknown__",
+  name: "알 수 없는 작물",
+  emoji: "❓",
+  varieties: [],
+  defaultUnitKg: 10,
+  weatherSensitivity: "중간",
+  harvestSeason: "-",
+};
+
+/**
+ * 안전한 작물 해석기.
+ * 1) 대표 카탈로그 id면 해당 Crop
+ * 2) 확장 카탈로그 id면 대표 매핑 후 매핑된 Crop, 매핑 실패 시 확장 정보를 Crop 형태로 합성
+ * 3) 어느 것도 매칭되지 않으면 "알 수 없는 작물" 플레이스홀더 (절대 조용히 "벼"로 떨어지지 않음)
+ */
+export const findCrop = (id: string): Crop => {
+  if (!id) return UNKNOWN_CROP;
+  const direct = CROPS.find((c) => c.id === id);
+  if (direct) return direct;
+  const repId = resolveRepresentativeId(id);
+  if (repId) {
+    const rep = CROPS.find((c) => c.id === repId);
+    if (rep) return rep;
+  }
+  const ext = findExtCropById(id);
+  if (ext) {
+    return {
+      id: ext.id,
+      name: ext.name,
+      emoji: ext.icon,
+      varieties: ext.varieties,
+      defaultUnitKg: 10,
+      weatherSensitivity: "중간",
+      harvestSeason: "-",
+    };
+  }
+  if (typeof console !== "undefined") {
+    console.warn(`[catalog] findCrop: unknown crop id "${id}"`);
+  }
+  return { ...UNKNOWN_CROP, id };
+};
+
 export const findMarket = (id: string) => MARKETS.find((m) => m.id === id) || MARKETS[0];
+
 
 // Deterministic seeded "price" per (crop, market, variety)
 export const seedPrice = (cropId: string, marketId: string, variety?: string) => {
