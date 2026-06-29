@@ -491,13 +491,7 @@ const MarketPricePage = () => {
               <div className="bg-card rounded-2xl border border-border p-4">
                 <div className="flex items-center justify-between gap-2 mb-1">
                   <span className="text-[13px] font-bold text-foreground">{marketCardTitle[marketMetric]}</span>
-                  <button
-                    onClick={() => setMarketMetricOpen(true)}
-                    className="h-9 px-3 inline-flex items-center gap-1 rounded-full border border-border bg-card text-[12px] font-bold text-primary active:scale-[0.98] shrink-0"
-                  >
-                    {marketMetricLabel[marketMetric]}
-                    <ChevronDown className="w-3.5 h-3.5" />
-                  </button>
+                  <DropdownButton label={marketMetricLabel[marketMetric]} onClick={() => setMarketMetricOpen(true)} />
                 </div>
                 <p className="text-[10px] text-muted-foreground mb-3">{marketCardDesc[marketMetric]}</p>
                 <div className="space-y-3">
