@@ -167,6 +167,8 @@ const AddCrop = () => {
   const [priceModeOpen, setPriceModeOpen] = useState(false);
   const [alertEnabled, setAlertEnabled] = useState(true);
   const [alertRules, setAlertRules] = useState<string[]>([ALERT_RULES[0]]);
+  const [selectedUnitKg, setSelectedUnitKg] = useState<number | null>(null);
+  const [selectedUnitLabel, setSelectedUnitLabel] = useState<string>("");
 
   const crop = selectedCropId ? findCropById(selectedCropId) : null;
   const market = findMarket(marketSel);
