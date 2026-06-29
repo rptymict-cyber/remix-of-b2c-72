@@ -673,6 +673,11 @@ const Onboarding = () => {
       </div>
       <button
         onClick={() => {
+          const firstId = selectedCrops[0];
+          if (firstId) {
+            const c = CROPS.find((x) => x.id === firstId);
+            setCrop(firstId, c?.varieties?.[0]);
+          }
           completeOnboarding();
           nav("/", { replace: true });
         }}
