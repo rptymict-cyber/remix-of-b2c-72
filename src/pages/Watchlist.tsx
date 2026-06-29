@@ -86,16 +86,13 @@ const TabBar = ({ activeTab, onTabChange }: { activeTab: WatchTab; onTabChange: 
   );
 };
 
-// ====== Info banner (closable) ======
-const InfoBanner = ({ icon, message, onClose }: { icon: React.ReactNode; message: string; onClose: () => void }) => (
+// ====== Info banner ======
+const InfoBanner = ({ icon, message }: { icon: React.ReactNode; message: string }) => (
   <div className="flex items-start gap-2.5 p-3 rounded-xl" style={{ background: LIGHT_GREEN_BG }}>
     <div className="shrink-0 w-7 h-7 rounded-full bg-white flex items-center justify-center" style={{ color: PRIMARY }}>
       {icon}
     </div>
     <p className="flex-1 text-[12.5px] leading-relaxed text-foreground/85">{message}</p>
-    <button onClick={onClose} aria-label="닫기" className="shrink-0 w-6 h-6 flex items-center justify-center text-muted-foreground">
-      <X className="w-4 h-4" />
-    </button>
   </div>
 );
 
