@@ -205,10 +205,9 @@ const HomePage = () => {
     mainPrice: 12800,
     mainUnit: "10kg",
     subPrice: "실거래가 25,600원 / 20kg",
-    graphTitle: "최근 7일 거래 흐름",
-    graphBadge: "거래량 증가",
-    graphBadgeCls: "bg-[#E8F0FE] text-[#1F6FE8]",
+    priceChangeBadge: { text: "전일 대비 +3.2%", cls: "bg-[#E8F0FE] text-[#1F6FE8]" },
     graphColor: "#1F6FE8",
+
     kpis: [
       { label: "거래량", value: "+31.2%", cls: "text-[#1F6FE8]" },
       { label: "거래건수", value: "142건", cls: "text-foreground" },
