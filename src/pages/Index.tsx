@@ -38,12 +38,12 @@ const USER_TYPE_OPTIONS: { id: NonNullable<UserType>; icon: string; title: strin
   { id: "enterprise", icon: "🏢", title: "식품기업 · 유통업체", desc: "대량 조달 전략과 수급 분석이 필요해요", tags: ["공급량 동향", "산지 분석", "중기 예측"] },
 ];
 
-const TYPE_META: Record<NonNullable<UserType> | "default", { dot: string; color: string; name: string; desc: string }> = {
-  farmer: { dot: "bg-[#16A34A]", color: "text-[#15803D]", name: "👨‍🌾 농민 모드", desc: "\n" },
-  wholesaler: { dot: "bg-[#2563EB]", color: "text-[#1D4ED8]", name: "🏪 도매상 모드", desc: "반입량 · 낙찰가 · 법인 중심" },
-  retailer: { dot: "bg-[#F97316]", color: "text-[#EA580C]", name: "🛒 소매상 모드", desc: "매입 적정가 · 가격 정보 중심" },
-  enterprise: { dot: "bg-[#8B5CF6]", color: "text-[#7C3AED]", name: "🏢 기업 모드", desc: "수급 동향 · 산지 분석 중심" },
-  default: { dot: "bg-[#16A34A]", color: "text-[#15803D]", name: "👨‍🌾 농민 모드", desc: "\n" },
+const TYPE_META: Record<NonNullable<UserType> | "default", { dot: string; color: string; name: string }> = {
+  farmer: { dot: "bg-[#16A34A]", color: "text-[#15803D]", name: "👨‍🌾 농민 모드" },
+  wholesaler: { dot: "bg-[#2563EB]", color: "text-[#1D4ED8]", name: "🏪 도매상 모드" },
+  retailer: { dot: "bg-[#F97316]", color: "text-[#EA580C]", name: "🛒 소매상 모드" },
+  enterprise: { dot: "bg-[#8B5CF6]", color: "text-[#7C3AED]", name: "🏢 기업 모드" },
+  default: { dot: "bg-[#16A34A]", color: "text-[#15803D]", name: "👨‍🌾 농민 모드" },
 };
 
 const TYPE_BTN: Record<NonNullable<UserType> | "default", { bg: string; border: string; text: string }> = {
