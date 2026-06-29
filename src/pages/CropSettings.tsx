@@ -71,7 +71,10 @@ const CropSettings = () => {
   };
 
   const handleSave = () => {
-    if (!dirty) return;
+    if (!dirty) {
+      nav("/farm-edit");
+      return;
+    }
     setCropSetting(id, { regType, region, marketId: marketSel });
     toast.success(`${crop.name} 설정이 업데이트됐어요`);
     nav("/farm-edit");
@@ -118,7 +121,6 @@ const CropSettings = () => {
           </div>
           <button
             onClick={handleSave}
-            disabled={!dirty}
             className={`w-12 h-10 text-[14px] font-bold ${
               dirty ? "text-[hsl(152_55%_42%)]" : "text-muted-foreground"
             }`}
@@ -242,8 +244,7 @@ const CropSettings = () => {
       <div className="fixed bottom-0 left-0 right-0 z-[100] mx-auto w-full max-w-[430px] bg-white border-t border-border px-5 pt-3 pb-6">
         <button
           onClick={handleSave}
-          disabled={!dirty}
-          className="w-full h-[52px] rounded-2xl bg-[hsl(152_55%_42%)] text-white text-[15px] font-bold disabled:bg-muted disabled:text-muted-foreground transition active:scale-[0.99]"
+          className="w-full h-[52px] rounded-2xl bg-[hsl(152_55%_42%)] text-white text-[15px] font-bold transition active:scale-[0.99]"
         >
           저장하기
         </button>
