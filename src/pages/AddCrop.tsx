@@ -405,6 +405,81 @@ const AddCrop = () => {
               선택한 시장은 작물별 기본 시세 기준으로 사용됩니다.
             </p>
           </Section>
+
+          <Section
+            title="가격 표시 기준"
+            desc="작물마다 거래 단위가 달라서, 같은 기준으로 환산해 비교할 수 있어요."
+          >
+            <div className="bg-card border border-border rounded-2xl px-4 py-3.5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Scale className="w-4 h-4 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-foreground">{modeShort(priceMode)}</p>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">
+                      실거래가를 {modeShort(priceMode)}으로 환산해 보여드려요.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setPriceModeOpen(true)}
+                  className="text-xs font-semibold text-primary"
+                >
+                  기준 변경
+                </button>
+              </div>
+              <div className="mt-3 px-3 py-2 rounded-xl border border-dashed border-primary/30 bg-primary/5">
+                <p className="text-[11px] text-foreground">
+                  <span className="text-muted-foreground">예시 </span>
+                  {won(SAMPLE_PRICE)} / {SAMPLE_KG}kg → <span className="font-bold text-primary">{convertLabel(priceMode)}</span>
+                </p>
+              </div>
+            </div>
+          </Section>
+
+          <Section title="가격 알림 (선택)" desc="가격이 크게 변하면 알려드려요.">
+            <div className="bg-card border border-border rounded-2xl px-4 py-3.5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Bell className="w-4 h-4 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-foreground">가격 변동 알림</p>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">
+                      가격이 크게 변하면 알려드려요.
+                    </p>
+                  </div>
+                </div>
+                <Switch checked={alertEnabled} onCheckedChange={setAlertEnabled} />
+              </div>
+              {alertEnabled && (
+                <div className="mt-3 pt-3 border-t border-border space-y-2">
+                  {ALERT_RULES.map((r) => {
+                    const sel = alertRules.includes(r);
+                    return (
+                      <button
+                        key={r}
+                        onClick={() => toggleAlertRule(r)}
+                        className="w-full flex items-center justify-between"
+                      >
+                        <span className="text-[13px] text-foreground text-left">{r}</span>
+                        <span
+                          className={`w-5 h-5 rounded-md border-2 flex items-center justify-center ${
+                            sel ? "border-primary bg-primary" : "border-border bg-card"
+                          }`}
+                        >
+                          {sel && <Check className="w-3 h-3 text-white" strokeWidth={3} />}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </Section>
         </main>
       )}
 
