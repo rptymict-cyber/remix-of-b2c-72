@@ -702,46 +702,67 @@ const MarketPricePage = () => {
         {/* ===== 품종 ===== */}
         {tab === "품종" && (
           <div className="space-y-3 animate-fade-in">
-            <div className="bg-card rounded-2xl border border-border p-4">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-[13px] font-bold text-foreground">품종 · 단량별 평균가 비교</span>
-                <span className="text-[10px] text-muted-foreground">kg 환산 포함</span>
+            {varietyData.length === 0 ? (
+              <div className="bg-card rounded-2xl border border-border p-6 text-center text-[13px] text-muted-foreground">
+                품종 정보를 찾을 수 없습니다.
               </div>
-              <div className="space-y-3">
-                {varietyData.map((v) => {
-                  const maxKg = Math.max(...varietyData.map((x) => x.kg));
-                  return (
-                    <button key={`${v.name}-${v.unit}`} onClick={() => setVarietyDetail(v)} className="w-full text-left">
-                      <div className="flex items-center justify-between text-[12px] mb-1">
-                        <span className="font-semibold text-foreground">{v.name} <span className="text-muted-foreground">/ {v.unit}</span></span>
-                        <span className="text-foreground"><b>{v.price.toLocaleString()}원</b> <span className="text-muted-foreground">· {v.kg.toLocaleString()}원/kg</span></span>
-                      </div>
-                      <div className="h-2 bg-secondary rounded-full overflow-hidden">
-                        <div className="h-full bg-primary rounded-full" style={{ width: `${(v.kg / maxKg) * 100}%` }} />
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
+            ) : (
+              <>
+                <div className="bg-card rounded-2xl border border-border p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-[13px] font-bold text-foreground">품종 · 단량별 평균가 비교</span>
+                    <span className="text-[10px] text-muted-foreground">{crop.name} · kg 환산 포함</span>
+                  </div>
+                  <div className="space-y-3">
+                    {(() => {
+                      const maxKg = Math.max(...varietyData.map((x) => x.kg), 1);
+                      return varietyData.map((v) => {
+                        const selected = v.name === variety;
+                        return (
+                          <button key={`${v.name}-${v.unit}`} onClick={() => setVarietyDetail(v)} className={`w-full text-left rounded-lg p-2 -m-2 ${selected ? "bg-primary/5" : ""}`}>
+                            <div className="flex items-center justify-between text-[12px] mb-1 gap-2">
+                              <span className={`font-semibold truncate ${selected ? "text-primary" : "text-foreground"}`}>
+                                {v.name} <span className="text-muted-foreground font-normal">/ {v.unit}</span>
+                                {selected && <span className="ml-1.5 text-[10px] font-bold text-primary">선택됨</span>}
+                              </span>
+                              <span className="text-foreground shrink-0"><b>{v.price.toLocaleString()}원</b> <span className="text-muted-foreground">· {v.kg.toLocaleString()}원/kg</span></span>
+                            </div>
+                            <div className="h-2 bg-secondary rounded-full overflow-hidden">
+                              <div className="h-full bg-primary rounded-full" style={{ width: `${(v.kg / maxKg) * 100}%` }} />
+                            </div>
+                          </button>
+                        );
+                      });
+                    })()}
+                  </div>
+                </div>
 
-            <div className="bg-card rounded-xl border border-border overflow-hidden">
-              <div className="grid grid-cols-[2fr_1.6fr_1.1fr_1.2fr] px-3 py-2 text-[10px] text-muted-foreground border-b border-border">
-                <span>품종 / 단량</span><span className="text-right">평균가</span><span className="text-right">전일</span><span className="text-right">거래량</span>
-              </div>
-              <div className="divide-y divide-border">
-                {varietyData.map((v) => (
-                  <button key={`${v.name}-${v.unit}-row`} onClick={() => setVarietyDetail(v)} className="w-full grid grid-cols-[2fr_1.6fr_1.1fr_1.2fr] px-3 py-2.5 text-[12px] text-left active:bg-secondary/50">
-                    <div className="min-w-0"><p className="font-semibold text-foreground truncate">{v.name}</p><p className="text-[10px] text-muted-foreground">{v.unit}</p></div>
-                    <span className="text-right font-bold text-foreground self-center">{v.price.toLocaleString()}</span>
-                    <span className={`text-right font-medium self-center ${v.dayChange > 0 ? "price-up" : v.dayChange < 0 ? "price-down" : "price-neutral"}`}>{v.dayChange > 0 ? "+" : ""}{v.dayChange}%</span>
-                    <span className="text-right text-muted-foreground self-center">{v.volume}t</span>
-                  </button>
-                ))}
-              </div>
-            </div>
+                <div className="bg-card rounded-xl border border-border overflow-hidden">
+                  <div className="grid grid-cols-[2fr_1.6fr_1.1fr_1.2fr] px-3 py-2 text-[10px] text-muted-foreground border-b border-border">
+                    <span>품종 / 단량</span><span className="text-right">평균가</span><span className="text-right">전일</span><span className="text-right">거래량</span>
+                  </div>
+                  <div className="divide-y divide-border">
+                    {varietyData.map((v) => {
+                      const selected = v.name === variety;
+                      return (
+                        <button key={`${v.name}-${v.unit}-row`} onClick={() => setVarietyDetail(v)} className={`w-full grid grid-cols-[2fr_1.6fr_1.1fr_1.2fr] px-3 py-2.5 text-[12px] text-left active:bg-secondary/50 ${selected ? "bg-primary/5" : ""}`}>
+                          <div className="min-w-0">
+                            <p className={`font-semibold truncate ${selected ? "text-primary" : "text-foreground"}`}>{v.name}</p>
+                            <p className="text-[10px] text-muted-foreground">{v.unit}</p>
+                          </div>
+                          <span className="text-right font-bold text-foreground self-center">{v.price.toLocaleString()}</span>
+                          <span className={`text-right font-medium self-center ${v.dayChange > 0 ? "price-up" : v.dayChange < 0 ? "price-down" : "price-neutral"}`}>{v.dayChange > 0 ? "+" : ""}{v.dayChange}%</span>
+                          <span className="text-right text-muted-foreground self-center">{v.volume}t</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         )}
+
 
         {/* AI 예측 CTA */}
         <button onClick={() => nav("/prediction")} className="w-full bg-[hsl(142_45%_94%)] border border-[hsl(142_40%_82%)] rounded-2xl px-4 py-3.5 flex items-center gap-3 active:opacity-80">
