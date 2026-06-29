@@ -140,10 +140,11 @@ const KV = ({ k, v }: { k: string; v: React.ReactNode }) => (
 
 const MarketPricePage = () => {
   const nav = useNavigate();
-  const { cropId, variety, marketId } = useApp();
+  const [searchParams] = useSearchParams();
+  const { cropId, variety, marketId, setCrop, setMarket, setVariety } = useApp();
   const crop = findCrop(cropId);
   const market = findMarket(marketId);
-  const price = seedPrice(cropId, marketId, variety);
+  const basePrice = seedPrice(cropId, marketId, variety);
 
   const [tab, setTab] = useState<Tab>("경매내역");
   const [date, setDate] = useState<typeof DATE_OPTIONS[number]>("오늘");
@@ -153,6 +154,10 @@ const MarketPricePage = () => {
   const [dateOpen, setDateOpen] = useState(false);
   const [sortOpen, setSortOpen] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [originView, setOriginView] = useState<"supply" | "supplyForecast">("supply");
+  const [priceMode, setPriceModeState] = useState<"actual" | "perKg" | "per10kg" | "per20kg" | "per100kg" | "cropDefault">("cropDefault");
+  const [entryMode, setEntryMode] = useState<"farmer" | "wholesaler" | "retailer" | "enterprise" | null>(null);
+  const [entrySource, setEntrySource] = useState<string | null>(null);
 
   // market-compare metric
   type MarketMetric = "price" | "share" | "dayChange" | "volume" | "inbound";
