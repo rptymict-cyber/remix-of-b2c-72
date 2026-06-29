@@ -3,9 +3,19 @@ import { useLocation, useNavigate } from "react-router-dom";
 const tabs = [
   { id: "/", label: "홈", icon: HomeIcon },
   { id: "/market", label: "시세", icon: TrendIcon },
+  { id: "/prediction", label: "예측", icon: PredictIcon },
   { id: "/watchlist", label: "관심", icon: StarIcon },
   { id: "/mypage", label: "마이", icon: PersonIcon },
 ];
+
+function PredictIcon({ active }: { active: boolean }) {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.2 : 1.8} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 2a7 7 0 00-4 12.7V17a2 2 0 002 2h4a2 2 0 002-2v-2.3A7 7 0 0012 2z" />
+      <path d="M10 22h4" />
+    </svg>
+  );
+}
 
 function HomeIcon({ active }: { active: boolean }) {
   return (
@@ -59,6 +69,7 @@ const BottomNav = () => {
     const p = location.pathname;
     if (path === "/") return p === "/";
     if (path === "/market") return p === "/market";
+    if (path === "/prediction") return p === "/prediction" || p.startsWith("/prediction");
     if (path === "/search") return p === "/search";
     if (path === "/watchlist") return p === "/watchlist" || p.startsWith("/crop");
     if (path === "/mypage") {
