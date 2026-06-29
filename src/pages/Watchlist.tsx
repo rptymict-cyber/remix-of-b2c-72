@@ -1093,7 +1093,7 @@ const Watchlist = () => {
             </button>
           ) : activeTab === "interests" ? (
             <button
-              onClick={() => setInterestAddOpen(true)}
+              onClick={() => navigate("/crop/add?mode=interest", { state: { returnTo: "/crop?tab=interest" } })}
               aria-label="관심 품목 추가"
               className="w-9 h-9 rounded-lg flex items-center justify-center"
               style={{ color: PRIMARY }}
